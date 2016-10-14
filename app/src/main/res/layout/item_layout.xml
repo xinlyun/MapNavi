@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_navi_title_1"
+    android:orientation="vertical" >
+
+    <TextView
+        android:layout_marginTop="20px"
+        android:text="22222"
+        android:id="@+id/poi_field_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/margin_left"
+        android:textColor="@color/white"
+        android:textSize="@dimen/poi_title_size" />
+
+    <TextView
+        android:layout_marginTop="15px"
+        android:text="1111"
+        android:id="@+id/poi_value_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/trans_half_white"
+        android:layout_marginBottom="20px"
+        android:layout_marginLeft="@dimen/margin_left" />
+
+</LinearLayout>

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/root_layout"
+    tools:context=".view.appwidget.activity.MainActivity">
+
+    <com.amap.api.maps.MapView
+        android:id="@+id/map_main"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </com.amap.api.maps.MapView>
+
+    <RelativeLayout
+        android:background="@drawable/bg_navi_title"
+        android:layout_width="match_parent"
+        android:layout_height="93px">
+
+        <com.xiaopeng.xmapnavi.view.appwidget.selfview.StereoView
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:id="@+id/stv_search"
+            android:layout_marginTop="13px"
+            android:layout_marginLeft="41px"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_width="998px"
+            android:layout_height="66px"
+            >
+            <LinearLayout
+                android:orientation="horizontal"
+                android:background="@drawable/bg_navi_title_1"
+                android:layout_width="998px"
+                android:layout_height="66px">
+                <com.gc.materialdesign.views.ProgressBarCircularIndeterminate
+                    android:layout_width="66px"
+                    android:layout_height="66px"
+                    />
+                <TextView
+                    android:textColor="#88ffffff"
+                    android:gravity="center_vertical"
+
+                    android:textSize="30px"
+                    android:text="@string/searching"
+                    android:layout_marginLeft="11px"
+                    android:layout_width="wrap_content"
+                    android:layout_height="66px" />
+                <TextView
+                    android:textColor="@color/white"
+                    android:textSize="35px"
+                    android:layout_width="wrap_content"
+                    android:layout_height="66px" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:background="@drawable/bg_navi_title_1"
+                android:layout_width="998px"
+                android:layout_height="66px">
+                <ImageView
+                    android:src="@drawable/icon_navistart_search_start"
+                    android:layout_marginLeft="22px"
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="40px"
+                    android:layout_height="40px" />
+                <TextView
+                    android:id="@+id/tx_search_start"
+                    android:textColor="#ffffff"
+                    android:gravity="center_vertical"
+
+                    android:textSize="30px"
+                    android:text=" 搜索目的地"
+                    android:layout_marginLeft="11px"
+                    android:layout_width="600px"
+                    android:layout_height="66px" />
+                <RelativeLayout
+                    android:id="@+id/navistart_search_yuyin"
+                    android:layout_gravity="center"
+                    android:layout_width="fill_parent"
+                    android:layout_height="40px">
+                    <ImageView
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="22px"
+                        android:src="@drawable/icon_set"
+
+                        android:layout_width="40px"
+                        android:layout_height="40px" />
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+
+                android:orientation="horizontal"
+                android:background="@drawable/bg_navi_title_1"
+                android:layout_width="998px"
+                android:layout_height="66px">
+                <EditText
+                    android:background="#00000000"
+                    android:imeOptions="actionSearch"
+                    android:id="@+id/edt_search"
+                    android:textColor="#ffffff"
+                    android:textColorHint="#60ffffff"
+                    android:gravity="center_vertical"
+                    android:hint="@string/perease_input"
+                    android:textSize="30px"
+
+                    android:layout_marginLeft="20px"
+                    android:layout_width="600px"
+                    android:layout_height="66px" />
+            </LinearLayout>
+        </com.xiaopeng.xmapnavi.view.appwidget.selfview.StereoView>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/navistart_down_llayout3"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20px"
+        android:orientation="horizontal"
+        android:layout_marginLeft="40px"
+        android:background="@drawable/navistart_down_llayout3_bg"
+        android:layout_width="1000px"
+        android:layout_height="121px">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:gravity="center"
+
+
+            android:id="@+id/navistart_down_navi_btn"
+
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_height="match_parent">
+            <ImageView
+                android:src="@drawable/daohang_icon"
+                android:layout_width="80px"
+                android:layout_height="80px" />
+            <TextView
+                android:text="导航"
+                android:textSize="20px"
+                android:textColor="#414141"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent" />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_marginTop="15px"
+            android:layout_marginBottom="15px"
+            android:layout_width="2px"
+            android:background="@color/Grey"
+            android:layout_height="match_parent" />
+        <LinearLayout
+            android:id="@+id/navistart_down_neigh_btn"
+            android:layout_width="match_parent"
+            android:gravity="center"
+
+
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_height="match_parent">
+            <ImageView
+                android:src="@drawable/icon_fujin"
+                android:layout_width="80px"
+                android:layout_height="80px" />
+            <TextView
+                android:text="附近"
+                android:textSize="20px"
+                android:textColor="#414141"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent" />
+        </LinearLayout>
+
+        <ImageView
+            android:layout_marginTop="15px"
+            android:layout_marginBottom="15px"
+            android:layout_width="2px"
+            android:background="@color/Grey"
+            android:layout_height="match_parent" />
+        <LinearLayout
+            android:id="@+id/navistart_down_setting_btn"
+            android:layout_width="match_parent"
+            android:gravity="center"
+
+
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_height="match_parent">
+            <ImageView
+                android:src="@drawable/icon_set"
+                android:layout_width="80px"
+                android:layout_height="80px" />
+            <TextView
+                android:text="设置"
+                android:textSize="20px"
+                android:textColor="#414141"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent" />
+        </LinearLayout>
+
+    </LinearLayout>
+</RelativeLayout>

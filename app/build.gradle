@@ -1,0 +1,87 @@
+import java.text.SimpleDateFormat
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.0"
+
+    defaultConfig {
+        applicationId "com.xiaopeng.xmapnavi"
+        minSdkVersion 19
+        targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true
+    }
+    signingConfigs {
+        release {
+            try {
+                storeFile file('/home/jenkins/.jenkins/workspace/xiaopeng_app_debug.keystore')
+                storePassword KEYSTORE_PASSWORD
+                keyAlias "androiddebugkey"
+                keyPassword KEY_PASSWORD
+            } catch (ex) {
+                throw new InvalidUserDataException("You should define KEYSTORE_PASSWORD and KEY_PASSWORD in gradle.properties.")
+            }
+        }
+        debug{
+            try {
+                storeFile file('C:/Users/linzx/Documents/debug.keystore')
+                storePassword "zyxie1324"
+                keyAlias "androiddebugkey"
+                keyPassword "zyxie1324"
+            } catch (ex) {
+                throw new InvalidUserDataException("You should define KEYSTORE_PASSWORD and KEY_PASSWORD in gradle.properties.")
+            }
+        }
+    }
+
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            zipAlignEnabled true
+            // 移除无用的resource文件
+            shrinkResources true
+            signingConfig signingConfigs.release
+
+            applicationVariants.all { variant ->gi
+                variant.outputs.each { output ->
+                    def outputFile = output.outputFile
+                    if (outputFile != null && outputFile.name.endsWith('.apk')) {
+
+                        def fileName = "xp_MapNavi.apk"
+                        output.outputFile = new File(outputFile.parent, fileName)
+                    }
+                }
+            }
+        }
+
+        debug {
+            versionNameSuffix "-debug"
+            minifyEnabled false
+            zipAlignEnabled true
+            shrinkResources true
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:24.0.0'
+    compile project(':amaplib')
+    compile project(':ActiveAndroid')
+    compile project(':MaterialDesign')
+    compile files('libs/bugly_crash_release.jar')
+    compile files('libs/fastjson-1.2.2.jar')
+    compile files('libs/okhttp-3.4.0-RC1.jar')
+    compile files('libs/okio-1.6.0.jar')
+    compile files('libs/universal-image-loader-1.9.5.jar')
+}
