@@ -14,3 +14,4 @@ autolayout/autolayout.iml
 *.iml
 .idea/
 /amaplib/build
+/.gradle
