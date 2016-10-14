@@ -1,0 +1,16 @@
+_Store
+/build
+/captures
+/ActiveAndroid/build
+/calligraphy/build
+/autolayout/build
+/CWorkProvide/build
+.idea/gradle.xml
+.idea/misc.xml
+ActiveAndroid/ActiveAndroid.iml
+MaterialDesign/MaterialDesign.iml
+app/app.iml
+autolayout/autolayout.iml
+*.iml
+.idea/
+/amaplib/build
