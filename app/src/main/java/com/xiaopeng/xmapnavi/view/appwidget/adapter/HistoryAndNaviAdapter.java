@@ -3,9 +3,12 @@ package com.xiaopeng.xmapnavi.view.appwidget.adapter;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.amap.api.maps.AMapUtils;
@@ -28,6 +31,7 @@ public class HistoryAndNaviAdapter extends ArrayAdapter {
     List<HistoryPosi> historyPosiList;
     LatLng localPosi;
     int style ;
+    private int index = -1;
     public HistoryAndNaviAdapter(Context context,List<PoiItem> poiItemList,int resource) {
         super(context,resource);
         this.poiItemList = poiItemList;
@@ -41,6 +45,7 @@ public class HistoryAndNaviAdapter extends ArrayAdapter {
     public void setNewOne(List<PoiItem> poiItemList){
         this.poiItemList = poiItemList;
         style = 1;
+        this.index = -1;
     }
 
     public void setLocalPosi(LatLng localPosi){
@@ -63,6 +68,8 @@ public class HistoryAndNaviAdapter extends ArrayAdapter {
         super.clear();
     }
 
+    private int touchPoi = -1;
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = null;
@@ -72,21 +79,78 @@ public class HistoryAndNaviAdapter extends ArrayAdapter {
             TextView historyText = (TextView) view.findViewById(R.id.text1);
             historyText.setText(historyPosi.getName());
         }else if(style==1){
+            ItemHolder itemHolder = new ItemHolder();
             PoiItem poiItem = poiItemList.get(position);
-            view = LayoutInflater.from(getContext()).inflate(R.layout.layout_fix_list_item,null);
-            TextView naviName = (TextView) view.findViewById(R.id.pre_list_name);
-            TextView naviPosi = (TextView) view.findViewById(R.id.pre_list_posi);
-            TextView naviDis  = (TextView) view.findViewById(R.id.pre_list_dis);
-            naviName.setText(poiItem.toString());
-            naviPosi.setText(poiItem.getCityName() + "  " + poiItem.getSnippet());
+            touchPoi = position;
+            if (convertView == null) {
+                view = LayoutInflater.from(getContext()).inflate(R.layout.layout_fix_list_item,null);
+                itemHolder.naviBtn = (LinearLayout) view .findViewById(R.id.touch_to_navi);
+                itemHolder.naviBtn.setTag(position);
+
+                itemHolder.naviName = (TextView) view.findViewById(R.id.pre_list_name);
+                itemHolder.naviPosi = (TextView) view.findViewById(R.id.pre_list_posi);
+                itemHolder.naviDis  = (TextView) view.findViewById(R.id.pre_list_dis);
+                view.setTag(itemHolder);
+            }else {
+                view = convertView;
+                itemHolder = (ItemHolder) view.getTag();
+            }
+            itemHolder.naviName.setText(poiItem.toString());
+            itemHolder.naviPosi.setText(poiItem.getCityName() + "  " + poiItem.getSnippet());
+            itemHolder.naviBtn.setOnClickListener(new lvButtonListener(position));
+            if (position == index){
+//                android:background="@color/trans_white_lrc"
+                view.findViewById(R.id.back_ll).setBackgroundColor(getContext().getResources().getColor(R.color.gray_lite));
+            }else {
+                view.findViewById(R.id.back_ll).setBackground(null);
+            }
             float dis = AMapUtils.calculateLineDistance(localPosi,new LatLng(poiItem.getLatLonPoint().getLatitude(),poiItem.getLatLonPoint().getLongitude()));
             dis = dis/1000f;
             DecimalFormat df = new DecimalFormat("0.0");
-
             String result = df.format(dis);
-            naviDis.setText(result+"KM");
+            itemHolder.naviDis.setText(result+"KM");
         }
 
         return view;
     }
+
+    class ItemHolder{
+        TextView naviName,naviPosi,naviDis;
+        LinearLayout naviBtn;
+//        ImageView imageView;
+    }
+
+    private OnClickRightItem mOnClickRightItem;
+
+    public interface OnClickRightItem{
+        void onClickRightItem(int posi);
+    }
+
+    public void setOnClickRightItem(OnClickRightItem rightItem){
+        mOnClickRightItem = rightItem;
+    }
+
+    class lvButtonListener implements View.OnClickListener {
+        private int position ;
+
+        lvButtonListener( int pos) {
+            position = pos;
+        }
+
+        @Override
+        public void onClick( View v) {
+            Log.d("PlayListDetailAdapter","Onclick:"+(int)v.getTag());
+            if (mOnClickRightItem != null) {
+                int posi1 = position;
+                mOnClickRightItem.onClickRightItem(posi1);
+            }
+        }
+    }
+
+    public void setIndex(int index){
+        this.index = index;
+        this.notifyDataSetChanged();
+        
+    }
+
 }

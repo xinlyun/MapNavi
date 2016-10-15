@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.MainThread;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -22,11 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
-import com.amap.api.location.AMapLocationClient;
-import com.amap.api.location.AMapLocationClientOption;
-import com.amap.api.location.AMapLocationListener;
 import com.amap.api.maps.AMap;
-import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
@@ -322,7 +316,8 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
             if (mStvSearch != null){
                 if (mLocationProvider.getPoiResult() != null && mLocationProvider.getPoiResult().getPois().size()>=1){
 
-                    Intent intent = new Intent(MainActivity.this,SearchPosiActivity.class);
+                    Intent intent = new Intent(MainActivity.this,ShowPosiActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     intent.putExtra(ACTION_SEARCH,REQ_HAVE_RESULT);
                     intent.putExtra(ACTION_MSG,mSearchName);
                     startActivity(intent);

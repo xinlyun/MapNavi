@@ -11,9 +11,13 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,7 +29,9 @@ import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.CameraUpdate;
 import com.amap.api.maps.CameraUpdateFactory;
+import com.amap.api.maps.MapView;
 import com.amap.api.maps.TextureMapView;
 import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
@@ -41,7 +47,6 @@ import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.core.SuggestionCity;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
-import com.xiaopeng.amaplib.util.ToastUtil;
 import com.xiaopeng.amaplib.util.Utils;
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.bean.HistoryPosi;
@@ -50,7 +55,6 @@ import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
 import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.HistoryAndNaviAdapter;
-import com.xiaopeng.xmapnavi.view.appwidget.selfview.SwipeBackLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,14 +62,24 @@ import java.util.List;
 /**
  * Created by linzx on 2016/10/13.
  */
-public class SearchPosiActivity extends Activity implements XpLocationListener
-        ,View.OnClickListener,XpSearchListner,
-        AMap.OnMapClickListener, AMap.OnInfoWindowClickListener, AMap.InfoWindowAdapter, AMap.OnMarkerClickListener
+public class ShowPosiActivity extends Activity implements XpLocationListener
+        , View.OnClickListener,XpSearchListner
+        , AMap.OnMapClickListener, AMap.OnInfoWindowClickListener
+        , AMap.InfoWindowAdapter, AMap.OnMarkerClickListener
+        , View.OnTouchListener , Animation.AnimationListener
+        , HistoryAndNaviAdapter.OnClickRightItem
 {
 
-    private static final String TAG = "SearchPosiActivity";
+    private static final String TAG = "ShowPosiActivity";
     private static final String ACTION_SEARCH = "ACTION_SEARCH";
     private static final String ACTION_MSG = "ACTION_MSG";
+    private static int  WINDOW_HEIGHT = 1440,
+            LAYOUT_REL_HEIGHT = 600,
+            TOUCH_HEIGHT = 800,
+            DOWN_HEIGHT = 400,
+            TITLE_HEIGHT = 100;
+
+
     private int[] markers = {com.xiaopeng.amaplib.R.drawable.poi_marker_1,
             com.xiaopeng.amaplib.R.drawable.poi_marker_2,
             com.xiaopeng.amaplib.R.drawable.poi_marker_3,
@@ -85,33 +99,17 @@ public class SearchPosiActivity extends Activity implements XpLocationListener
     private PoiResult mPoiResult;
     private HistoryAndNaviAdapter mAdapter;
 
-    private Button titleBtn,mBeginNavi;
     private ListView mHistoryLv;
-    private static final int SET_NOWPOSI=1,SET_POSI=2,SET_HOME=3,SET_COMPANY=4;
-    private ImageView btn_return;
-    private TextView titleTextView;
-    private EditText mEtvReq;
-    private LinearLayout editBar;
-    private PoiSearch.Query query;
-    private PoiSearch poiSearch;
-    private Bundle bundle;
-    private LatLonPoint mPosi = null,mHomePosi = null,mCompanyPosi = null;
-
-    private Intent intent;
-    private List<NaviLatLng> startPoint, endPoint, wayPoint;
-    //    private AMapNavi mapNavi;
+    //    private TextView titleTextView;
+//    private EditText mEtvReq;
     private SharedPreferences.Editor editor;
-    private Dialog mCleanDialog,mCalueDialog;
     private ProgressDialog mProgDialog;
-    private boolean causePri = false;
-    private ImageView btnListener;
-    int style;
     protected int activityCloseEnterAnimation;
 
     protected int activityCloseExitAnimation;
 
 
-    private TextureMapView mapview;
+    private MapView mapview;
     private AMap mAMap;
     private LatLonPoint lp ;// 116.472995,39.993743
     private Marker locationMarker; // 选择的点
@@ -120,6 +118,10 @@ public class SearchPosiActivity extends Activity implements XpLocationListener
     private myPoiOverlay poiOverlay;// poi图层
     private PoiResult poiResult; // poi返回的结果
     private List<PoiItem> poiItems;// poi数据
+
+    private Button mBtPull;
+    private LinearLayout mLlByPull;
+    private float touPx,touPy;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,13 +129,12 @@ public class SearchPosiActivity extends Activity implements XpLocationListener
 //        setDragEdge(SwipeBackLayout.DragEdge.LEFT);
         mLocationPro    = LocationProvider.getInstence(this);
 
-        mapview   = (TextureMapView) findViewById(R.id.tmv_search_show);
+        mapview   = (MapView) findViewById(R.id.tmv_search_show);
         mapview   .onCreate(savedInstanceState);
         mAMap       = mapview.getMap();
         lp          = Utils.getLatLonFromLocation(mLocationPro.getAmapLocation());
         initView();
-        initListView(this);
-        initMap();
+
     }
 
 
@@ -147,6 +148,8 @@ public class SearchPosiActivity extends Activity implements XpLocationListener
     @Override
     protected void onStart() {
         super.onStart();
+        initListView(this);
+        initMap();
         readIntent(getIntent());
         mLocationPro    .addSearchListner(this);
     }
@@ -165,29 +168,27 @@ public class SearchPosiActivity extends Activity implements XpLocationListener
     }
 
     private void initView(){
-
-        startPoint = new ArrayList<NaviLatLng>();
-        endPoint = new ArrayList<NaviLatLng>();
-        wayPoint = new ArrayList<NaviLatLng>();
+        mBtPull         = (Button) findViewById(R.id.btn_pull);
+        mLlByPull       = (LinearLayout) findViewById(R.id.ll_search_layout);
         mHistoryLv      = (ListView) findViewById(R.id.prepare_listview);
-        btn_return      = (ImageView) findViewById(R.id.title_return);
-        titleTextView   = (TextView) findViewById(R.id.title_title);
-        titleTextView.setText("搜索");
-        mEtvReq = (EditText) findViewById(R.id.prepare_edittext);
-        titleBtn        = (Button) findViewById(R.id.title_button);
-        mBeginNavi      = (Button) findViewById(R.id.pre_beginnavi);
-        editBar         = (LinearLayout) findViewById(R.id.prepare_edit_bar);
-        btnListener     = (ImageView) findViewById(R.id.prepare_ttslistener);
+//        titleTextView   = (TextView) findViewById(R.id.title_title);
+//        titleTextView.setText("搜索");
+//        mEtvReq = (EditText) findViewById(R.id.prepare_edittext);
         mProgDialog = new ProgressDialog(this);
         mProgDialog.setTitle("多样化路径计算");
         mProgDialog.setMessage("正在计算路径......");
         mProgDialog.setCancelable(true);
+
+
+        //----init listener ---//
         mProgDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
 
             }
         });
+
+        mBtPull .setOnTouchListener(this);
     }
 
     /**
@@ -257,18 +258,17 @@ public class SearchPosiActivity extends Activity implements XpLocationListener
             mAdapter.clear();
 
             if (poiItems.size()==0){
-                initListView(SearchPosiActivity.this);
+                initListView(ShowPosiActivity.this);
             }else {
-                mEtvReq.setText(mSearchName);
 
                 mAdapter.setNewOne(poiItems);
 
                 Log.d(TAG,"new Adapter");
                 mAdapter.notifyDataSetChanged();
                 mHistoryLv.setOnItemClickListener(onItemClickListener);
-                mBeginNavi.setTextColor(getResources().getColor(R.color.white));
-                mBeginNavi.setBackgroundResource(R.drawable.prepare_seach_btn_true);
-                mBeginNavi.setOnClickListener(this);
+//                mBeginNavi.setTextColor(getResources().getColor(R.color.white));
+//                mBeginNavi.setBackgroundResource(R.drawable.prepare_seach_btn_true);
+//                mBeginNavi.setOnClickListener(this);
 
             }
 
@@ -294,17 +294,13 @@ public class SearchPosiActivity extends Activity implements XpLocationListener
 
     }
 
-    AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            findViewById(R.id.ll_search_layout).setVisibility(View.GONE);
-        }
-    };
+
 
     private void initListView(Context context){
         List<HistoryPosi> historyPosis= new ArrayList<>();
         historyPosis.add(new HistoryPosi("                       清除历史搜索",0f,0f));
-        mAdapter = new HistoryAndNaviAdapter(context,R.layout.layout_fix_list_item,historyPosis);
+        mAdapter    = new HistoryAndNaviAdapter(context,R.layout.layout_fix_list_item,historyPosis);
+        mAdapter    . setOnClickRightItem(this);
         mAdapter.setLocalPosi(new LatLng(mLocationPro.getAmapLocation().getLatitude(), mLocationPro.getAmapLocation().getLongitude()));
 //        ArrayAdapter adapter = new ArrayAdapter(context,R.layout.mysimple_listitem,strings);
         mHistoryLv.setAdapter(mAdapter);
@@ -363,8 +359,46 @@ public class SearchPosiActivity extends Activity implements XpLocationListener
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        return false;
+        int index = poiOverlay.getPoiIndex(marker);
+        runMarkerChange(marker,index);
+        mHistoryLv.setSelection(index);
+        return true;
     }
+
+    private void runMarkerChange(Marker marker,int index){
+        if (marker.getObject() != null) {
+            whetherToShowDetailInfo(true);
+            try {
+                PoiItem mCurrentPoi = (PoiItem) marker.getObject();
+                if (mlastMarker == null) {
+                    mlastMarker = marker;
+                } else {
+                    // 将之前被点击的marker置为原来的状态
+                    resetlastmarker();
+                    mlastMarker = marker;
+                }
+                mAdapter.setIndex(index);
+
+                detailMarker = marker;
+                detailMarker.setIcon(BitmapDescriptorFactory
+                        .fromBitmap(BitmapFactory.decodeResource(
+                                getResources(),
+                                com.xiaopeng.amaplib.R.drawable.poi_marker_pressed)));
+
+//                setPoiItemDisplayContent(mCurrentPoi);
+                CameraUpdate cameraUpdate = CameraUpdateFactory.changeLatLng(new LatLng(mCurrentPoi.getLatLonPoint().getLatitude(),mCurrentPoi.getLatLonPoint().getLongitude()));
+                mAMap.animateCamera(cameraUpdate);
+
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+        }else {
+            whetherToShowDetailInfo(false);
+            resetlastmarker();
+        }
+    }
+
+
     // 将之前被点击的marker置为原来的状态
     private void resetlastmarker() {
         int index = poiOverlay.getPoiIndex(mlastMarker);
@@ -392,46 +426,46 @@ public class SearchPosiActivity extends Activity implements XpLocationListener
             {// 搜索poi的结果
                 Log.d(TAG,"onPoiSearched2");
 //                if (result.getQuery().equals(query)) {// 是否是同一条
-                    Log.d(TAG,"onPoiSearched3");
-                    poiResult = result;
-                    poiItems = poiResult.getPois();// 取得第一页的poiitem数据，页数从数字0开始
-                    List<SuggestionCity> suggestionCities = poiResult
-                            .getSearchSuggestionCitys();// 当搜索不到poiitem数据时，会返回含有搜索关键字的城市信息
-                    if (poiItems != null && poiItems.size() > 0) {
-                        Log.d(TAG,"onPoiSearched4");
-                        //清除POI信息显示
-                        whetherToShowDetailInfo(false);
-                        //并还原点击marker样式
-                        if (mlastMarker != null) {
-                            resetlastmarker();
-                        }
-                        //清理之前搜索结果的marker
-                        if (poiOverlay !=null) {
-                            poiOverlay.removeFromMap();
-                        }
-                        mAMap.clear();
-                        poiOverlay = new myPoiOverlay(mAMap, poiItems);
-                        poiOverlay.addToMap();
-                        poiOverlay.zoomToSpan();
+                Log.d(TAG,"onPoiSearched3");
+                poiResult = result;
+                poiItems = poiResult.getPois();// 取得第一页的poiitem数据，页数从数字0开始
+                List<SuggestionCity> suggestionCities = poiResult
+                        .getSearchSuggestionCitys();// 当搜索不到poiitem数据时，会返回含有搜索关键字的城市信息
+                if (poiItems != null && poiItems.size() > 0) {
+                    Log.d(TAG,"onPoiSearched4");
+                    //清除POI信息显示
+                    whetherToShowDetailInfo(false);
+                    //并还原点击marker样式
+                    if (mlastMarker != null) {
+                        resetlastmarker();
+                    }
+                    //清理之前搜索结果的marker
+                    if (poiOverlay !=null) {
+                        poiOverlay.removeFromMap();
+                    }
+                    mAMap.clear();
+                    poiOverlay = new myPoiOverlay(mAMap, poiItems);
+                    poiOverlay.addToMap();
+                    poiOverlay.zoomToSpan();
 
-                        mAMap.addMarker(new MarkerOptions()
-                                .anchor(0.5f, 0.5f)
-                                .icon(BitmapDescriptorFactory
-                                        .fromBitmap(BitmapFactory.decodeResource(
-                                                getResources(), com.xiaopeng.amaplib.R.drawable.point4)))
-                                .position(new LatLng(lp.getLatitude(), lp.getLongitude())));
+                    mAMap.addMarker(new MarkerOptions()
+                            .anchor(0.5f, 0.5f)
+                            .icon(BitmapDescriptorFactory
+                                    .fromBitmap(BitmapFactory.decodeResource(
+                                            getResources(), com.xiaopeng.amaplib.R.drawable.point4)))
+                            .position(new LatLng(lp.getLatitude(), lp.getLongitude())));
 
-                        mAMap.addCircle(new CircleOptions()
-                                .center(new LatLng(lp.getLatitude(),
-                                        lp.getLongitude())).radius(5000)
-                                .strokeColor(Color.BLUE)
-                                .fillColor(Color.argb(50, 1, 1, 1))
-                                .strokeWidth(2));
+                    mAMap.addCircle(new CircleOptions()
+                            .center(new LatLng(lp.getLatitude(),
+                                    lp.getLongitude())).radius(5000)
+                            .strokeColor(Color.BLUE)
+                            .fillColor(Color.argb(50, 1, 1, 1))
+                            .strokeWidth(2));
 
-                    } else if (suggestionCities != null
-                            && suggestionCities.size() > 0) {
+                } else if (suggestionCities != null
+                        && suggestionCities.size() > 0) {
 //                        showSuggestCity(suggestionCities);
-                    } else {
+                } else {
 //                    }
                 }
             } else {
@@ -451,11 +485,178 @@ public class SearchPosiActivity extends Activity implements XpLocationListener
 //
 //        }
     }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        switch (motionEvent.getAction()){
+            case MotionEvent.ACTION_DOWN:
+                touPx = motionEvent.getRawX();
+                touPy = motionEvent.getRawY();
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                moveLinearLayout(motionEvent);
+                touPx = motionEvent.getRawX();
+                touPy = motionEvent.getRawY();
+                break;
+
+            case MotionEvent.ACTION_UP:
+                resetLinearLayout();
+                break;
+
+            default:
+                break;
+        }
+
+
+        return true;
+    }
+    private void moveLinearLayout(MotionEvent motionEvent){
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mLlByPull.getLayoutParams();
+        int height = layoutParams.height ;
+        float distance = motionEvent.getRawY() - touPy;
+        int newHeight  = (int) (height - distance);
+
+        layoutParams.height = newHeight;
+        mLlByPull.setLayoutParams(layoutParams);
+
+    }
+    private void resetLinearLayout(){
+        //TODO
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mLlByPull.getLayoutParams();
+        int height = layoutParams.height ;
+        if (height > TOUCH_HEIGHT){
+//            new AnimalHelp(height,WINDOW_HEIGHT).start();
+            resetLayoutFinish();
+//            float scalaY  = WINDOW_HEIGHT/((float)height);
+//            ScaleAnimation scaleAnimation = new ScaleAnimation(1f,1f,1f,scalaY);
+//            scaleAnimation.setDuration(350);
+//            scaleAnimation.setAnimationListener(this);
+//            mLlByPull.setAnimation(scaleAnimation);
+        }else if (height<=TOUCH_HEIGHT && height > DOWN_HEIGHT){
+            new AnimalHelp(height,LAYOUT_REL_HEIGHT).start();
+//            float scalaY  = LAYOUT_REL_HEIGHT/((float)height);
+//            ScaleAnimation scaleAnimation = new ScaleAnimation(1f,1f,1f,scalaY);
+//            scaleAnimation.setDuration(350);
+//            scaleAnimation.setAnimationListener(this);
+//            mLlByPull.setAnimation(scaleAnimation);
+        }else {
+            new AnimalHelp(height,TITLE_HEIGHT).start();
+//            float scalaY  = TITLE_HEIGHT/((float)height);
+//            ScaleAnimation scaleAnimation = new ScaleAnimation(1f,1f,1f,scalaY);
+//            scaleAnimation.setDuration(350);
+//            scaleAnimation.setAnimationListener(this);
+//            mLlByPull.setAnimation(scaleAnimation);
+        }
+
+    }
+    private void setLinLayoutHeight(int height){
+        if (mLlByPull == null)return;
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mLlByPull.getLayoutParams();
+        layoutParams.height = height;
+        mLlByPull.setLayoutParams(layoutParams);
+
+    }
+
+
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case 0:
+                    int height = msg.arg1;
+                    setLinLayoutHeight(height);
+                    break;
+
+                case 1:
+
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    };
+
+    @Override
+    public void onClickRightItem(int posi) {
+        Log.d(TAG,"onClickRightItem posi:"+posi);
+    }
+    AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//            findViewById(R.id.ll_search_layout).setVisibility(View.GONE);
+            Log.d(TAG,"onItemClick posi:"+poiItems);
+//            mAdapter.setIndex(i);
+//            ShowPosiActivity.this.onMarkerClick(poiOverlay.getMarker(i));
+            ShowPosiActivity.this.runMarkerChange(poiOverlay.getMarker(i),i);
+        }
+    };
+
+    class AnimalHelp extends Thread{
+        int mOldHeight,mPosiHeight;
+        AnimalHelp(int oldHeight,int posiHeight){
+            mOldHeight = oldHeight;
+            mPosiHeight = posiHeight;
+        }
+        @Override
+        public void run() {
+            super.run();
+            float dif = mPosiHeight - mOldHeight;
+            float disP = 10f * (dif/Math.abs(dif));
+            while (Math.abs(mPosiHeight - mOldHeight) >10){
+                mOldHeight = (int) (mOldHeight + disP);
+                Message message = handler.obtainMessage();
+                message.what = 0;
+                message.arg1 = mOldHeight;
+                handler.sendMessage(message);
+                try {
+                    sleep(8);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            Message message = handler.obtainMessage();
+            message.what = 1;
+            message.arg1 = mPosiHeight;
+
+        }
+    }
+
+    private void resetLayoutFinish(){
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mLlByPull.getLayoutParams();
+        int height = layoutParams.height ;
+        if (height > TOUCH_HEIGHT){
+            layoutParams.height = WINDOW_HEIGHT;
+        }else if (height<=TOUCH_HEIGHT && height > DOWN_HEIGHT){
+            layoutParams.height = LAYOUT_REL_HEIGHT;
+        }else {
+            layoutParams.height = TITLE_HEIGHT;
+        }
+        mLlByPull.setLayoutParams(layoutParams);
+    }
+
+    @Override
+    public void onAnimationStart(Animation animation) {
+
+    }
+
+    @Override
+    public void onAnimationEnd(Animation animation) {
+        resetLayoutFinish();
+    }
+
+    @Override
+    public void onAnimationRepeat(Animation animation) {
+
+    }
+
+
     /**
      * 自定义PoiOverlay
      *
      */
-
     private class myPoiOverlay {
         private AMap mamap;
         private List<PoiItem> mPois;
@@ -479,6 +680,16 @@ public class SearchPosiActivity extends Activity implements XpLocationListener
         }
 
         /**
+         *
+         */
+        public Marker getMarker(int posi){
+            if (mPoiMarks.size()>posi) {
+                return mPoiMarks.get(posi);
+            }else return null;
+        }
+
+
+        /**
          * 去掉PoiOverlay上所有的Marker。
          *
          * @since V2.1.0
@@ -495,6 +706,7 @@ public class SearchPosiActivity extends Activity implements XpLocationListener
          */
         public void zoomToSpan() {
             if (mPois != null && mPois.size() > 0) {
+
                 if (mamap == null)
                     return;
                 LatLngBounds bounds = getLatLngBounds();

@@ -48,6 +48,7 @@
 
     <color name="trans_white">#11ffffff</color>
     <color name="trans_black">#88000000</color>
+    <color name="trans40_white">#55ffffff</color>
     <color name="trans_half_white">#88ffffff</color>
     <color name="trans_fuck_white">#ccffffff</color>
     <color name="seekbar_yellow">#db7c00</color>

@@ -41,7 +41,7 @@
             </intent-filter>
         </activity>
         <!--android:theme="@style/Theme.Swipe.Back.Second"-->
-        <activity android:name=".view.appwidget.activity.SearchPosiActivity"
+        <activity android:name=".view.appwidget.activity.ShowPosiActivity"
             android:launchMode="singleTask"
 
             >
