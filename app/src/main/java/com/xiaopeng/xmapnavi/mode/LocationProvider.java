@@ -2,6 +2,8 @@ package com.xiaopeng.xmapnavi.mode;
 
 import android.content.Context;
 import android.util.Log;
+import android.util.SparseArray;
+import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -15,22 +17,28 @@ import com.amap.api.navi.model.AMapLaneInfo;
 import com.amap.api.navi.model.AMapNaviCross;
 import com.amap.api.navi.model.AMapNaviInfo;
 import com.amap.api.navi.model.AMapNaviLocation;
+import com.amap.api.navi.model.AMapNaviPath;
 import com.amap.api.navi.model.AMapNaviTrafficFacilityInfo;
 import com.amap.api.navi.model.AimLessModeCongestionInfo;
 import com.amap.api.navi.model.AimLessModeStat;
 import com.amap.api.navi.model.NaviInfo;
 import com.amap.api.navi.model.NaviLatLng;
+import com.amap.api.navi.view.RouteOverLay;
+import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
+import com.autonavi.amap.mapcore.MapTilsCacheAndResManager;
 import com.autonavi.tbt.NaviStaticInfo;
 import com.autonavi.tbt.TrafficFacilityInfo;
 import com.xiaopeng.amaplib.util.TTSController;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
 import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
+import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -49,8 +57,12 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private AMapLocation mAmapLocation;
     private static List<XpLocationListener> mListeners;
     private static List<XpSearchListner> mSearchListeners;
+    private static List<XpNaviCalueListener> mNaviCalueListeners;
     private PoiSearch mPoiSearch;
 
+    private boolean congestion, cost, hightspeed, avoidhightspeed;
+
+    private SparseArray<RouteOverLay> routeOverlays = new SparseArray<RouteOverLay>();
 
     //-Resume-//
     private PoiResult mPoiResult;
@@ -89,8 +101,54 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     }
 
     @Override
+    public void addNaviCalueListner(XpNaviCalueListener xpSearchListner) {
+        Log.d(TAG,"addNaviCalueListner size:"+mNaviCalueListeners.size()+"\nlistner:"+xpSearchListner.toString());
+        mNaviCalueListeners.add(xpSearchListner);
+    }
+
+    @Override
+    public void removeNaviCalueListner(XpNaviCalueListener xpSearchListner) {
+        Log.d(TAG,"removeNaviCalueListner size:"+mNaviCalueListeners.size()+"\nlistner:"+xpSearchListner.toString());
+        mNaviCalueListeners.remove(xpSearchListner);
+    }
+
+    @Override
     public void trySearchPosi(String str) {
         beginSearchAddr(str);
+    }
+
+    @Override
+    public void calueRunWay(List<NaviLatLng> startList,List<NaviLatLng> wayList,List<NaviLatLng> endList) {
+        if (avoidhightspeed && hightspeed) {
+            Log.d(TAG,"不走高速与高速优先不能同时为true.");
+        }
+        if (cost && hightspeed) {
+            Log.d(TAG,"高速优先与避免收费不能同时为true");
+        }
+            /*
+			 * strategyFlag转换出来的值都对应PathPlanningStrategy常量，用户也可以直接传入PathPlanningStrategy常量进行算路。
+			 * 如:mAMapNavi.calculateDriveRoute(mStartList, mEndList, mWayPointList,PathPlanningStrategy.DRIVING_DEFAULT);
+			 */
+        int strategyFlag = 0;
+        try {
+            strategyFlag = aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (strategyFlag >= 0) {
+            aMapNavi.calculateDriveRoute(startList, endList, wayList, strategyFlag);
+            Log.d(TAG,"策略:" + strategyFlag);
+        }
+    }
+
+    @Override
+    public AMapNaviPath getNaviPath() {
+        return aMapNavi.getNaviPath();
+    }
+
+    @Override
+    public HashMap<Integer, AMapNaviPath> getNaviPaths() {
+        return aMapNavi.getNaviPaths();
     }
 
     public static ILocationProvider getInstence(Context context){
@@ -103,6 +161,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private LocationProvider(Context context){
         mListeners = new ArrayList<>();
         mSearchListeners = new ArrayList<>();
+        mNaviCalueListeners = new ArrayList<>();
         if (mLocationClient == null) {
             mLocationClient = new AMapLocationClient(context.getApplicationContext());
             mLocationOption = getDefaultOption();
@@ -128,7 +187,10 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
         aMapNavi.addAMapNaviListener(this);
         aMapNavi.addAMapNaviListener(ttsManager);
+
     }
+
+
 
 
     @Override
@@ -201,6 +263,9 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void onCalculateRouteSuccess() {
         Log.d(NAVI_TAG,"onCalculateRouteSuccess");
+        for (XpNaviCalueListener listener:mNaviCalueListeners){
+            listener.onCalculateRouteSuccess();
+        }
     }
 
     @Override
@@ -277,6 +342,9 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void onCalculateMultipleRoutesSuccess(int[] ints) {
         Log.d(NAVI_TAG,"onCalculateMultipleRoutesSuccess");
+        for (XpNaviCalueListener listener:mNaviCalueListeners){
+            listener.onCalculateMultipleRoutesSuccess(ints);
+        }
     }
 
     @Override
@@ -380,4 +448,24 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     public PoiItem getPoiItem() {
         return mPoiItem;
     }
+
+    @Override
+    public void selectRouteId(int id) {
+        aMapNavi.selectRouteId(id);
+    }
+
+    @Override
+    public boolean startNavi(int var1) {
+        aMapNavi.stopAimlessMode();
+        aMapNavi.setEmulatorNaviSpeed(60);
+        return aMapNavi.startNavi(var1);
+    }
+
+    @Override
+    public void stopNavi() {
+        aMapNavi.stopNavi();
+        aMapNavi.startAimlessMode(AimLessMode.CAMERA_AND_SPECIALROAD_DETECTED);
+    }
+
+
 }

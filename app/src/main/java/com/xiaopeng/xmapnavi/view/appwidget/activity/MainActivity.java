@@ -127,6 +127,7 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
     private void init() {
         if (aMap == null) {
             aMap = mapView.getMap();
+            aMap.setMapType(AMap.MAP_TYPE_NAVI);
             // 初始化 显示我的位置的Marker
             myLocationMarker = aMap.addMarker(new MarkerOptions()
                     .icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
@@ -305,7 +306,7 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
 
         mTipWindow.dismiss();
         if (!handler.hasMessages(0)){
-            handler.sendEmptyMessageDelayed(0,50);
+            handler.sendEmptyMessageDelayed(0,10);
         }
     }
     Handler handler = new Handler(){

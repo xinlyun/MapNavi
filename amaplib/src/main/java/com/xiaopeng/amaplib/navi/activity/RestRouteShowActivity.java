@@ -308,6 +308,32 @@ public class RestRouteShowActivity extends Activity implements AMapNaviListener,
         routeOverlays.clear();
     }
 
+    private void beginCalculate(){
+        clearRoute();
+        mapClickStartReady = false;
+        mapClickEndReady = false;
+        if (avoidhightspeed && hightspeed) {
+            Toast.makeText(getApplicationContext(), "不走高速与高速优先不能同时为true.", Toast.LENGTH_LONG).show();
+        }
+        if (cost && hightspeed) {
+            Toast.makeText(getApplicationContext(), "高速优先与避免收费不能同时为true.", Toast.LENGTH_LONG).show();
+        }
+            /*
+			 * strategyFlag转换出来的值都对应PathPlanningStrategy常量，用户也可以直接传入PathPlanningStrategy常量进行算路。
+			 * 如:mAMapNavi.calculateDriveRoute(mStartList, mEndList, mWayPointList,PathPlanningStrategy.DRIVING_DEFAULT);
+			 */
+        int strategyFlag = 0;
+        try {
+            strategyFlag = mAMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (strategyFlag >= 0) {
+            mAMapNavi.calculateDriveRoute(startList, endList, wayList, strategyFlag);
+            Toast.makeText(getApplicationContext(), "策略:" + strategyFlag, Toast.LENGTH_LONG).show();
+        }
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {

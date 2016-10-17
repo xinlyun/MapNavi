@@ -42,10 +42,15 @@
         </activity>
         <!--android:theme="@style/Theme.Swipe.Back.Second"-->
         <activity android:name=".view.appwidget.activity.ShowPosiActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleInstance"
 
             >
             </activity>
+        <activity android:name=".view.appwidget.activity.RouteNaviActivity"
+            android:launchMode="singleInstance"
+
+            >
+        </activity>
 
         <!-- 定位需要的服务 使用2.0的定位需要加上这个 -->
         <service android:name="com.amap.api.location.APSService" >

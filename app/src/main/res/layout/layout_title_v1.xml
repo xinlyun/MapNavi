@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/Grey"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="100px">
+    <TextView
+        android:layout_weight="3"
+        android:gravity="center"
+        android:text="退出"
+        android:id="@+id/btn_exit"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    <TextView
+        android:gravity="center"
+        android:id="@+id/tv_title"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    <TextView
+        android:id="@+id/tv_right"
+        android:gravity="center"
+        android:text="偏好"
+        android:layout_weight="3"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

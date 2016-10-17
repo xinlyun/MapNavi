@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_marginTop="-1000px"
+        android:layout_width="match_parent"
+        android:layout_height="1340px">
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="1100px"></ListView>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="240px">
+            <LinearLayout
+                android:layout_weight="4"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <Button
+                    android:id="@+id/btn_start_navi"
+                    android:text="导航"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+                <Button
+                    android:text="轻导航"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <!--<LinearLayout-->
+                <!--android:orientation="horizontal"-->
+                <!--android:id="@+id/linl_show_an"-->
+                <!--android:layout_weight="1"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent">-->
+
+                <!--</LinearLayout>-->
+                <GridView
+                    android:background="@color/trans_half_white"
+                    android:id="@+id/gv_show_an"
+                    android:layout_weight="1"
+                    android:numColumns="auto_fit"
+                    android:columnWidth="288px"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"></GridView>
+                <TextView
+                    android:gravity="center"
+                    android:id="@+id/tv_show_msg"
+                    android:layout_weight="2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <include layout="@layout/layout_title_v1"/>
+</RelativeLayout>
