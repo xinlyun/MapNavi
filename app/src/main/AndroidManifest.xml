@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+
     package="com.xiaopeng.xmapnavi">
+    <!--android:sharedUserId="android.uid.system"-->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
@@ -16,6 +18,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"></uses-permission>
 
+
     <application
         android:name=".XpApplication"
         android:allowBackup="true"
@@ -26,6 +29,10 @@
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="518079e13164d2910ff81c078e073bcd"/>
+
+        <meta-data android:name="AA_DB_NAME" android:value="SearchInfo.db" />
+        <meta-data android:name="AA_DB_VERSION" android:value="2" />
+
 
         <!--android:configChanges="orientation|keyboardHidden|screenSize"-->
         <activity android:name=".view.appwidget.activity.MainActivity"
@@ -51,6 +58,10 @@
 
             >
         </activity>
+        <activity android:name=".view.appwidget.activity.SearchPosiActivity"
+            android:launchMode="singleInstance"
+            >
+            </activity>
 
         <!-- 定位需要的服务 使用2.0的定位需要加上这个 -->
         <service android:name="com.amap.api.location.APSService" >

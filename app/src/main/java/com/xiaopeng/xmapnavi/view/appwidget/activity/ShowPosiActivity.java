@@ -74,6 +74,11 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
 {
 
     private static final String TAG = "ShowPosiActivity";
+    private static final String ACTION_NAVI_COMP = "ACTION_COMP";
+    private static final String NAVI_MSG ="ints";
+    private static final String NAVI_POI ="NAVI_POI";
+
+
     private MapView mapView ;
     private FrameLayout mLlFragAdd;
     RunNaviWayFragment runNaviWayFragment = new RunNaviWayFragment();
@@ -105,16 +110,7 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
         mapView   .onCreate(savedInstanceState);
         mapView     .getMap().setMapType(AMap.MAP_TYPE_NAVI);
         mLlFragAdd= (FrameLayout) findViewById(R.id.ll_show_fragment);
-        mLlFragAdd.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                FragmentManager manager = ShowPosiActivity.this.getFragmentManager();
-                FragmentTransaction transaction = manager.beginTransaction();
-                showPosiFragment.setMapView(mapView);
-                transaction.add(R.id.ll_show_fragment,showPosiFragment);
-                transaction.commit();
-            }
-        },300);
+
         initView();
 
     }
@@ -146,7 +142,18 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
     protected void onStart() {
         super.onStart();
         mLocationPro.addNaviCalueListner(this);
-
+        if (!readNaviIntent(getIntent())) {
+            mLlFragAdd.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    FragmentManager manager = ShowPosiActivity.this.getFragmentManager();
+                    FragmentTransaction transaction = manager.beginTransaction();
+                    showPosiFragment.setMapView(mapView);
+                    transaction.replace(R.id.ll_show_fragment, showPosiFragment);
+                    transaction.commit();
+                }
+            }, 100);
+        }
 
     }
 
@@ -159,7 +166,10 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        readNaviIntent(intent);
     }
+
+
 
     @Override
     protected void onDestroy() {
@@ -198,6 +208,25 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
         }
     }
 
+    private boolean readNaviIntent(Intent intent){
+        if (intent == null)return false;
+        Bundle bundle = intent.getBundleExtra(ACTION_NAVI_COMP);
+        if (bundle == null) return false;
+        int[] ints = bundle.getIntArray(NAVI_MSG);
+        if (ints == null || ints.length<1)return false;
+
+        runNaviWayFragment.setSucceful(ints);
+        double[] doubles = bundle.getDoubleArray(NAVI_POI);
+        LatLonPoint fromPoi = new LatLonPoint(doubles[0],doubles[1]);
+        LatLonPoint toPoi = new LatLonPoint(doubles[2],doubles[3]);
+        this.fromPoint = fromPoi;
+        this.toPoint = toPoi;
+        Log.d(TAG,"from:"+fromPoi+"\ntoPoi:"+toPoi);
+        runNaviWayFragment.setPosiFromTo(fromPoi,toPoi);
+        showRunNaviFragment();
+        return true;
+    }
+
 
     @Override
     public void onCalculateMultipleRoutesSuccess(int[] ints) {
@@ -229,6 +258,7 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
     public void requestStartNavi(){
         Intent intent = new Intent(this,RouteNaviActivity.class);
         intent.putExtra("gps", true);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
         finish();
     }

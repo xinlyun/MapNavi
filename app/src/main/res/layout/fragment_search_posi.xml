@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/title_v2"/>
+    <LinearLayout
+        android:id="@+id/prepare_edit_bar"
+        android:orientation="horizontal"
+        android:background="@drawable/bg_activity_prepare_input"
+        android:layout_width="match_parent"
+        android:layout_height="186px">
+        <RelativeLayout
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="31px"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:background="@drawable/bg_prepare_input_edittext"
+            android:layout_width="785px"
+            android:layout_height="116px">
+            <EditText
+                android:background="@null"
+                android:id="@+id/prepare_edittext"
+                android:textSize="45px"
+                android:layout_marginLeft="121px"
+                android:layout_marginRight="180px"
+                android:textColor="@color/text_black"
+                android:hint="搜索目的地"
+                android:textColorHint="@color/Grey"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+            <ImageView
+                android:id="@+id/prepare_ttslistener"
+                android:layout_alignParentRight="true"
+                android:layout_width="180px"
+                android:layout_height="match_parent" />
+        </RelativeLayout>
+        <Button
+            android:id="@+id/pre_beginnavi"
+            android:text="搜索"
+            android:textSize="50px"
+            android:textColor="@color/Grey"
+            android:background="@drawable/prepare_seach_btn_false"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="37px"
+            android:layout_marginRight="37px"
+            android:layout_width="194px"
+            android:layout_height="116px" />
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/lv_show_tip_his"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </ListView>
+
+
+</LinearLayout>

@@ -1,6 +1,8 @@
 package com.xiaopeng.xmapnavi.mode;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
@@ -32,6 +34,7 @@ import com.autonavi.amap.mapcore.MapTilsCacheAndResManager;
 import com.autonavi.tbt.NaviStaticInfo;
 import com.autonavi.tbt.TrafficFacilityInfo;
 import com.xiaopeng.amaplib.util.TTSController;
+import com.xiaopeng.xmapnavi.bean.LocationSaver;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
 import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
@@ -68,6 +71,9 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private PoiResult mPoiResult;
     private PoiItem mPoiItem;
     //--------//
+
+    private long timeSave  = 0;
+
     public static void init(Context context) {
         mContext = context;
         mLp      = new LocationProvider(context);
@@ -80,6 +86,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void addLocationListener(XpLocationListener xpLocationListener) {
         mListeners.add(xpLocationListener);
+        updateLoction.sendEmptyMessageDelayed(0,200);
     }
 
     @Override
@@ -165,13 +172,15 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         if (mLocationClient == null) {
             mLocationClient = new AMapLocationClient(context.getApplicationContext());
             mLocationOption = getDefaultOption();
+            mLocationClient.setLocationOption(mLocationOption);
             //设置定位监听
+
             mLocationClient.setLocationListener(this);
             //设置为高精度定位模式
 //            mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
 //            mLocationOption.setOnceLocation(false);
             //设置定位参数
-            mLocationClient.setLocationOption(mLocationOption);
+
             // 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
             // 注意设置合适的定位时间的间隔（最小间隔支持为2000ms），并且在合适时间调用stopLocation()方法来取消定位请求
             // 在定位结束后，在合适的生命周期调用onDestroy()方法
@@ -179,7 +188,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
             mLocationClient.startLocation();
         }
 
-        aMapNavi = AMapNavi.getInstance(context.getApplicationContext());
+        aMapNavi = AMapNavi.getInstance(context);
         aMapNavi.startAimlessMode(AimLessMode.CAMERA_AND_SPECIALROAD_DETECTED);
 
         ttsManager = TTSController.getInstance(context.getApplicationContext());
@@ -188,7 +197,26 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         aMapNavi.addAMapNaviListener(this);
         aMapNavi.addAMapNaviListener(ttsManager);
 
+        updateLoction.sendEmptyMessageDelayed(1,1000);
     }
+
+    Handler updateLoction = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case 0:
+                    onLocationChanged(LocationProvider.this.mAmapLocation);
+                    break;
+                case 1:
+                    mAmapLocation = LocationSaver.getSaveLocation();
+                    onLocationChanged(mAmapLocation);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
 
 
@@ -199,6 +227,11 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
             if (aMapLocation != null
                     && aMapLocation.getErrorCode() == 0) {
                 mAmapLocation = aMapLocation;
+                if (System.currentTimeMillis() - timeSave > (60 * 1000)){
+                    timeSave = System.currentTimeMillis();
+                    new SaveThread(aMapLocation).start();
+                }
+
                 for (XpLocationListener listener:mListeners){
                     listener.onLocationChanged(aMapLocation);
                 }
@@ -395,11 +428,11 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         mOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);//可选，设置定位模式，可选的模式有高精度、仅设备、仅网络。默认为高精度模式
         mOption.setGpsFirst(true);//可选，设置是否gps优先，只在高精度模式下有效。默认关闭
         mOption.setHttpTimeOut(30000);//可选，设置网络请求超时时间。默认为30秒。在仅设备模式下无效
-        mOption.setInterval(2000);//可选，设置定位间隔。默认为2秒
+        mOption.setInterval(30*1000);//可选，设置定位间隔。默认为2秒
         mOption.setNeedAddress(true);//可选，设置是否返回逆地理地址信息。默认是ture
         mOption.setOnceLocation(false);//可选，设置是否单次定位。默认是false
         mOption.setOnceLocationLatest(false);//可选，设置是否等待wifi刷新，默认为false.如果设置为true,会自动变为单次定位，持续定位时不要使用
-        AMapLocationClientOption.setLocationProtocol(AMapLocationClientOption.AMapLocationProtocol.HTTP);//可选， 设置网络请求的协议。可选HTTP或者HTTPS。默认为HTTP
+        AMapLocationClientOption.setLocationProtocol(AMapLocationClientOption.AMapLocationProtocol.HTTPS);//可选， 设置网络请求的协议。可选HTTP或者HTTPS。默认为HTTP
         return mOption;
     }
 
@@ -465,6 +498,20 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     public void stopNavi() {
         aMapNavi.stopNavi();
         aMapNavi.startAimlessMode(AimLessMode.CAMERA_AND_SPECIALROAD_DETECTED);
+    }
+
+    class SaveThread extends Thread{
+        AMapLocation location;
+        SaveThread(AMapLocation location){
+            this.location = location;
+        }
+        @Override
+        public void run() {
+            super.run();
+
+            LocationSaver locationSaver = LocationSaver.saveNewLocation(mAmapLocation);
+            locationSaver.save();
+        }
     }
 
 

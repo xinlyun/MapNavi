@@ -2,7 +2,9 @@ package com.xiaopeng.xmapnavi.view.appwidget.services;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.annotation.Nullable;
 
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
@@ -22,7 +24,14 @@ public class LocationProService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        LocationProvider.init(this);
-        mLocationProvider  = LocationProvider.getInstence(this);
+//        LocationProvider.init(this);
+        deleyToInit.sendEmptyMessageDelayed(0,1000);
     }
+    Handler deleyToInit = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            mLocationProvider  = LocationProvider.getInstence(LocationProService.this);
+        }
+    };
 }

@@ -1,6 +1,8 @@
 package com.xiaopeng.xmapnavi.view.appwidget.activity;
 
 import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -36,6 +38,8 @@ import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
 import com.xiaopeng.xmapnavi.presenter.callback.TipItemClickListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
+import com.xiaopeng.xmapnavi.view.appwidget.fragment.SearchPosiFragment;
+import com.xiaopeng.xmapnavi.view.appwidget.fragment.ShowPosiFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.StereoView;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.TipPopWindow;
 import com.xiaopeng.xmapnavi.view.appwidget.services.LocationProService;
@@ -56,6 +60,11 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
     private static final String ACTION_SEARCH = "ACTION_SEARCH";
     private static final int REQ_HAVE_RESULT = 1;
     private static final String ACTION_MSG = "ACTION_MSG";
+    private static final String ACTION_NAVI_COMP = "ACTION_COMP";
+    private static final String NAVI_MSG ="ints";
+
+    private static final String NAVI_POI ="NAVI_POI";
+
     private String mSearchName ;
     private ILocationProvider mLocationProvider;
     private MapView mapView;
@@ -80,7 +89,7 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
     private EditText mEtvSearch;
     //Activity最外层的Layout视图
     private View activityRootView;
-
+    private SearchPosiFragment mSearchFragment;
     //----//
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,20 +101,23 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
         mapView.onCreate(savedInstanceState);// 此方法必须重写
 
         initView();
-        init();
+
         screenHeight = this.getWindowManager().getDefaultDisplay().getHeight();
         //阀值设置为屏幕高度的1/5
         keyHeight = screenHeight/5;
 
-
+        mSearchFragment = new SearchPosiFragment();
+        LocationProvider.getInstence(this);
     }
 
 
     @Override
     protected void onStart() {
         super.onStart();
+        init();
+
         mLocationProvider    = LocationProvider.getInstence(this);
-        mLocationProvider   .addLocationListener(this);
+
 //        mLocationProvider   .addSearchListner(this);
         activityRootView    .addOnLayoutChangeListener(this);
 
@@ -113,10 +125,11 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
 
 
 
+
     @Override
     protected void onStop() {
         super.onStop();
-        mLocationProvider   .removeLocationListener(this);
+//        mLocationProvider   .removeLocationListener(this);
         mLocationProvider   = null;
         activityRootView    .removeOnLayoutChangeListener(this);
     }
@@ -239,6 +252,7 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
         super.onResume();
         mapView.onResume();
         mapView.setVisibility(View.VISIBLE);
+        mLocationProvider   .addLocationListener(this);
         mLocationProvider.addSearchListner(this);
     }
 
@@ -250,7 +264,9 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
         super.onPause();
         mapView.onPause();
         mapView.setVisibility(View.GONE);
+
         mLocationProvider.removeSearchListner(this);
+        mLocationProvider   .removeLocationListener(this);
     }
 
     /**
@@ -305,6 +321,9 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
     public void searchSucceful() {
 
         mTipWindow.dismiss();
+        tryToShowPosi();
+    }
+    public void tryToShowPosi(){
         if (!handler.hasMessages(0)){
             handler.sendEmptyMessageDelayed(0,10);
         }
@@ -334,15 +353,20 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.tx_search_start:
-//                mStvSearch.toNext();
-                mStvSearch.setFocusable(false);
-                mStvSearch.setFocusableInTouchMode(false);
+//                mStvSearch.setFocusable(false);
+//                mStvSearch.setFocusableInTouchMode(false);
+//
+//                mEtvSearch.setFocusable(true);
+//                mEtvSearch.setFocusableInTouchMode(true);
+//                mEtvSearch.requestFocus();
+//                mEtvSearch.findFocus();
 
-                mEtvSearch.setFocusable(true);
-                mEtvSearch.setFocusableInTouchMode(true);
-                mEtvSearch.requestFocus();
-                mEtvSearch.findFocus();
+                startSearch();
 
+//                Intent intent = new Intent(this,SearchPosiActivity.class);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+//                startActivity(intent);
+//                finish();
                 break;
 
             default:
@@ -474,6 +498,37 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
         hideKeyboard(mEtvSearch);
         readAndCompleInput();
     }
+
+    private void startSearch(){
+        FragmentManager manager = getFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.add(R.id.ll_show_fragment,mSearchFragment);
+        transaction.commit();
+    }
+
+    public void exitFragment(){
+        FragmentManager manager = getFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.remove(mSearchFragment);
+        transaction.commit();
+    }
+
+    public void haveCalueNaviSucceful(int[] ints,float posLat,float posLon){
+        Intent intent = new Intent(this, ShowPosiActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putIntArray(NAVI_MSG,ints);
+        double[] doubles = new double[4];
+        doubles[0] = mLocationProvider.getAmapLocation().getLatitude();
+        doubles[1] = mLocationProvider.getAmapLocation().getLongitude();
+        doubles[2] = posLat;
+        doubles[3] = posLon;
+        bundle.putDoubleArray(NAVI_POI,doubles);
+        intent.putExtra(ACTION_NAVI_COMP,bundle);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivity(intent);
+        exitFragment();
+    }
+
 
 
 }

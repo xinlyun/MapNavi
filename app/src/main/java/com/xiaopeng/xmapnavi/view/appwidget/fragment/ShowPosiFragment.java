@@ -41,8 +41,11 @@ import com.amap.api.services.poisearch.PoiResult;
 import com.xiaopeng.amaplib.util.Utils;
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.bean.HistoryPosi;
+import com.xiaopeng.xmapnavi.mode.DateHelper;
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
+import com.xiaopeng.xmapnavi.presenter.IHistoryDateHelper;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
+import com.xiaopeng.xmapnavi.presenter.callback.OnClickRightItem;
 import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.ShowPosiActivity;
@@ -60,7 +63,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
         , AMap.OnMapClickListener, AMap.OnInfoWindowClickListener
         , AMap.InfoWindowAdapter, AMap.OnMarkerClickListener
         , View.OnTouchListener
-        , HistoryAndNaviAdapter.OnClickRightItem{
+        , OnClickRightItem {
 
     private int[] markers = {com.xiaopeng.amaplib.R.drawable.poi_marker_1,
             com.xiaopeng.amaplib.R.drawable.poi_marker_2,
@@ -110,7 +113,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
     //    private TextView titleTextView;
 //    private EditText mEtvReq;
     private ProgressDialog mProgDialog;
-
+    private IHistoryDateHelper dateHelper;
 
     public void setMapView(MapView mapView){
         mAmapView = mapView;
@@ -124,6 +127,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
         super.onCreate(savedInstanceState);
         mLocationPro    = LocationProvider.getInstence(this.getActivity());
         lp          = Utils.getLatLonFromLocation(mLocationPro.getAmapLocation());
+        dateHelper = new DateHelper();
     }
 
     @Nullable
@@ -527,6 +531,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
     @Override
     public void onClickRightItem(int posi) {
         Log.d(TAG,"onClickRightItem posi:"+posi);
+        dateHelper.savePoiItem(poiItems.get(posi));
         Marker marker = poiOverlay.getMarker(posi);
         LatLng latLng = marker.getPosition();
         requestToNavi(lp,new LatLonPoint(latLng.latitude,latLng.longitude));

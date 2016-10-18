@@ -18,6 +18,7 @@ import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.bean.HistoryPosi;
+import com.xiaopeng.xmapnavi.presenter.callback.OnClickRightItem;
 
 
 import java.text.DecimalFormat;
@@ -32,6 +33,8 @@ public class HistoryAndNaviAdapter extends ArrayAdapter {
     LatLng localPosi;
     int style ;
     private int index = -1;
+    private OnClickRightItem mOnClickRightItem;
+
     public HistoryAndNaviAdapter(Context context,List<PoiItem> poiItemList,int resource) {
         super(context,resource);
         this.poiItemList = poiItemList;
@@ -120,11 +123,9 @@ public class HistoryAndNaviAdapter extends ArrayAdapter {
 //        ImageView imageView;
     }
 
-    private OnClickRightItem mOnClickRightItem;
 
-    public interface OnClickRightItem{
-        void onClickRightItem(int posi);
-    }
+
+
 
     public void setOnClickRightItem(OnClickRightItem rightItem){
         mOnClickRightItem = rightItem;

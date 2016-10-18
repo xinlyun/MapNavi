@@ -2,5 +2,7 @@
     <string name="app_name">Xp_MapNavi</string>
     <string name="perease_input">   请输入目的地</string>
     <string name="searching">正在搜索..:</string>
+    <string name="search">搜索</string>
+    <string name="please_sure_text">请确认输入正确</string>
 
 </resources>

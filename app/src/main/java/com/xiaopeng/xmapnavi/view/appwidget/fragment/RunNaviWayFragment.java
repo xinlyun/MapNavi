@@ -7,6 +7,7 @@ import android.content.pm.ProviderInfo;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,6 +63,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
     }
     public void setPosiFromTo(LatLonPoint fromPoint, LatLonPoint toPoint){
+        Log.d(TAG,"setPosiFromTo:"+"from:"+fromPoint+"\nto:"+toPoint);
         this.fromPoint = fromPoint;
         this.toPoint = toPoint;
     }
@@ -149,11 +151,16 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         mAmapView.postDelayed(new Runnable() {
             @Override
             public void run() {
-                LatLngBounds bounds = LatLngBounds.builder().include(new LatLng(fromPoint.getLatitude(),fromPoint.getLongitude()))
-                    .include(new LatLng(toPoint.getLatitude(),toPoint.getLongitude())).build();
-                CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds,100);
-                mAMap.animateCamera(update);
-                changeRoute();
+                try {
+                    Log.d(TAG,"ready to changeRoute \nfrom:"+fromPoint+"\n toPoint："+toPoint);
+                    LatLngBounds bounds = LatLngBounds.builder().include(new LatLng(fromPoint.getLatitude(), fromPoint.getLongitude()))
+                            .include(new LatLng(toPoint.getLatitude(), toPoint.getLongitude())).build();
+                    CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, 100);
+                    mAMap.animateCamera(update);
+                    changeRoute();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         },800);
 
