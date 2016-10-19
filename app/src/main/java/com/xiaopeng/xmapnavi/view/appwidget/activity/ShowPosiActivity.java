@@ -60,6 +60,7 @@ import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.HistoryAndNaviAdapter;
+import com.xiaopeng.xmapnavi.view.appwidget.fragment.RadarNaviFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.RunNaviWayFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.ShowPosiFragment;
 
@@ -83,6 +84,7 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
     private FrameLayout mLlFragAdd;
     RunNaviWayFragment runNaviWayFragment = new RunNaviWayFragment();
     ShowPosiFragment showPosiFragment = new ShowPosiFragment();
+    RadarNaviFragment radarNaviFragment = new RadarNaviFragment();
     private ILocationProvider mLocationPro;
 
     private LatLonPoint fromPoint,toPoint;
@@ -261,6 +263,28 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
         finish();
+    }
+
+    public void requestRouteNavi(){
+        FragmentManager fragmentManager = getFragmentManager();
+        radarNaviFragment.setMapView(mapView);
+        radarNaviFragment.setToPoint(toPoint);
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.ll_show_fragment,radarNaviFragment);
+        transaction.commit();
+        mapView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (fromPoint!=null && toPoint!=null){
+                    isReadyNavi = false;
+                    startList.clear();
+                    startList.add(new NaviLatLng(fromPoint.getLatitude(),fromPoint.getLongitude()));
+                    endList.clear();
+                    endList.add(new NaviLatLng(toPoint.getLatitude(),toPoint.getLongitude()));
+                    mLocationPro.calueRunWay(startList,wayList,endList);
+                }
+            }
+        },300);
     }
 
 }

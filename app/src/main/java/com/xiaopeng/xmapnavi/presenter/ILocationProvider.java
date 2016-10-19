@@ -10,6 +10,8 @@ import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.poisearch.PoiResult;
 import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
+import com.xiaopeng.xmapnavi.presenter.callback.XpNaviInfoListener;
+import com.xiaopeng.xmapnavi.presenter.callback.XpRouteListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
 
 import java.util.HashMap;
@@ -27,6 +29,13 @@ public interface ILocationProvider {
 
     void addNaviCalueListner(XpNaviCalueListener xpSearchListner);
     void removeNaviCalueListner(XpNaviCalueListener xpSearchListner);
+
+    void addRouteListener(XpRouteListener xpRouteListener);
+    void removeRouteListener(XpRouteListener xpRouteListener);
+
+    void addNaviInfoListner(XpNaviInfoListener xpNaviInfoListener);
+    void removeNaviInfoListener(XpNaviInfoListener xpNaviInfoListener);
+
     void trySearchPosi(String str);
     void calueRunWay(List<NaviLatLng> startList, List<NaviLatLng> wayList, List<NaviLatLng> endList);
     AMapNaviPath getNaviPath();
@@ -37,5 +46,7 @@ public interface ILocationProvider {
     void selectRouteId(int id);
     boolean startNavi(int var1);
     void stopNavi();
+    void startRouteNavi();
+    void stopRouteNavi();
 
 }

@@ -2,7 +2,9 @@ package com.xiaopeng.xmapnavi.view.appwidget.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
 import android.view.Window;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.amap.api.navi.AMapNavi;
@@ -25,10 +27,13 @@ import com.xiaopeng.xmapnavi.mode.LocationProvider;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
 
 
-public class RouteNaviActivity extends Activity implements AMapNaviListener, AMapNaviViewListener {
+public class RouteNaviActivity extends Activity implements AMapNaviListener
+		, AMapNaviViewListener
+		, View.OnClickListener{
 
 	AMapNaviView mAMapNaviView;
 	private ILocationProvider mLocationPro;
+	private EditText mEtv;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -39,11 +44,12 @@ public class RouteNaviActivity extends Activity implements AMapNaviListener, AMa
 		mAMapNaviView = (AMapNaviView) findViewById(R.id.navi_view);
 		mAMapNaviView.onCreate(savedInstanceState);
 		mAMapNaviView.setAMapNaviViewListener(this);
-
-
+		findViewById(R.id.btn_change).setOnClickListener(this);
+		mEtv = (EditText) findViewById(R.id.etv_input);
 		boolean gps=getIntent().getBooleanExtra("gps", false);
 		if(gps){
-			mLocationPro.startNavi(AMapNavi.GPSNaviMode);
+			mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
+//			mLocationPro.startNavi(AMapNavi.GPSNaviMode);
 		}else{
 			mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
 		}
@@ -247,4 +253,21 @@ public class RouteNaviActivity extends Activity implements AMapNaviListener, AMa
 		return false;
 	}
 
+	@Override
+	public void onClick(View view) {
+		switch (view.getId()){
+			case R.id.btn_change:
+				String str = mEtv.getText().toString();
+				if (!"".equals(str)) {
+					int i = Integer.valueOf(str);
+					mLocationPro.stopNavi();
+					mLocationPro.selectRouteId(i);
+					mLocationPro.startNavi(AMapNavi.GPSNaviMode);
+				}
+				break;
+
+			default:
+				break;
+		}
+	}
 }

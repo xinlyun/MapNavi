@@ -18,8 +18,10 @@ import com.amap.api.navi.model.AMapCongestionLink;
 import com.amap.api.navi.model.AMapLaneInfo;
 import com.amap.api.navi.model.AMapNaviCross;
 import com.amap.api.navi.model.AMapNaviInfo;
+import com.amap.api.navi.model.AMapNaviLink;
 import com.amap.api.navi.model.AMapNaviLocation;
 import com.amap.api.navi.model.AMapNaviPath;
+import com.amap.api.navi.model.AMapNaviStep;
 import com.amap.api.navi.model.AMapNaviTrafficFacilityInfo;
 import com.amap.api.navi.model.AimLessModeCongestionInfo;
 import com.amap.api.navi.model.AimLessModeStat;
@@ -36,8 +38,11 @@ import com.autonavi.tbt.TrafficFacilityInfo;
 import com.xiaopeng.amaplib.util.TTSController;
 import com.xiaopeng.xmapnavi.bean.LocationSaver;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
+import com.xiaopeng.xmapnavi.presenter.IRoutePower;
 import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
+import com.xiaopeng.xmapnavi.presenter.callback.XpNaviInfoListener;
+import com.xiaopeng.xmapnavi.presenter.callback.XpRouteListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
 
 import java.util.ArrayList;
@@ -48,7 +53,9 @@ import java.util.List;
  * Created by linzx on 2016/10/12.
  */
 public class LocationProvider implements ILocationProvider,AMapLocationListener,AMapNaviListener
-        ,PoiSearch.OnPoiSearchListener{
+        ,PoiSearch.OnPoiSearchListener
+        ,XpRouteListener
+{
     private static final String TAG = "LocationProvider";
     private static final String NAVI_TAG = "Lp_NaviMsg";
     private TTSController ttsManager;
@@ -61,6 +68,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private static List<XpLocationListener> mListeners;
     private static List<XpSearchListner> mSearchListeners;
     private static List<XpNaviCalueListener> mNaviCalueListeners;
+    private static List<XpRouteListener> mRouteListeners;
+    private static List<XpNaviInfoListener> mNaviInfoListners;
     private PoiSearch mPoiSearch;
 
     private boolean congestion, cost, hightspeed, avoidhightspeed;
@@ -71,6 +80,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private PoiResult mPoiResult;
     private PoiItem mPoiItem;
     //--------//
+
+    private IRoutePower mRoutePower;
 
     private long timeSave  = 0;
 
@@ -120,12 +131,33 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     }
 
     @Override
+    public void addRouteListener(XpRouteListener xpRouteListener) {
+        mRouteListeners.add(xpRouteListener);
+    }
+
+    @Override
+    public void removeRouteListener(XpRouteListener xpRouteListener) {
+        mRouteListeners.remove(xpRouteListener);
+    }
+
+    @Override
+    public void addNaviInfoListner(XpNaviInfoListener xpNaviInfoListener) {
+        mNaviInfoListners.add(xpNaviInfoListener);
+    }
+
+    @Override
+    public void removeNaviInfoListener(XpNaviInfoListener xpNaviInfoListener) {
+        mNaviInfoListners.remove(xpNaviInfoListener);
+    }
+
+    @Override
     public void trySearchPosi(String str) {
         beginSearchAddr(str);
     }
 
     @Override
     public void calueRunWay(List<NaviLatLng> startList,List<NaviLatLng> wayList,List<NaviLatLng> endList) {
+        aMapNavi.stopNavi();
         if (avoidhightspeed && hightspeed) {
             Log.d(TAG,"不走高速与高速优先不能同时为true.");
         }
@@ -150,8 +182,14 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public AMapNaviPath getNaviPath() {
+        AMapNaviPath path = aMapNavi.getNaviPath();
+        AMapNaviStep step = path.getSteps().get(0);
+        AMapNaviLink naviLink = step.getLinks().get(0);
+
         return aMapNavi.getNaviPath();
     }
+
+
 
     @Override
     public HashMap<Integer, AMapNaviPath> getNaviPaths() {
@@ -169,6 +207,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         mListeners = new ArrayList<>();
         mSearchListeners = new ArrayList<>();
         mNaviCalueListeners = new ArrayList<>();
+        mRouteListeners = new ArrayList<>();
+        mNaviInfoListners = new ArrayList<>();
         if (mLocationClient == null) {
             mLocationClient = new AMapLocationClient(context.getApplicationContext());
             mLocationOption = getDefaultOption();
@@ -198,6 +238,9 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         aMapNavi.addAMapNaviListener(ttsManager);
 
         updateLoction.sendEmptyMessageDelayed(1,1000);
+
+        mRoutePower = new RoutePower();
+        mRoutePower .setXpRouteListner(this);
     }
 
     Handler updateLoction = new Handler(){
@@ -231,10 +274,10 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
                     timeSave = System.currentTimeMillis();
                     new SaveThread(aMapLocation).start();
                 }
-
                 for (XpLocationListener listener:mListeners){
                     listener.onLocationChanged(aMapLocation);
                 }
+                mRoutePower.setCurretPosi(mAmapLocation);
             } else {
                 String errText = "定位失败," + aMapLocation.getErrorCode()+ ": " + aMapLocation.getErrorInfo();
                 Log.e("AmapErr",errText);
@@ -275,7 +318,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void onGetNavigationText(int i, String s) {
         Log.d(NAVI_TAG,"onGetNavigationText i="+i+"\ns:"+s);
-        ttsManager.startSpeaking(s);
+//        ttsManager.startSpeaking(s);
     }
 
     @Override
@@ -334,6 +377,10 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void onNaviInfoUpdate(NaviInfo naviInfo) {
         Log.d(NAVI_TAG,"onNaviInfoUpdate");
+        for (XpNaviInfoListener naviInfoListener:mNaviInfoListners){
+            naviInfoListener.onNaviInfoUpdate(naviInfo);
+        }
+
     }
 
     @Override
@@ -375,6 +422,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void onCalculateMultipleRoutesSuccess(int[] ints) {
         Log.d(NAVI_TAG,"onCalculateMultipleRoutesSuccess");
+        mRoutePower.setPath(aMapNavi.getNaviPaths(),ints);
         for (XpNaviCalueListener listener:mNaviCalueListeners){
             listener.onCalculateMultipleRoutesSuccess(ints);
         }
@@ -500,6 +548,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         aMapNavi.startAimlessMode(AimLessMode.CAMERA_AND_SPECIALROAD_DETECTED);
     }
 
+
+
     class SaveThread extends Thread{
         AMapLocation location;
         SaveThread(AMapLocation location){
@@ -513,6 +563,33 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
             locationSaver.save();
         }
     }
+
+    @Override
+    public void startRouteNavi(){
+        aMapNavi.removeAMapNaviListener(ttsManager);
+        aMapNavi.stopAimlessMode();
+        mRoutePower.startRoute();
+    }
+
+    @Override
+    public void stopRouteNavi(){
+        aMapNavi.addAMapNaviListener(ttsManager);
+        aMapNavi.startAimlessMode(AimLessMode.CAMERA_AND_SPECIALROAD_DETECTED);
+        mRoutePower.stopRoute();
+    }
+
+
+    @Override
+    public void nearBy(int pathId, int stepNum, int poiNum) {
+        aMapNavi.stopNavi();
+        aMapNavi.selectRouteId(pathId);
+        aMapNavi.startNavi(AMapNavi.GPSNaviMode);
+        for (XpRouteListener listener:mRouteListeners){
+            listener.nearBy(pathId,stepNum,poiNum);
+        }
+    }
+
+
 
 
 }

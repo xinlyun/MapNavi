@@ -9,6 +9,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
-
+    <EditText
+        android:id="@+id/etv_input"
+        android:layout_width="200px"
+        android:layout_height="100px" />
+    <Button
+        android:id="@+id/btn_change"
+        android:layout_marginLeft="200px"
+        android:layout_marginTop="200px"
+        android:layout_width="100px"
+        android:layout_height="100px" />
 
 </RelativeLayout>

@@ -34,6 +34,12 @@ import com.amap.api.navi.model.AMapNaviStep;
 import com.amap.api.navi.model.NaviLatLng;
 import com.amap.api.navi.view.RouteOverLay;
 import com.amap.api.services.core.LatLonPoint;
+import com.amap.api.services.route.BusRouteResult;
+import com.amap.api.services.route.DrivePath;
+import com.amap.api.services.route.DriveRouteResult;
+import com.amap.api.services.route.RideRouteResult;
+import com.amap.api.services.route.RouteSearch;
+import com.amap.api.services.route.WalkRouteResult;
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
 import com.xiaopeng.xmapnavi.mode.NaviViewProvide;
@@ -50,7 +56,7 @@ import java.util.List;
 /**
  * Created by linzx on 2016/10/15.
  */
-public class RunNaviWayFragment extends Fragment implements View.OnClickListener{
+public class RunNaviWayFragment extends Fragment implements View.OnClickListener,RouteSearch.OnRouteSearchListener{
     private static final String TAG = "RunNaviWayFragment";
     private MapView mAmapView;
     private AMap mAMap;
@@ -132,6 +138,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
         //--listener--//
         mBtnStartNavi       .setOnClickListener(this);
+        findViewById(R.id.btn_start_route_navi).setOnClickListener(this);
     }
 
 
@@ -256,6 +263,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     }
 
     private void drawRoutes(int routeId, AMapNaviPath path) {
+        Log.d(TAG,"drawRoutes id:"+routeId);
         calculateSuccess = true;
         mAMap.moveCamera(CameraUpdateFactory.changeTilt(0));
         RouteOverLay routeOverLay = new RouteOverLay(mAMap, path, getActivity());
@@ -283,10 +291,33 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             case R.id.btn_start_navi:
                 ((ShowPosiActivity)getActivity()).requestStartNavi();
                 break;
-
+            case R.id.btn_start_route_navi:
+                ((ShowPosiActivity)getActivity()).requestRouteNavi();
+                break;
             default:
                 break;
 
         }
+    }
+
+    @Override
+    public void onBusRouteSearched(BusRouteResult busRouteResult, int i) {
+
+    }
+
+    @Override
+    public void onDriveRouteSearched(DriveRouteResult driveRouteResult, int i) {
+
+
+    }
+
+    @Override
+    public void onWalkRouteSearched(WalkRouteResult walkRouteResult, int i) {
+
+    }
+
+    @Override
+    public void onRideRouteSearched(RideRouteResult rideRouteResult, int i) {
+
     }
 }

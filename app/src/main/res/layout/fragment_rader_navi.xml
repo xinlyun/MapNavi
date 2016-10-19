@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="200px">
+        <Button
+            android:id="@+id/btn_start_navi"
+            android:text="导航"
+            android:textSize="45px"
+            android:layout_width="200px"
+            android:layout_height="match_parent" />
+        <TextView
+            android:textSize="45px"
+            android:text=""
+            android:id="@+id/tv_show_msg"
+            android:gravity="center"
+            android:background="@color/trans_half_white"
+            android:layout_width="fill_parent"
+            android:layout_height="200px" />
+    </LinearLayout>
+    <Button
+        android:id="@+id/btn_see_all"
+        android:text="全览"
+        android:layout_width="200px"
+        android:layout_height="100px" />
+
+</LinearLayout>
