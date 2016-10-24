@@ -276,6 +276,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
         mEtvSearch.setText("");
         MainActivity activity = (MainActivity) getActivity();
         activity.haveCalueNaviSucceful(ints,poiLat,poiLon);
+        activity.exitFragment();
     }
 
     @Override

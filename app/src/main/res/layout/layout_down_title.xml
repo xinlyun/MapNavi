@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_alignParentBottom="true"
+    android:layout_marginBottom="20px"
+    android:orientation="horizontal"
+    android:layout_marginLeft="40px"
+    android:background="@drawable/navistart_down_llayout3_bg"
+    android:id="@+id/layout_down"
+    android:visibility="gone"
+    android:layout_width="1000px"
+    android:layout_height="180px">
+    <Button
+        android:id="@+id/btn_begin_navi"
+        android:textColor="@color/white"
+        android:textSize="60px"
+        android:text="@string/navi"
+        android:background="@color/blue"
+        android:layout_width="300px"
+        android:layout_height="match_parent" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="500px"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/tv_poi_name"
+            android:textColor="@color/black"
+            android:textSize="38px"
+            android:singleLine="true"
+            android:gravity="center"
+            android:layout_weight="1.5"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <TextView
+            android:textColor="@color/trans_black"
+            android:singleLine="true"
+            android:id="@+id/tv_poi_str"
+            android:textSize="32px"
+            android:gravity="center"
+            android:layout_weight="2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <TextView
+            android:textSize="32px"
+            android:textColor="@color/trans_black"
+            android:id="@+id/tv_poi_dis"
+            android:gravity="center"
+            android:singleLine="true"
+            android:layout_weight="2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:text="@string/around"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <Button
+            android:text="@string/shouchang"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+</LinearLayout>

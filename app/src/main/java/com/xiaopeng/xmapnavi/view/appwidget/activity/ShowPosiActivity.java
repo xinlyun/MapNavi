@@ -114,7 +114,23 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
         mLlFragAdd= (FrameLayout) findViewById(R.id.ll_show_fragment);
 
         initView();
-
+        mapView .postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (!readNaviIntent(getIntent())) {
+                    mLlFragAdd.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            FragmentManager manager = ShowPosiActivity.this.getFragmentManager();
+                            FragmentTransaction transaction = manager.beginTransaction();
+                            showPosiFragment.setMapView(mapView);
+                            transaction.replace(R.id.ll_show_fragment, showPosiFragment);
+                            transaction.commit();
+                        }
+                    }, 150);
+                }
+            }
+        },350);
     }
 
 
@@ -142,26 +158,18 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
 
     @Override
     protected void onStart() {
+        Log.d(TAG,"onStart");
         super.onStart();
         mLocationPro.addNaviCalueListner(this);
-        if (!readNaviIntent(getIntent())) {
-            mLlFragAdd.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    FragmentManager manager = ShowPosiActivity.this.getFragmentManager();
-                    FragmentTransaction transaction = manager.beginTransaction();
-                    showPosiFragment.setMapView(mapView);
-                    transaction.replace(R.id.ll_show_fragment, showPosiFragment);
-                    transaction.commit();
-                }
-            }, 100);
-        }
+
+
 
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        Log.d(TAG,"onStop");
         mLocationPro.removeNaviCalueListner(this);
     }
 
@@ -175,8 +183,9 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
 
     @Override
     protected void onDestroy() {
-        mapView.onDestroy();
+        Log.d(TAG,"onDestroy");
         super.onDestroy();
+        mapView.onDestroy();
 
     }
 
@@ -226,6 +235,7 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
         Log.d(TAG,"from:"+fromPoi+"\ntoPoi:"+toPoi);
         runNaviWayFragment.setPosiFromTo(fromPoi,toPoi);
         showRunNaviFragment();
+        setIntent(null);
         return true;
     }
 
@@ -285,6 +295,18 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
                 }
             }
         },300);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mapView.onPause();
     }
 
 }

@@ -39,11 +39,18 @@ public class LocationSaver extends Model {
 //    public String str;
 
     public static AMapLocation getSaveLocation(){
-        List<LocationSaver> locationSavers = new Select()
-                .from(LocationSaver.class)
-                .limit(1)
-                .execute();
-        if (locationSavers.size() < 1){
+
+        List<LocationSaver> locationSavers  = null;
+        try
+        {
+            locationSavers = new Select()
+                    .from(LocationSaver.class)
+                    .limit(1)
+                    .execute();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        if (locationSavers == null || locationSavers.size() < 1){
             return null;
         }
         else {

@@ -91,9 +91,20 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mAmap.setMyLocationEnabled(false);
-        mAmap.setLocationSource(null);
-        mLocationPro.stopRouteNavi();
+        Log.d(TAG,"onDestroy");
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mMapView.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mMapView.onResume();
     }
 
     @Nullable
@@ -119,19 +130,26 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     @Override
     public void onStart() {
         super.onStart();
+        Log.d(TAG,"onStart");
         mLocationPro.addLocationListener(this);
         mLocationPro.addNaviCalueListner(this);
         mLocationPro.addRouteListener(this);
         mLocationPro.addNaviInfoListner(this);
+
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        mLocationPro.removeNaviInfoListener(this);
-        mLocationPro.removeLocationListener(this);
-        mLocationPro.removeNaviCalueListner(this);
-        mLocationPro.removeRouteListener(this);
+        Log.d(TAG,"onStop");
+        try {
+            mLocationPro.removeNaviInfoListener(this);
+            mLocationPro.removeLocationListener(this);
+            mLocationPro.removeNaviCalueListner(this);
+            mLocationPro.removeRouteListener(this);
+        }catch (Exception e){
+
+        }
     }
 
     @Override
@@ -353,6 +371,24 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
             default:
                 break;
 
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        Log.d(TAG,"onDestroyView");
+        try {
+            if (ints != null){
+                routeID = ints[ints.length-1];
+            }
+
+            mLocationPro.removeRouteListener(this);
+//            mAmap.setMyLocationEnabled(false);
+//        mAmap.setLocationSource(null);
+            mLocationPro.stopRouteNavi();
+            super.onDestroyView();
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 }

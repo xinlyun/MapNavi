@@ -4,5 +4,13 @@
     <string name="searching">正在搜索..:</string>
     <string name="search">搜索</string>
     <string name="please_sure_text">请确认输入正确</string>
+    <string name="navi">导航</string>
+    <string name="around">周边</string>
+    <string name="shouchang">收藏</string>
+    <string name="load_get_msg">正在获取数据......</string>
+    <string name="unknow_road">无名道路</string>
+    <string name="negiht">附件</string>
+    <string name="kmile">公里</string>
+    <string name="mile">米</string>
 
 </resources>
