@@ -46,10 +46,10 @@ public class RouteNaviActivity extends Activity implements AMapNaviListener
 		mAMapNaviView.setAMapNaviViewListener(this);
 		findViewById(R.id.btn_change).setOnClickListener(this);
 		mEtv = (EditText) findViewById(R.id.etv_input);
-		boolean gps=getIntent().getBooleanExtra("gps", false);
+		boolean gps=getIntent().getBooleanExtra("gps", true);
 		if(gps){
-			mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
-//			mLocationPro.startNavi(AMapNavi.GPSNaviMode);
+//			mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
+			mLocationPro.startNavi(AMapNavi.GPSNaviMode);
 		}else{
 			mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
 		}

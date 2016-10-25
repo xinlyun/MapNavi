@@ -23,6 +23,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -35,6 +36,7 @@ import com.amap.api.maps.CameraUpdate;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
+import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
@@ -130,11 +132,12 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
     private LinearLayout mDownLayout0,mDownLayout1;
 
     private TextView mTvPoiName,mTvPoiStr,mTvPoiDis;
-
+    private ImageView mImgBtnLukuang;
 
     private LatLng mLatLng;
     //----//
     private ProgressDialog mProgDialog;
+    private boolean isTraff = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -220,9 +223,13 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
             aMap = mapView.getMap();
             aMap.setMapType(AMap.MAP_TYPE_NAVI);
             // 初始化 显示我的位置的Marker
+            aMap.setTrafficEnabled(isTraff);
             myLocationMarker = aMap.addMarker(new MarkerOptions()
                     .icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
                             .decodeResource(getResources(), com.xiaopeng.amaplib.R.drawable.car))));
+            UiSettings settings = aMap.getUiSettings();
+            settings.setTiltGesturesEnabled(false);
+            settings.setRotateGesturesEnabled(false);
             aMap.setLocationSource(this);// 设置定位监听
             aMap.getUiSettings().setMyLocationButtonEnabled(true);// 设置默认定位按钮是否显示
             aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
@@ -234,7 +241,7 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
                     CameraUpdate update = CameraUpdateFactory.zoomTo(15);
                     aMap.animateCamera(update);
                 }
-            },500);
+            },2000);
             aMap.setOnMarkerDragListener(this);
             aMap.setOnCameraChangeListener(this);
             polylineOptions = new PolylineOptions();
@@ -242,12 +249,6 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
             polylineOptions.color(Color.argb(255, 1, 1, 1));
             polylineOptions.setDottedLine(true);
             polylineOptions.aboveMaskLayer(true);
-//            polylineOptions.addAll(latLngs);
-
-//                            if (mPolyline !=null){
-//                                mPolyline.remove();
-//                                mPolyline = null;
-//                            }
             mPolyline = aMap.addPolyline(polylineOptions);
             setMapInteractiveListener();
 
@@ -269,14 +270,17 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
         mTvPoiName          = (TextView) findViewById(R.id.tv_poi_name);
         mTvPoiStr           = (TextView) findViewById(R.id.tv_poi_str);
         mTvPoiDis           = (TextView) findViewById(R.id.tv_poi_dis);
+        mImgBtnLukuang      = (ImageView) findViewById(R.id.d3_lukuang);
+
 
         //--listener--//
+        mImgBtnLukuang      .setOnClickListener(this);
         mTvSearch           .setOnClickListener(this);
         mEtvSearch          .addTextChangedListener(this);
         mEtvSearch          .setOnFocusChangeListener(this);
         mTipWindow          .setOnTipItemClickListener(this);
         findViewById(R.id.btn_begin_navi).setOnClickListener(this);
-
+        findViewById(R.id.d3_dinwei).setOnClickListener(this);
         mProgDialog = new ProgressDialog(this);
         mProgDialog.setTitle("正在搜索数据");
         mProgDialog.setMessage("正在搜索相关信息....");
@@ -492,7 +496,7 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
 
             case R.id.btn_begin_navi:
                 mProgDialog.show();
-               startCalueNavi();
+                startCalueNavi();
                 mDownLayout0.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -501,8 +505,29 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
                 },6 * 1000);
                 break;
 
+            case R.id.d3_dinwei:
+                findMyPosi();
+                break;
+
+            case R.id.d3_lukuang:
+                changeTriffical();
+                break;
+
             default:
                 break;
+        }
+    }
+
+
+    private void findMyPosi(){
+        if (mLocationProvider!=null && mLocationProvider.getAmapLocation()!=null && aMap!=null){
+            CameraUpdate update = CameraUpdateFactory.newCameraPosition(new CameraPosition(
+                    new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()),//新的中心点坐标
+                    18, //新的缩放级别
+                    30, //俯仰角0°~45°（垂直与地图时为0）
+                    0  ////偏航角 0~360° (正北方为0)
+            ));
+            aMap.animateCamera(update);
         }
     }
 
@@ -807,5 +832,18 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
     @Override
     public void onCalculateRouteSuccess() {
 
+    }
+
+    private void changeTriffical(){
+        if (aMap!=null) {
+            isTraff = !isTraff;
+            aMap.setTrafficEnabled(isTraff);
+            if (isTraff){
+                mImgBtnLukuang.setImageResource(R.drawable.lukuang_00);
+            }else {
+                mImgBtnLukuang.setImageResource(R.drawable.lukuang_01);
+            }
+
+        }
     }
 }

@@ -170,6 +170,7 @@ public class DriveRouteActivity extends Activity implements OnMapClickListener,
 							mContext, aMap, drivePath,
 							mDriveRouteResult.getStartPos(),
 							mDriveRouteResult.getTargetPos(), null);
+
 					drivingRouteOverlay.setNodeIconVisibility(false);//设置节点marker是否显示
 					drivingRouteOverlay.setIsColorfulline(true);//是否用颜色展示交通拥堵情况，默认true
 					drivingRouteOverlay.removeFromMap();

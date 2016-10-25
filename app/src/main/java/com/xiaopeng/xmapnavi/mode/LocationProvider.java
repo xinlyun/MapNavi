@@ -575,6 +575,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     public void stopRouteNavi(){
         aMapNavi.addAMapNaviListener(ttsManager);
         aMapNavi.startAimlessMode(AimLessMode.CAMERA_AND_SPECIALROAD_DETECTED);
+
         mRoutePower.stopRoute();
     }
 

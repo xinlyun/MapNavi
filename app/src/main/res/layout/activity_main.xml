@@ -205,10 +205,32 @@
 
     </LinearLayout>
 
+    <ImageView
+        android:background="@drawable/lukuang_00"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20px"
+        android:layout_marginTop="219px"
+        android:id="@+id/d3_lukuang"
+        android:layout_width="94px"
+        android:layout_height="94px" />
+
+
+    <ImageView
+        android:background="@drawable/dinwei_dra"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="38px"
+        android:layout_marginBottom="192px"
+        android:id="@+id/d3_dinwei"
+        android:layout_width="94px"
+        android:layout_height="94px" />
+
     <include layout="@layout/layout_down_title"
         />
     <FrameLayout
         android:id="@+id/ll_show_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"></FrameLayout>
+
+
 </RelativeLayout>

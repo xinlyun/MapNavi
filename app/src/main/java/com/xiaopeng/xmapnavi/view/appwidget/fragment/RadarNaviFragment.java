@@ -1,6 +1,8 @@
 package com.xiaopeng.xmapnavi.view.appwidget.fragment;
 
 import android.app.Fragment;
+import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -34,6 +36,7 @@ import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviInfoListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpRouteListener;
+import com.xiaopeng.xmapnavi.view.appwidget.activity.RouteNaviActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,6 +85,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         super.onCreate(savedInstanceState);
         mLocationPro = LocationProvider.getInstence(getActivity());
         mAmap.setLocationSource(this);// 设置定位监听
+
         mAmap.getUiSettings().setMyLocationButtonEnabled(true);// 设置默认定位按钮是否显示
         mAmap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
         // 设置定位的类型为定位模式 ，可以由定位、跟随或地图根据面向方向旋转几种
@@ -120,6 +124,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         mBtnStart = (Button) findViewById(R.id.btn_start_navi);
         mTvShowMsg = (TextView) findViewById(R.id.tv_show_msg);
         findViewById(R.id.btn_see_all).setOnClickListener(this);
+        mBtnStart.setOnClickListener(this);
     }
 
     private View findViewById(int id){
@@ -242,6 +247,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         if (mPaths !=null) {
             Log.d(TAG, "onCalculateMultipleRoutesSuccess getPath size:" + mPaths.size());
         }
+
         if (mPaths != null && mPaths.size() > 1 && ints != null){
             for (int i = 0; i < ints.length; i++) {
                 AMapNaviPath path = mPaths.get(ints[i]);
@@ -342,9 +348,10 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         Log.d(TAG,"drawRoutes id:"+routeId);
         mAmap.moveCamera(CameraUpdateFactory.changeTilt(0));
         RouteOverLay routeOverLay = new RouteOverLay(mAmap, path, getActivity());
-        routeOverLay.setStartPointBitmap(null);
+        routeOverLay.setStartPointBitmap(BitmapFactory.decodeResource(getActivity().getResources(),R.drawable.title_back_00));
         routeOverLay.setTrafficLine(true);
         routeOverLay.addToMap();
+
         routeOverlays.put(routeId, routeOverLay);
     }
 
@@ -368,10 +375,21 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
                 seeAll();
                 break;
 
+            case R.id.btn_start_navi:
+                startNavi();
+                break;
+
             default:
                 break;
 
         }
+    }
+
+    private void startNavi(){
+        Intent intent = new Intent(getActivity(), RouteNaviActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        getActivity().startActivity(intent);
+        getActivity().finish();
     }
 
     @Override
