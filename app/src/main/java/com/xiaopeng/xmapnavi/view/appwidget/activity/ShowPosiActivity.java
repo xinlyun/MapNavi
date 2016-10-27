@@ -294,7 +294,7 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
                     mLocationPro.calueRunWay(startList,wayList,endList);
                 }
             }
-        },300);
+        },150);
     }
 
     @Override

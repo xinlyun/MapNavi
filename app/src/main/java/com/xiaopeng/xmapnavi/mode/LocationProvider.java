@@ -72,7 +72,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private static List<XpNaviInfoListener> mNaviInfoListners;
     private PoiSearch mPoiSearch;
 
-    private boolean congestion, cost, hightspeed, avoidhightspeed;
+    private boolean congestion = true, cost = false, hightspeed = false, avoidhightspeed = false;
 
     private SparseArray<RouteOverLay> routeOverlays = new SparseArray<RouteOverLay>();
 

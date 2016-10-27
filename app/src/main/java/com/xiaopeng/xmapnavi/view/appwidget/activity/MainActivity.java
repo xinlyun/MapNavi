@@ -95,9 +95,14 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
     private static final String ACTION_MSG = "ACTION_MSG";
     private static final String ACTION_NAVI_COMP = "ACTION_COMP";
     private static final String NAVI_MSG ="ints";
-
     private static final String NAVI_POI ="NAVI_POI";
+    private static final int WATCH_NORTH = 0;
+    private static final int WATCH_2D = 1;
+    private static final int WATCH_3D = 2;
+    private int[] IMG_WEK = {R.drawable.dialog_icon_00,R.drawable.dialog_icon_01,R.drawable.dialog_icon_02};
 
+
+    private int mWatchStyle = WATCH_NORTH;
     private String mSearchName ;
     private ILocationProvider mLocationProvider;
     private MapView mapView;
@@ -133,6 +138,7 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
 
     private TextView mTvPoiName,mTvPoiStr,mTvPoiDis;
     private ImageView mImgBtnLukuang;
+    private ImageView mImgBtnSeeWay;
 
     private LatLng mLatLng;
     //----//
@@ -271,11 +277,12 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
         mTvPoiStr           = (TextView) findViewById(R.id.tv_poi_str);
         mTvPoiDis           = (TextView) findViewById(R.id.tv_poi_dis);
         mImgBtnLukuang      = (ImageView) findViewById(R.id.d3_lukuang);
-
+        mImgBtnSeeWay       = (ImageView) findViewById(R.id.d3_setting);
 
         //--listener--//
         mImgBtnLukuang      .setOnClickListener(this);
         mTvSearch           .setOnClickListener(this);
+        mImgBtnSeeWay       .setOnClickListener(this);
         mEtvSearch          .addTextChangedListener(this);
         mEtvSearch          .setOnFocusChangeListener(this);
         mTipWindow          .setOnTipItemClickListener(this);
@@ -431,6 +438,10 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
     public void onLocationChanged(AMapLocation aMapLocation) {
         if (aMapLocation != null) {
             mCity = aMapLocation.getCity();
+            if (aMap !=null && mWatchStyle!= WATCH_NORTH){
+                CameraUpdate update = CameraUpdateFactory.changeBearing(aMapLocation.getBearing());
+                aMap.animateCamera(update);
+            }
         }
         if (mListener != null){
             mListener.onLocationChanged(aMapLocation);
@@ -511,6 +522,10 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
 
             case R.id.d3_lukuang:
                 changeTriffical();
+                break;
+
+            case R.id.d3_setting:
+                changeWatchWay();
                 break;
 
             default:
@@ -845,5 +860,33 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
             }
 
         }
+    }
+
+    private void changeWatchWay(){
+        mWatchStyle = (mWatchStyle+1)%3;
+        mImgBtnSeeWay.setImageResource(IMG_WEK[mWatchStyle]);
+        if (aMap!=null){
+        switch (mWatchStyle){
+            case WATCH_NORTH:
+                if ( mLocationProvider!=null && mLocationProvider.getAmapLocation()!=null) {
+                    CameraUpdate update0 = CameraUpdateFactory.changeBearing(0);
+                    aMap.animateCamera(update0);
+                    CameraUpdate update1 = CameraUpdateFactory.changeTilt(0);
+                    aMap.animateCamera(update1);
+                }
+                break;
+
+            case WATCH_2D:
+                if ( mLocationProvider!=null && mLocationProvider.getAmapLocation()!=null) {
+                    CameraUpdate update0 = CameraUpdateFactory.changeBearing(mLocationProvider.getAmapLocation().getBearing());
+                    aMap.animateCamera(update0);
+                }
+                break;
+
+            case WATCH_3D:
+                CameraUpdate update1 = CameraUpdateFactory.changeTilt(30);
+                aMap.animateCamera(update1);
+                break;
+        }}
     }
 }

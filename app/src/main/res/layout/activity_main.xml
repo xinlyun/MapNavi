@@ -215,7 +215,15 @@
         android:layout_width="94px"
         android:layout_height="94px" />
 
-
+    <ImageView
+        android:background="@drawable/dialog_icon_00"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20px"
+        android:layout_marginTop="324px"
+        android:id="@+id/d3_setting"
+        android:layout_width="94px"
+        android:layout_height="94px" />
     <ImageView
         android:background="@drawable/dinwei_dra"
         android:layout_alignParentBottom="true"
