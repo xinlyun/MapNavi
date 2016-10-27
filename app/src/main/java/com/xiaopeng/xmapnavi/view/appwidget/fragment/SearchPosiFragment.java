@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
+import com.xiaopeng.lib.utils.utils.LogUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -286,7 +286,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
 
     @Override
     public void onClickRightItem(int posi) {
-        Log.d(TAG,"onClickRightItem  POSI:"+posi);
+        LogUtils.d(TAG,"onClickRightItem  POSI:"+posi);
         HisItem hisItem = mHisItems.get(posi);
         if (hisItem.type == DateHelper.TYPE_POSI){
             List<NaviLatLng> startPoi = new ArrayList<>();

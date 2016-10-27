@@ -11,7 +11,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
+import com.xiaopeng.lib.utils.utils.LogUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -226,7 +226,7 @@ public class SearchPosiActivity  extends Activity implements XpSearchListner
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-//            Log.d(TAG,"searchSucceful");
+//            LogUtils.d(TAG,"searchSucceful");
                 if (mLocationProvider.getPoiResult() != null && mLocationProvider.getPoiResult().getPois().size()>=1){
 
                     Intent intent = new Intent(SearchPosiActivity.this,ShowPosiActivity.class);

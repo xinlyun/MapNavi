@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.util.Log;
+import com.xiaopeng.lib.utils.utils.LogUtils;
 
 import com.xiaopeng.xmapnavi.view.appwidget.services.LocationProService;
 
@@ -23,7 +23,7 @@ public class BrokenBroadCast extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        Log.d("SearchMusic", "Receive" + ACTION);
+        LogUtils.d("SearchMusic", "Receive" + ACTION);
         if (intent.getAction().equals(ACTION)) {
 //            Intent intent1=new Intent();
 //            intent1.setAction(NaviProService.class.getName());

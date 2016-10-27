@@ -5,7 +5,7 @@ import android.graphics.Camera;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.util.AttributeSet;
-import android.util.Log;
+import com.xiaopeng.lib.utils.utils.LogUtils;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -270,7 +270,7 @@ public class StereoView extends ViewGroup {
         startY = getScrollY() - mHeight;
         setScrollY(startY);
         delta = mHeight * mStartScreen - startY + (addCount - 1) * mHeight;
-        Log.d(TAG,"多后一页startY " + startY + " yVelocity " + yVelocity + " delta " + delta + "  getScrollY() " + getScrollY() + " addCount " + addCount);
+         LogUtils.d(TAG,"多后一页startY " + startY + " yVelocity " + yVelocity + " delta " + delta + "  getScrollY() " + getScrollY() + " addCount " + addCount);
         duration = (Math.abs(delta)) * 3;
         mScroller.startScroll(0, startY, 0, delta, duration);
         addCount--;
@@ -474,10 +474,10 @@ public class StereoView extends ViewGroup {
      */
     public StereoView setItem(int itemId) {
 
-        Log.d(TAG,"之前curScreen " + mCurScreen);
+         LogUtils.d(TAG,"之前curScreen " + mCurScreen);
         if (!mScroller.isFinished()) {
             mScroller.abortAnimation();
-            Log.d(TAG,"强制完成");
+             LogUtils.d(TAG,"强制完成");
         }
         if (itemId < 0 || itemId > (getChildCount() - 1)) {
             throw new IndexOutOfBoundsException("请输入规定范围内item位置号");
@@ -490,7 +490,7 @@ public class StereoView extends ViewGroup {
             //setScrollY(mStartScreen * mHeight);
             toPreAction(standerSpeed + (mCurScreen - itemId - 1) * flingSpeed);
         }
-        Log.d(TAG,"之后curScreen " + mCurScreen + " getScrollY " + getScrollY());
+         LogUtils.d(TAG,"之后curScreen " + mCurScreen + " getScrollY " + getScrollY());
         return this;
     }
 
@@ -502,7 +502,7 @@ public class StereoView extends ViewGroup {
     public StereoView toPre() {
         if (!mScroller.isFinished()) {
             mScroller.abortAnimation();
-            Log.d(TAG,"强制完成");
+             LogUtils.d(TAG,"强制完成");
         }
         toPreAction(standerSpeed);
         return this;
@@ -516,7 +516,7 @@ public class StereoView extends ViewGroup {
     public StereoView toNext() {
         if (!mScroller.isFinished()) {
             mScroller.abortAnimation();
-            Log.d(TAG,"强制完成");
+             LogUtils.d(TAG,"强制完成");
         }
         toNextAction(-standerSpeed);
         return this;

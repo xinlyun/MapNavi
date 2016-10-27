@@ -11,7 +11,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.view.animation.FastOutLinearInInterpolator;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -47,6 +46,7 @@ import com.amap.api.services.route.DriveRouteResult;
 import com.amap.api.services.route.RideRouteResult;
 import com.amap.api.services.route.RouteSearch;
 import com.amap.api.services.route.WalkRouteResult;
+import com.xiaopeng.lib.utils.utils.LogUtils;
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
 import com.xiaopeng.xmapnavi.mode.NaviViewProvide;
@@ -84,7 +84,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
     }
     public void setPosiFromTo(LatLonPoint fromPoint, LatLonPoint toPoint){
-        Log.d(TAG,"setPosiFromTo:"+"from:"+fromPoint+"\nto:"+toPoint);
+        LogUtils.d(TAG,"setPosiFromTo:"+"from:"+fromPoint+"\nto:"+toPoint);
 
         this.fromPoint = fromPoint;
         this.toPoint = toPoint;
@@ -194,7 +194,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             @Override
             public void run() {
                 try {
-                    Log.d(TAG,"ready to changeRoute \nfrom:"+fromPoint+"\n toPoint："+toPoint);
+                    LogUtils.d(TAG,"ready to changeRoute \nfrom:"+fromPoint+"\n toPoint："+toPoint);
                     LatLngBounds bounds = LatLngBounds.builder().include(new LatLng(fromPoint.getLatitude(), fromPoint.getLongitude()))
                             .include(new LatLng(toPoint.getLatitude(), toPoint.getLongitude())).build();
                     CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, 100);
@@ -397,7 +397,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     }
 
     private void drawRoutes(int routeId, AMapNaviPath path) {
-        Log.d(TAG,"drawRoutes id:"+routeId);
+        LogUtils.d(TAG,"drawRoutes id:"+routeId);
         calculateSuccess = true;
         mAMap.moveCamera(CameraUpdateFactory.changeTilt(0));
         RouteOverLay routeOverLay = new RouteOverLay(mAMap, path, getActivity());
@@ -461,7 +461,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     private int nowNum;
     @Override
     public void onTouch(MotionEvent motionEvent) {
-        Log.d(TAG,"onTouch:");
+        LogUtils.d(TAG,"onTouch:");
         if (mAMap!=null) {
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -534,7 +534,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     }
 
     private void reCanLine(){
-        Log.d(TAG,"reCanLine");
+        LogUtils.d(TAG,"reCanLine");
         wayPois.clear();
         for (LatLng marker:markers){
 //            LatLng latLng = marker.getPosition();
@@ -548,7 +548,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
     private int  isInLine(LatLng latLng){
         //TODO
-        Log.d(TAG,"isInLine:"+latLng);
+        LogUtils.d(TAG,"isInLine:"+latLng);
 
         AMapNaviPath path = paths.get(ints[routeIndex]);
         List<NaviLatLng> latLngs = path.getCoordList();
@@ -559,7 +559,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             if ((dis1+dis2)<0.002){
                 return i;
             }else {
-                Log.d(TAG,"dis1+dis2:"+(dis1+dis2));
+                LogUtils.d(TAG,"dis1+dis2:"+(dis1+dis2));
             }
         }
         return -1;
@@ -600,7 +600,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onCalculateMultipleRoutesSuccess(int[] ints) {
-        Log.d(TAG,"onCalculateMultipleRoutesSuccess");
+        LogUtils.d(TAG,"onCalculateMultipleRoutesSuccess");
         cleanLine();
         this.ints = ints;
         drawAgain();

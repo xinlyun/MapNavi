@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.util.Log;
+import com.xiaopeng.lib.utils.utils.LogUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -224,7 +224,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
 //            if (poiResult.getQuery().equals(startSearchQuery)) {
 
             List<PoiItem> poiItems = mPoiResult.getPois();// 取得poiitem数据
-            Log.d(TAG,"seach successed ,size:"+mPoiResult.getPois().size());
+            LogUtils.d(TAG,"seach successed ,size:"+mPoiResult.getPois().size());
             mAdapter.clear();
 
             if (poiItems.size()==0){
@@ -233,7 +233,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
 
                 mAdapter.setNewOne(poiItems);
 
-                Log.d(TAG,"new Adapter");
+                LogUtils.d(TAG,"new Adapter");
                 mAdapter.notifyDataSetChanged();
                 mHistoryLv.setOnItemClickListener(onItemClickListener);
 //                mBeginNavi.setTextColor(getResources().getColor(R.color.white));
@@ -367,21 +367,21 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
 
 
     private void onPoiSearched(PoiResult result, int rcode) {
-        Log.d(TAG,"onPoiSearched");
+        LogUtils.d(TAG,"onPoiSearched");
         if (rcode == 1000)
         {
-            Log.d(TAG,"onPoiSearched1");
+            LogUtils.d(TAG,"onPoiSearched1");
             if (result != null && result.getQuery() != null)
             {// 搜索poi的结果
-                Log.d(TAG,"onPoiSearched2");
+                LogUtils.d(TAG,"onPoiSearched2");
 //                if (result.getQuery().equals(query)) {// 是否是同一条
-                Log.d(TAG,"onPoiSearched3");
+                LogUtils.d(TAG,"onPoiSearched3");
                 poiResult = result;
                 poiItems = poiResult.getPois();// 取得第一页的poiitem数据，页数从数字0开始
                 List<SuggestionCity> suggestionCities = poiResult
                         .getSearchSuggestionCitys();// 当搜索不到poiitem数据时，会返回含有搜索关键字的城市信息
                 if (poiItems != null && poiItems.size() > 0) {
-                    Log.d(TAG,"onPoiSearched4");
+                    LogUtils.d(TAG,"onPoiSearched4");
                     //清除POI信息显示
                     whetherToShowDetailInfo(false);
                     //并还原点击marker样式
@@ -530,7 +530,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
 
     @Override
     public void onClickRightItem(int posi) {
-        Log.d(TAG,"onClickRightItem posi:"+posi);
+        LogUtils.d(TAG,"onClickRightItem posi:"+posi);
         dateHelper.savePoiItem(poiItems.get(posi));
         Marker marker = poiOverlay.getMarker(posi);
         LatLng latLng = marker.getPosition();
@@ -540,7 +540,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 //            findViewById(R.id.ll_search_layout).setVisibility(View.GONE);
-            Log.d(TAG,"onItemClick posi:"+poiItems);
+            LogUtils.d(TAG,"onItemClick posi:"+poiItems);
 //            mAdapter.setIndex(i);
 //            ShowPosiActivity.this.onMarkerClick(poiOverlay.getMarker(i));
             ShowPosiFragment.this.runMarkerChange(poiOverlay.getMarker(i),i);

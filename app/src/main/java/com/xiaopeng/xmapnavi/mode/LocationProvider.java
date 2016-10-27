@@ -3,7 +3,7 @@ package com.xiaopeng.xmapnavi.mode;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
+import com.xiaopeng.lib.utils.utils.LogUtils;
 import android.util.SparseArray;
 import android.widget.Toast;
 
@@ -108,25 +108,25 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void addSearchListner(XpSearchListner xpSearchListner) {
         mSearchListeners.add(xpSearchListner);
-        Log.d(TAG,"addSearchListner size:"+mSearchListeners.size()+"\nlistner:"+xpSearchListner.toString());
+        LogUtils.d(TAG,"addSearchListner size:"+mSearchListeners.size()+"\nlistner:"+xpSearchListner.toString());
 
     }
 
     @Override
     public void removeSearchListner(XpSearchListner xpSearchListner) {
-        Log.d(TAG,"removeSearchListner size:"+mSearchListeners.size()+"\nlistner:"+xpSearchListner.toString());
+        LogUtils.d(TAG,"removeSearchListner size:"+mSearchListeners.size()+"\nlistner:"+xpSearchListner.toString());
         mSearchListeners.remove(xpSearchListner);
     }
 
     @Override
     public void addNaviCalueListner(XpNaviCalueListener xpSearchListner) {
-        Log.d(TAG,"addNaviCalueListner size:"+mNaviCalueListeners.size()+"\nlistner:"+xpSearchListner.toString());
+        LogUtils.d(TAG,"addNaviCalueListner size:"+mNaviCalueListeners.size()+"\nlistner:"+xpSearchListner.toString());
         mNaviCalueListeners.add(xpSearchListner);
     }
 
     @Override
     public void removeNaviCalueListner(XpNaviCalueListener xpSearchListner) {
-        Log.d(TAG,"removeNaviCalueListner size:"+mNaviCalueListeners.size()+"\nlistner:"+xpSearchListner.toString());
+        LogUtils.d(TAG,"removeNaviCalueListner size:"+mNaviCalueListeners.size()+"\nlistner:"+xpSearchListner.toString());
         mNaviCalueListeners.remove(xpSearchListner);
     }
 
@@ -159,10 +159,10 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     public void calueRunWay(List<NaviLatLng> startList,List<NaviLatLng> wayList,List<NaviLatLng> endList) {
         aMapNavi.stopNavi();
         if (avoidhightspeed && hightspeed) {
-            Log.d(TAG,"不走高速与高速优先不能同时为true.");
+            LogUtils.d(TAG,"不走高速与高速优先不能同时为true.");
         }
         if (cost && hightspeed) {
-            Log.d(TAG,"高速优先与避免收费不能同时为true");
+            LogUtils.d(TAG,"高速优先与避免收费不能同时为true");
         }
             /*
 			 * strategyFlag转换出来的值都对应PathPlanningStrategy常量，用户也可以直接传入PathPlanningStrategy常量进行算路。
@@ -176,7 +176,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         }
         if (strategyFlag >= 0) {
             aMapNavi.calculateDriveRoute(startList, endList, wayList, strategyFlag);
-            Log.d(TAG,"策略:" + strategyFlag);
+            LogUtils.d(TAG,"策略:" + strategyFlag);
         }
     }
 
@@ -280,7 +280,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
                 mRoutePower.setCurretPosi(mAmapLocation);
             } else {
                 String errText = "定位失败," + aMapLocation.getErrorCode()+ ": " + aMapLocation.getErrorInfo();
-                Log.e("AmapErr",errText);
+                LogUtils.e("AmapErr",errText);
             }
         }
     }
@@ -289,27 +289,27 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     /* 以下都是Navi的回调 */
     @Override
     public void onInitNaviFailure() {
-        Log.d(NAVI_TAG,"onInitNaviFailure");
+        LogUtils.d(NAVI_TAG,"onInitNaviFailure");
     }
 
     @Override
     public void onInitNaviSuccess() {
-        Log.d(NAVI_TAG,"onInitNaviSuccess");
+        LogUtils.d(NAVI_TAG,"onInitNaviSuccess");
     }
 
     @Override
     public void onStartNavi(int i) {
-        Log.d(NAVI_TAG,"onStartNavi: i ="+i);
+        LogUtils.d(NAVI_TAG,"onStartNavi: i ="+i);
     }
 
     @Override
     public void onTrafficStatusUpdate() {
-        Log.d(NAVI_TAG,"onTrafficStatusUpdate");
+        LogUtils.d(NAVI_TAG,"onTrafficStatusUpdate");
     }
 
     @Override
     public void onLocationChange(AMapNaviLocation aMapNaviLocation) {
-        Log.d(NAVI_TAG,"onLocationChange");
+        LogUtils.d(NAVI_TAG,"onLocationChange");
         for (XpLocationListener lisener:mListeners){
             lisener.onLocationChange(aMapNaviLocation);
         }
@@ -317,28 +317,28 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public void onGetNavigationText(int i, String s) {
-        Log.d(NAVI_TAG,"onGetNavigationText i="+i+"\ns:"+s);
+        LogUtils.d(NAVI_TAG,"onGetNavigationText i="+i+"\ns:"+s);
 //        ttsManager.startSpeaking(s);
     }
 
     @Override
     public void onEndEmulatorNavi() {
-        Log.d(NAVI_TAG,"onEndEmulatorNavi");
+        LogUtils.d(NAVI_TAG,"onEndEmulatorNavi");
     }
 
     @Override
     public void onArriveDestination() {
-        Log.d(NAVI_TAG,"onArriveDestination");
+        LogUtils.d(NAVI_TAG,"onArriveDestination");
     }
 
     @Override
     public void onArriveDestination(NaviStaticInfo naviStaticInfo) {
-        Log.d(NAVI_TAG,"onArriveDestination");
+        LogUtils.d(NAVI_TAG,"onArriveDestination");
     }
 
     @Override
     public void onCalculateRouteSuccess() {
-        Log.d(NAVI_TAG,"onCalculateRouteSuccess");
+        LogUtils.d(NAVI_TAG,"onCalculateRouteSuccess");
         for (XpNaviCalueListener listener:mNaviCalueListeners){
             listener.onCalculateRouteSuccess();
         }
@@ -346,37 +346,37 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public void onCalculateRouteFailure(int i) {
-        Log.d(NAVI_TAG,"onCalculateRouteFailure i="+i);
+        LogUtils.d(NAVI_TAG,"onCalculateRouteFailure i="+i);
     }
 
     @Override
     public void onReCalculateRouteForYaw() {
-        Log.d(NAVI_TAG,"onReCalculateRouteForYaw");
+        LogUtils.d(NAVI_TAG,"onReCalculateRouteForYaw");
     }
 
     @Override
     public void onReCalculateRouteForTrafficJam() {
-        Log.d(NAVI_TAG,"onReCalculateRouteForTrafficJam");
+        LogUtils.d(NAVI_TAG,"onReCalculateRouteForTrafficJam");
     }
 
     @Override
     public void onArrivedWayPoint(int i) {
-        Log.d(NAVI_TAG,"onArrivedWayPoint");
+        LogUtils.d(NAVI_TAG,"onArrivedWayPoint");
     }
 
     @Override
     public void onGpsOpenStatus(boolean b) {
-        Log.d(NAVI_TAG,"onGpsOpenStatus b="+b);
+        LogUtils.d(NAVI_TAG,"onGpsOpenStatus b="+b);
     }
 
     @Override
     public void onNaviInfoUpdated(AMapNaviInfo aMapNaviInfo) {
-        Log.d(NAVI_TAG,"onNaviInfoUpdated");
+        LogUtils.d(NAVI_TAG,"onNaviInfoUpdated");
     }
 
     @Override
     public void onNaviInfoUpdate(NaviInfo naviInfo) {
-        Log.d(NAVI_TAG,"onNaviInfoUpdate");
+        LogUtils.d(NAVI_TAG,"onNaviInfoUpdate");
         for (XpNaviInfoListener naviInfoListener:mNaviInfoListners){
             naviInfoListener.onNaviInfoUpdate(naviInfo);
         }
@@ -385,9 +385,9 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public void OnUpdateTrafficFacility(AMapNaviTrafficFacilityInfo info) {
-        Log.d(NAVI_TAG,"OnUpdateTrafficFacility");
+        LogUtils.d(NAVI_TAG,"OnUpdateTrafficFacility");
         if (info!=null){
-            Log.d(NAVI_TAG, "(trafficFacilityInfo.coor_X+trafficFacilityInfo.coor_Y+trafficFacilityInfo.distance+trafficFacilityInfo.limitSpeed):"
+            LogUtils.d(NAVI_TAG, "(trafficFacilityInfo.coor_X+trafficFacilityInfo.coor_Y+trafficFacilityInfo.distance+trafficFacilityInfo.limitSpeed):"
                     + (info.getCoorX() + info.getCoorY() + info.getDistance() + info.getLimitSpeed()));
         }
 
@@ -395,33 +395,33 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public void OnUpdateTrafficFacility(TrafficFacilityInfo trafficFacilityInfo) {
-        Log.d(NAVI_TAG,"OnUpdateTrafficFacility");
+        LogUtils.d(NAVI_TAG,"OnUpdateTrafficFacility");
 
     }
 
     @Override
     public void showCross(AMapNaviCross aMapNaviCross) {
-        Log.d(NAVI_TAG,"showCross");
+        LogUtils.d(NAVI_TAG,"showCross");
     }
 
     @Override
     public void hideCross() {
-        Log.d(NAVI_TAG,"hideCross");
+        LogUtils.d(NAVI_TAG,"hideCross");
     }
 
     @Override
     public void showLaneInfo(AMapLaneInfo[] aMapLaneInfos, byte[] bytes, byte[] bytes1) {
-        Log.d(NAVI_TAG,"showLaneInfo");
+        LogUtils.d(NAVI_TAG,"showLaneInfo");
     }
 
     @Override
     public void hideLaneInfo() {
-        Log.d(NAVI_TAG,"hideLaneInfo");
+        LogUtils.d(NAVI_TAG,"hideLaneInfo");
     }
 
     @Override
     public void onCalculateMultipleRoutesSuccess(int[] ints) {
-        Log.d(NAVI_TAG,"onCalculateMultipleRoutesSuccess");
+        LogUtils.d(NAVI_TAG,"onCalculateMultipleRoutesSuccess");
         mRoutePower.setPath(aMapNavi.getNaviPaths(),ints);
         for (XpNaviCalueListener listener:mNaviCalueListeners){
             listener.onCalculateMultipleRoutesSuccess(ints);
@@ -430,35 +430,35 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public void notifyParallelRoad(int i) {
-        Log.d(NAVI_TAG,"notifyParallelRoad");
+        LogUtils.d(NAVI_TAG,"notifyParallelRoad");
     }
 
     @Override
     public void OnUpdateTrafficFacility(AMapNaviTrafficFacilityInfo[] aMapNaviTrafficFacilityInfos) {
-        Log.d(NAVI_TAG,"OnUpdateTrafficFacility");
+        LogUtils.d(NAVI_TAG,"OnUpdateTrafficFacility");
     }
 
     @Override
     public void updateAimlessModeStatistics(AimLessModeStat aimLessModeStat) {
-        Log.d(NAVI_TAG,"updateAimlessModeStatistics");
-        Log.d(TAG, "distance=" + aimLessModeStat.getAimlessModeDistance());
-        Log.d(TAG, "time=" + aimLessModeStat.getAimlessModeTime());
+        LogUtils.d(NAVI_TAG,"updateAimlessModeStatistics");
+        LogUtils.d(TAG, "distance=" + aimLessModeStat.getAimlessModeDistance());
+        LogUtils.d(TAG, "time=" + aimLessModeStat.getAimlessModeTime());
     }
 
     @Override
     public void updateAimlessModeCongestionInfo(AimLessModeCongestionInfo aimLessModeCongestionInfo) {
-        Log.d(NAVI_TAG,"updateAimlessModeCongestionInfo");
-        Log.d(TAG, "roadName=" + aimLessModeCongestionInfo.getRoadName());
-        Log.d(TAG, "CongestionStatus=" + aimLessModeCongestionInfo.getCongestionStatus());
-        Log.d(TAG, "eventLonLat=" + aimLessModeCongestionInfo.getEventLon() + "," + aimLessModeCongestionInfo.getEventLat());
-        Log.d(TAG, "length=" + aimLessModeCongestionInfo.getLength());
-        Log.d(TAG, "time=" + aimLessModeCongestionInfo.getTime());
+        LogUtils.d(NAVI_TAG,"updateAimlessModeCongestionInfo");
+        LogUtils.d(TAG, "roadName=" + aimLessModeCongestionInfo.getRoadName());
+        LogUtils.d(TAG, "CongestionStatus=" + aimLessModeCongestionInfo.getCongestionStatus());
+        LogUtils.d(TAG, "eventLonLat=" + aimLessModeCongestionInfo.getEventLon() + "," + aimLessModeCongestionInfo.getEventLat());
+        LogUtils.d(TAG, "length=" + aimLessModeCongestionInfo.getLength());
+        LogUtils.d(TAG, "time=" + aimLessModeCongestionInfo.getTime());
         for (AMapCongestionLink link :
                 aimLessModeCongestionInfo.getAmapCongestionLinks()) {
-            Log.d(TAG, "status=" + link.getCongestionStatus());
+            LogUtils.d(TAG, "status=" + link.getCongestionStatus());
             for (NaviLatLng latlng : link.getCoords()
                     ) {
-                Log.d(TAG, latlng.toString());
+                LogUtils.d(TAG, latlng.toString());
             }
         }
     }
@@ -508,7 +508,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public void onPoiSearched(PoiResult poiResult, int i) {
-        Log.d(TAG,"onPoiSearched i:"+i);
+        LogUtils.d(TAG,"onPoiSearched i:"+i);
         mPoiResult = poiResult;
         for (XpSearchListner listener:mSearchListeners){
             listener.searchSucceful();

@@ -16,7 +16,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.util.Log;
+import com.xiaopeng.lib.utils.utils.LogUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -158,7 +158,7 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
 
     @Override
     protected void onStart() {
-        Log.d(TAG,"onStart");
+        LogUtils.d(TAG,"onStart");
         super.onStart();
         mLocationPro.addNaviCalueListner(this);
 
@@ -169,7 +169,7 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d(TAG,"onStop");
+        LogUtils.d(TAG,"onStop");
         mLocationPro.removeNaviCalueListner(this);
     }
 
@@ -183,7 +183,7 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
 
     @Override
     protected void onDestroy() {
-        Log.d(TAG,"onDestroy");
+        LogUtils.d(TAG,"onDestroy");
         super.onDestroy();
         mapView.onDestroy();
 
@@ -232,7 +232,7 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
         LatLonPoint toPoi = new LatLonPoint(doubles[2],doubles[3]);
         this.fromPoint = fromPoi;
         this.toPoint = toPoi;
-        Log.d(TAG,"from:"+fromPoi+"\ntoPoi:"+toPoi);
+        LogUtils.d(TAG,"from:"+fromPoi+"\ntoPoi:"+toPoi);
         runNaviWayFragment.setPosiFromTo(fromPoi,toPoi);
         showRunNaviFragment();
         setIntent(null);

@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
+import com.xiaopeng.lib.utils.utils.LogUtils;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -95,7 +95,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d(TAG,"onDestroy");
+        LogUtils.d(TAG,"onDestroy");
 
     }
 
@@ -135,7 +135,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(TAG,"onStart");
+        LogUtils.d(TAG,"onStart");
         mLocationPro.addLocationListener(this);
         mLocationPro.addNaviCalueListner(this);
         mLocationPro.addRouteListener(this);
@@ -146,7 +146,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     @Override
     public void onStop() {
         super.onStop();
-        Log.d(TAG,"onStop");
+        LogUtils.d(TAG,"onStop");
         try {
             mLocationPro.removeNaviInfoListener(this);
             mLocationPro.removeLocationListener(this);
@@ -179,7 +179,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
             if (dis > 500 || (System.currentTimeMillis() - timeSave)> 60 * 1000){
                 poiSave = new LatLng(aMapLocation.getLatitude(),aMapLocation.getLongitude());
                 timeSave = System.currentTimeMillis();
-                Log.d(TAG,"ready rechange:");
+                LogUtils.d(TAG,"ready rechange:");
                 reCalue();
             }
         }
@@ -221,7 +221,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
             public void run() {
 
                 try {
-                    Log.d(TAG,"ready to changeRoute \nfrom:"+fromPoint+"\n toPoint："+toPoint);
+                    LogUtils.d(TAG,"ready to changeRoute \nfrom:"+fromPoint+"\n toPoint："+toPoint);
 
                     if (toPoint!=null && fromPoint!=null) {
                         LatLngBounds bounds = LatLngBounds.builder().include(new LatLng(fromPoint.getLatitude(), fromPoint.getLongitude()))
@@ -239,13 +239,13 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
 
     @Override
     public void onCalculateMultipleRoutesSuccess(int[] ints) {
-        Log.d(TAG,"onCalculateMultipleRoutesSuccess ints size:"+ints.length);
+        LogUtils.d(TAG,"onCalculateMultipleRoutesSuccess ints size:"+ints.length);
         clearPathLay();
         this.ints = ints;
         routeID = ints[0];
         mPaths = mLocationPro.getNaviPaths();
         if (mPaths !=null) {
-            Log.d(TAG, "onCalculateMultipleRoutesSuccess getPath size:" + mPaths.size());
+            LogUtils.d(TAG, "onCalculateMultipleRoutesSuccess getPath size:" + mPaths.size());
         }
 
         if (mPaths != null && mPaths.size() > 1 && ints != null){
@@ -269,7 +269,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
             public void run() {
 
                 try {
-                    Log.d(TAG,"ready to changeRoute \nfrom:"+fromPoint+"\n toPoint："+toPoint);
+                    LogUtils.d(TAG,"ready to changeRoute \nfrom:"+fromPoint+"\n toPoint："+toPoint);
 
                     if (toPoint!=null && fromPoint!=null) {
                         LatLngBounds bounds = LatLngBounds.builder().include(new LatLng(fromPoint.getLatitude(), fromPoint.getLongitude()))
@@ -311,7 +311,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
             routeOverlays.get(routeID).setZindex(zindex+1);
         }catch (Exception e){
             e.printStackTrace();
-            Log.e(TAG,"changeRoute error:routeId = "+routeID);
+            LogUtils.e(TAG,"changeRoute error:routeId = "+routeID);
         }
 
 //        AMapNaviPath path  = mPaths.get(ints[routeIndex]);
@@ -328,7 +328,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
 
     @Override
     public void nearBy(int pathId, int stepNum, int poiNum) {
-        Log.d(TAG,"nearBy:"+pathId);
+        LogUtils.d(TAG,"nearBy:"+pathId);
         routeID = pathId;
         changeRoute();
     }
@@ -345,7 +345,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
 
 
     private void drawRoutes(int routeId, AMapNaviPath path) {
-        Log.d(TAG,"drawRoutes id:"+routeId);
+        LogUtils.d(TAG,"drawRoutes id:"+routeId);
         mAmap.moveCamera(CameraUpdateFactory.changeTilt(0));
         RouteOverLay routeOverLay = new RouteOverLay(mAmap, path, getActivity());
         routeOverLay.setStartPointBitmap(BitmapFactory.decodeResource(getActivity().getResources(),R.drawable.title_back_00));
@@ -394,7 +394,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
 
     @Override
     public void onDestroyView() {
-        Log.d(TAG,"onDestroyView");
+        LogUtils.d(TAG,"onDestroyView");
         try {
             if (ints != null){
                 routeID = ints[ints.length-1];

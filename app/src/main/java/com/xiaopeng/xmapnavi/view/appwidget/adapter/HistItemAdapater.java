@@ -1,7 +1,7 @@
 package com.xiaopeng.xmapnavi.view.appwidget.adapter;
 
 import android.content.Context;
-import android.util.Log;
+import com.xiaopeng.lib.utils.utils.LogUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

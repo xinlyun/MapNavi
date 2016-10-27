@@ -14,7 +14,7 @@ import android.os.Message;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
+import com.xiaopeng.lib.utils.utils.LogUtils;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -168,7 +168,7 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
             @Override
             public void run() {
                 FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) activityRootView.getLayoutParams();
-                Log.d(TAG,"layoutparams width:"+layoutParams.width);
+                LogUtils.d(TAG,"layoutparams width:"+layoutParams.width);
                 marker = aMap.addMarker(new MarkerOptions()
                         .icon(BitmapDescriptorFactory
                                 .fromResource(R.drawable.amap_car))
@@ -468,7 +468,7 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            Log.d(TAG,"searchSucceful");
+            LogUtils.d(TAG,"searchSucceful");
             if (mStvSearch != null){
                 if (mLocationProvider.getPoiResult() != null && mLocationProvider.getPoiResult().getPois().size()>=1){
 

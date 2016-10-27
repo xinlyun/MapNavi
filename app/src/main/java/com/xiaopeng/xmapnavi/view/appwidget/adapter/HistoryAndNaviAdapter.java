@@ -1,7 +1,7 @@
 package com.xiaopeng.xmapnavi.view.appwidget.adapter;
 
 import android.content.Context;
-import android.util.Log;
+import com.xiaopeng.lib.utils.utils.LogUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -140,7 +140,7 @@ public class HistoryAndNaviAdapter extends ArrayAdapter {
 
         @Override
         public void onClick( View v) {
-            Log.d("PlayListDetailAdapter","Onclick:"+(int)v.getTag());
+            LogUtils.d("PlayListDetailAdapter","Onclick:"+(int)v.getTag());
             if (mOnClickRightItem != null) {
                 int posi1 = position;
                 mOnClickRightItem.onClickRightItem(posi1);
