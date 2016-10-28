@@ -3,8 +3,14 @@ package com.xiaopeng.xmapnavi.view.appwidget.fragment;
 import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+
+import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -36,6 +42,7 @@ import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviInfoListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpRouteListener;
+import com.xiaopeng.xmapnavi.presenter.callback.XpSensorListener;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.RouteNaviActivity;
 
 import java.util.ArrayList;
@@ -47,8 +54,9 @@ import java.util.Map;
  * Created by linzx on 2016/10/18.
  */
 public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNaviCalueListener
-            ,XpLocationListener , LocationSource
-            , XpNaviInfoListener,View.OnClickListener{
+        ,XpLocationListener , LocationSource
+        , XpNaviInfoListener,View.OnClickListener
+        , XpSensorListener{
     private static final String TAG = "RadarNaviFragment";
     private MapView mMapView;
     private AMap mAmap;
@@ -80,6 +88,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
 
     private Button mBtnStart;
     private TextView mTvShowMsg;
+    private Marker mLocationMarker;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,6 +126,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_rader_navi,container,false);
         mAmap.clear();
+
         initView();
         return rootView;
     }
@@ -126,6 +136,12 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         mTvShowMsg = (TextView) findViewById(R.id.tv_show_msg);
         findViewById(R.id.btn_see_all).setOnClickListener(this);
         mBtnStart.setOnClickListener(this);
+        MarkerOptions options  = new MarkerOptions();
+
+        options.icon(BitmapDescriptorFactory.fromResource(com.xiaopeng.amaplib.R.drawable.navi_map_gps_locked));
+
+        mLocationMarker = mAmap.addMarker(options);
+        mLocationMarker.setAnchor(0.5f,0.5f);
     }
 
     private View findViewById(int id){
@@ -142,6 +158,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         mLocationPro.addNaviCalueListner(this);
         mLocationPro.addRouteListener(this);
         mLocationPro.addNaviInfoListner(this);
+        mLocationPro.addSensorListner(this);
 
     }
 
@@ -150,6 +167,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         super.onStop();
         LogUtils.d(TAG,"onStop");
         try {
+            mLocationPro.removeSensorListner(this);
             mLocationPro.removeNaviInfoListener(this);
             mLocationPro.removeLocationListener(this);
             mLocationPro.removeNaviCalueListner(this);
@@ -162,8 +180,16 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
 
-        if (mLisenerClient != null){
-            mLisenerClient.onLocationChanged(aMapLocation);
+//        if (mLisenerClient != null){
+//            mLisenerClient.onLocationChanged(aMapLocation);
+//        }
+
+        if (mLocationMarker != null){
+            LogUtils.d(TAG,"mlocation:"+aMapLocation);
+            LogUtils.d(TAG,"mlocation:Angle:"+aMapLocation.getBearing());
+            mLocationMarker.setPosition(new LatLng(aMapLocation.getLatitude(),aMapLocation.getLongitude()));
+
+            mLocationMarker.setRotateAngle(aMapLocation.getBearing());
         }
 
         if (fromPoint!=null) {
@@ -302,7 +328,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         //突出选择的那条路
         for (int i = 0; i < routeOverlays.size(); i++) {
             int key = routeOverlays.keyAt(i);
-            routeOverlays.get(key).setTransparency(0.4f);
+            routeOverlays.get(key).setTransparency(0.23f);
         }
         try {
 
@@ -410,5 +436,20 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event != null && event.values!=null && event.values.length>0) {
+            float bearing = event.values[0];
+            if (mLocationMarker!=null){
+                mLocationMarker.setRotateAngle(360 - bearing);
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 }

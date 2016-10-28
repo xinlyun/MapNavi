@@ -13,6 +13,7 @@ import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviInfoListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpRouteListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
+import com.xiaopeng.xmapnavi.presenter.callback.XpSensorListener;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,9 @@ public interface ILocationProvider {
 
     void addNaviInfoListner(XpNaviInfoListener xpNaviInfoListener);
     void removeNaviInfoListener(XpNaviInfoListener xpNaviInfoListener);
+
+    void addSensorListner(XpSensorListener xpSensorListener);
+    void removeSensorListner(XpSensorListener xpSensorListener);
 
     void trySearchPosi(String str);
     void calueRunWay(List<NaviLatLng> startList, List<NaviLatLng> wayList, List<NaviLatLng> endList);

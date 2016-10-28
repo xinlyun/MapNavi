@@ -1,6 +1,10 @@
 package com.xiaopeng.xmapnavi.mode;
 
 import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Handler;
 import android.os.Message;
 import com.xiaopeng.lib.utils.utils.LogUtils;
@@ -44,6 +48,7 @@ import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviInfoListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpRouteListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
+import com.xiaopeng.xmapnavi.presenter.callback.XpSensorListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +59,7 @@ import java.util.List;
  */
 public class LocationProvider implements ILocationProvider,AMapLocationListener,AMapNaviListener
         ,PoiSearch.OnPoiSearchListener
-        ,XpRouteListener
+        ,XpRouteListener , SensorEventListener
 {
     private static final String TAG = "LocationProvider";
     private static final String NAVI_TAG = "Lp_NaviMsg";
@@ -70,8 +75,9 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private static List<XpNaviCalueListener> mNaviCalueListeners;
     private static List<XpRouteListener> mRouteListeners;
     private static List<XpNaviInfoListener> mNaviInfoListners;
+    private static List<XpSensorListener> mSensorListners;
     private PoiSearch mPoiSearch;
-
+    private SensorManager manager;
     private boolean congestion = true, cost = false, hightspeed = false, avoidhightspeed = false;
 
     private SparseArray<RouteOverLay> routeOverlays = new SparseArray<RouteOverLay>();
@@ -151,6 +157,27 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     }
 
     @Override
+    public void addSensorListner(XpSensorListener xpSensorListener) {
+        if (mSensorListners.size() < 1){
+            Sensor sensor = manager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+//应用在前台时候注册监听器
+            manager.registerListener(this, sensor,
+                    SensorManager.SENSOR_DELAY_GAME);
+
+        }
+
+        mSensorListners.add(xpSensorListener);
+    }
+
+    @Override
+    public void removeSensorListner(XpSensorListener xpSensorListener) {
+        mSensorListners.remove(xpSensorListener);
+        if (mSensorListners.size()<1) {
+            manager.unregisterListener(this);
+        }
+    }
+
+    @Override
     public void trySearchPosi(String str) {
         beginSearchAddr(str);
     }
@@ -209,6 +236,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         mNaviCalueListeners = new ArrayList<>();
         mRouteListeners = new ArrayList<>();
         mNaviInfoListners = new ArrayList<>();
+        mSensorListners = new ArrayList<>();
         if (mLocationClient == null) {
             mLocationClient = new AMapLocationClient(context.getApplicationContext());
             mLocationOption = getDefaultOption();
@@ -241,6 +269,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
         mRoutePower = new RoutePower();
         mRoutePower .setXpRouteListner(this);
+
+       manager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
     }
 
     Handler updateLoction = new Handler(){
@@ -548,6 +578,19 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         aMapNavi.startAimlessMode(AimLessMode.CAMERA_AND_SPECIALROAD_DETECTED);
     }
 
+    @Override
+    public void onSensorChanged(SensorEvent sensorEvent) {
+        for (XpSensorListener listener : mSensorListners){
+            listener.onSensorChanged(sensorEvent);
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+        for (XpSensorListener listener : mSensorListners){
+            listener.onAccuracyChanged(sensor,i);
+        }
+    }
 
 
     class SaveThread extends Thread{
