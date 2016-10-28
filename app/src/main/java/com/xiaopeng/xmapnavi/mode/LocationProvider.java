@@ -579,6 +579,14 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         mRoutePower.stopRoute();
     }
 
+    @Override
+    public void setNaviStyle(boolean congestion, boolean avHighSpeed, boolean avCost, boolean highSpeed) {
+        this.congestion = congestion;
+        this.avoidhightspeed = avHighSpeed;
+        this.cost = avCost;
+        this.hightspeed = highSpeed;
+    }
+
 
     @Override
     public void nearBy(int pathId, int stepNum, int poiNum) {

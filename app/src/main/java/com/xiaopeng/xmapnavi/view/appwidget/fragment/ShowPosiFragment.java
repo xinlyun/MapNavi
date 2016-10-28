@@ -168,6 +168,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
         });
 
         mBtPull .setOnTouchListener(this);
+
     }
     /**
      * 初始化AMap对象
@@ -274,7 +275,13 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
 
     @Override
     public void onClick(View view) {
-
+        switch (view.getId()){
+            case R.id.title_back:
+                //down
+            case R.id.title_title:
+                getFragmentManager().popBackStack();
+                break;
+        }
     }
 
 

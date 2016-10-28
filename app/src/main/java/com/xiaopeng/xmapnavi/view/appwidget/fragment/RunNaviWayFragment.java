@@ -55,6 +55,7 @@ import com.xiaopeng.xmapnavi.presenter.INaviViewProvide;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.ShowPosiActivity;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.NaviPathAdapter;
+import com.xiaopeng.xmapnavi.view.appwidget.selfview.NaviChanDialog;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,7 +67,8 @@ import java.util.concurrent.RunnableFuture;
  */
 public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
-        ,AMap.OnMapTouchListener,RouteSearch.OnRouteSearchListener,XpNaviCalueListener
+        ,AMap.OnMapTouchListener,RouteSearch.OnRouteSearchListener
+        ,XpNaviCalueListener ,NaviChanDialog.OnChioceNaviStyleListner
 {
     private static final String TAG = "RunNaviWayFragment";
     private MapView mAmapView;
@@ -133,6 +135,8 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     Bitmap bi;
     private List<RouteOverLay> deletLay = new ArrayList<>();
 
+    private NaviChanDialog mNaviChioceDialog;
+    private ProgressDialog mProgDialog;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -171,6 +175,29 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         //--listener--//
         mBtnStartNavi       .setOnClickListener(this);
         findViewById(R.id.btn_start_route_navi).setOnClickListener(this);
+        findViewById(R.id.tv_right).setOnClickListener(this);
+        mBtnStartNavi.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mNaviChioceDialog = new NaviChanDialog(RunNaviWayFragment.this.getActivity());
+                mNaviChioceDialog.setOnChioceNaviStyleListner(RunNaviWayFragment.this);
+            }
+        },1000);
+
+
+        mProgDialog = new ProgressDialog(this.getActivity());
+        mProgDialog.setTitle("正在搜索数据");
+        mProgDialog.setMessage("正在搜索相关信息....");
+        mProgDialog.setCancelable(true);
+
+
+        //----init listener ---//
+        mProgDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+
+            }
+        });
     }
 
 
@@ -179,6 +206,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     public void onStop() {
         super.onStop();
         mLocaionPro.removeNaviCalueListner(this);
+        mAMap.setOnMapTouchListener(null);
         if (mAMap!=null) {
             mAMap.getUiSettings().setAllGesturesEnabled(false);
         }
@@ -200,6 +228,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                     CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, 100);
                     mAMap.animateCamera(update);
                     mAMap.setOnMapTouchListener(RunNaviWayFragment.this);
+
                     changeRoute();
 
 //                    if (mAMap!=null) {
@@ -321,6 +350,43 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                 routeOverlays.get(routeID).setZindex(zindex++);
                 mLocaionPro.selectRouteId(routeID);
 
+                mAmapView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+//                HashMap<Integer, AMapNaviPath> paths = mLocaionPro.getNaviPaths();
+//                INaviViewProvide naviViewProvide = new NaviViewProvide(RunNaviWayFragment.this.getActivity());
+//                HashMap<Integer,View> viewHashMap = naviViewProvide.createViewByPath(paths);
+//                addViewWithViews(viewHashMap);
+                        adapter = new NaviPathAdapter(getActivity(),R.layout.layout_gradview_item);
+                        adapter.setDate(paths,ints);
+                        mGvShowNaviPaths.setAdapter(adapter);
+                        mGvShowNaviPaths.setOnItemClickListener(mClickPathItemListner);
+                    }
+                },400);
+
+                mAmapView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            LogUtils.d(TAG,"ready to changeRoute \nfrom:"+fromPoint+"\n toPoint："+toPoint);
+                            LatLngBounds bounds = LatLngBounds.builder().include(new LatLng(fromPoint.getLatitude(), fromPoint.getLongitude()))
+                                    .include(new LatLng(toPoint.getLatitude(), toPoint.getLongitude())).build();
+                            CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, 100);
+                            mAMap.animateCamera(update);
+                            mAMap.setOnMapTouchListener(RunNaviWayFragment.this);
+
+                            changeRoute();
+
+//                    if (mAMap!=null) {
+//                            mAMap.getUiSettings().setAllGesturesEnabled(false);
+//                    }
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                },800);
+
+
             }else {
                 AMapNaviPath path = paths.get(ints[0]);
                 if (path != null) {
@@ -430,6 +496,11 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             case R.id.btn_start_route_navi:
                 ((ShowPosiActivity)getActivity()).requestRouteNavi();
                 break;
+
+            case R.id.tv_right:
+                mNaviChioceDialog.show();
+                break;
+
             default:
                 break;
 
@@ -604,10 +675,25 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         cleanLine();
         this.ints = ints;
         drawAgain();
+        mProgDialog.dismiss();
     }
 
     @Override
     public void onCalculateRouteSuccess() {
 
+    }
+
+
+    @Override
+    public void onChioceNaviStyle(boolean congestion, boolean avHighSpeed, boolean avCost, boolean highSpeed) {
+        mLocaionPro.setNaviStyle(congestion,avHighSpeed,avCost,highSpeed);
+        reCanLine();
+        mProgDialog.show();
+        mTvShowMsg.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mProgDialog.dismiss();
+            }
+        },6 * 1000);
     }
 }

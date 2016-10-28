@@ -12,5 +12,11 @@
     <string name="negiht">附件</string>
     <string name="kmile">公里</string>
     <string name="mile">米</string>
+    <string name="update_navi">更新路线</string>
+    <string name="navi_change_title">路线偏好</string>
+    <string name="congestion">躲避拥堵</string>
+    <string name="cost">避免收费</string>
+    <string name="hightspeed">高速优先</string>
+    <string name="avoidhightspeed">不走高速</string>
 
 </resources>

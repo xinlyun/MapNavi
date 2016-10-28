@@ -48,5 +48,5 @@ public interface ILocationProvider {
     void stopNavi();
     void startRouteNavi();
     void stopRouteNavi();
-
+    void setNaviStyle(boolean congestion, boolean avHighSpeed, boolean avCost, boolean highSpeed);
 }

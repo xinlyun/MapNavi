@@ -264,6 +264,7 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
         runNaviWayFragment.setPosiFromTo(fromPoint,toPoint);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.ll_show_fragment,runNaviWayFragment);
+        transaction.addToBackStack(null);
         transaction.commit();
     }
 

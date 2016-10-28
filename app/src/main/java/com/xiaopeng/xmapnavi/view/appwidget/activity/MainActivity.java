@@ -439,8 +439,8 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
         if (aMapLocation != null) {
             mCity = aMapLocation.getCity();
             if (aMap !=null && mWatchStyle!= WATCH_NORTH){
-                CameraUpdate update = CameraUpdateFactory.changeBearing(aMapLocation.getBearing());
-                aMap.animateCamera(update);
+//                CameraUpdate update = CameraUpdateFactory.changeBearing(aMapLocation.getBearing());
+//                aMap.animateCamera(update);
             }
         }
         if (mListener != null){
@@ -536,12 +536,20 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
 
     private void findMyPosi(){
         if (mLocationProvider!=null && mLocationProvider.getAmapLocation()!=null && aMap!=null){
+            int bear  = 0;
+            if (mWatchStyle == WATCH_3D)bear = 30;
             CameraUpdate update = CameraUpdateFactory.newCameraPosition(new CameraPosition(
-                    new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()),//新的中心点坐标
-                    18, //新的缩放级别
-                    30, //俯仰角0°~45°（垂直与地图时为0）
+                    new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude())
+//                    新的中心点坐标
+                    ,16, //新的缩放级别
+                    bear, //俯仰角0°~45°（垂直与地图时为0）
                     0  ////偏航角 0~360° (正北方为0)
             ));
+//            CameraPosition.Builder builder = CameraPosition.builder();
+//            builder.target(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
+//            CameraPosition position = builder.build();
+//            CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+
             aMap.animateCamera(update);
         }
     }
@@ -686,6 +694,7 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
         FragmentManager manager = getFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.add(R.id.ll_show_fragment,mSearchFragment);
+        transaction.addToBackStack(null);
         transaction.commit();
         mLocationProvider.removeNaviCalueListner(this);
     }
@@ -762,7 +771,7 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
 
 
     private boolean equalNavLat(LatLng latLon1,LatLng latLng2){
-        if ((latLng2.latitude == latLon1.latitude) && latLng2.longitude == latLon1.longitude){
+        if ((Math.abs(latLng2.latitude - latLon1.latitude) < 0.0012f) && (Math.abs(latLng2.longitude - latLon1.longitude) < 0.0012f)){
             return true;
         }else {
             return false;
@@ -873,13 +882,15 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
                     aMap.animateCamera(update0);
                     CameraUpdate update1 = CameraUpdateFactory.changeTilt(0);
                     aMap.animateCamera(update1);
+                    aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
                 }
                 break;
 
             case WATCH_2D:
                 if ( mLocationProvider!=null && mLocationProvider.getAmapLocation()!=null) {
-                    CameraUpdate update0 = CameraUpdateFactory.changeBearing(mLocationProvider.getAmapLocation().getBearing());
-                    aMap.animateCamera(update0);
+//                    CameraUpdate update0 = CameraUpdateFactory.changeBearing(mLocationProvider.getAmapLocation().getBearing());
+//                    aMap.animateCamera(update0);
+                    aMap.setMyLocationType(AMap.LOCATION_TYPE_MAP_ROTATE);
                 }
                 break;
 

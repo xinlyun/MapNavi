@@ -108,6 +108,9 @@ public class SearchPosiActivity  extends Activity implements XpSearchListner
 
             }
         });
+
+        findViewById(R.id.title_title).setOnClickListener(this);
+        findViewById(R.id.title_back).setOnClickListener(this);
     }
     /**
      * 方法必须重写
@@ -141,7 +144,8 @@ public class SearchPosiActivity  extends Activity implements XpSearchListner
         switch (view.getId()){
             case R.id.title_return:
 
-                finish();
+            case R.id.title_title:
+                getFragmentManager().popBackStack();
                 break;
 
             case R.id.pre_beginnavi:
