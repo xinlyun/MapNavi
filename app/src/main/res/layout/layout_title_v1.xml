@@ -4,6 +4,7 @@
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="100px">
     <TextView
+        android:textSize="35px"
         android:layout_weight="3"
         android:gravity="center"
         android:text="退出"
@@ -11,12 +12,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
     <TextView
+        android:textSize="35px"
         android:gravity="center"
         android:id="@+id/tv_title"
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
     <TextView
+        android:textSize="35px"
         android:id="@+id/tv_right"
         android:gravity="center"
         android:text="偏好"

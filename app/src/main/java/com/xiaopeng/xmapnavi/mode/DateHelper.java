@@ -18,7 +18,7 @@ import java.util.List;
 public class DateHelper implements IHistoryDateHelper {
     public static final int TYPE_NAME = 0,TYPE_POSI = 1,TYPE_WAY = 2 ;
     private XpHisDateListner mHistoryListner;
-    private static final long LENGTHST_TIME = 604800000;
+    private static final long LENGTHST_TIME = 604800000; // 7 * 24 * 60 * 60 *1000 一周时间
 
     @Override
     public void savePosiStr(String str) {
@@ -111,7 +111,6 @@ public class DateHelper implements IHistoryDateHelper {
                 hisItem.delete();
             }
             Message msg = callBackHandler.obtainMessage();
-            msg.what = 0;
             msg.obj = null;
             callBackHandler.sendMessage(msg);
         }
@@ -138,7 +137,6 @@ public class DateHelper implements IHistoryDateHelper {
                 }
             }
             Message msg = callBackHandler.obtainMessage();
-            msg.what = 0;
             msg.obj = rebackItems;
             callBackHandler.sendMessage(msg);
 

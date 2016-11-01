@@ -22,6 +22,9 @@ import java.util.List;
  * Created by linzx on 2016/10/12.
  */
 public interface ILocationProvider {
+    static final int REQUEST_INIT = 1;
+    static final int REQUEST_UPDATE = 0 ;
+
 
     void addLocationListener(XpLocationListener xpLocationListener);
     void removeLocationListener(XpLocationListener xpLocationListener);

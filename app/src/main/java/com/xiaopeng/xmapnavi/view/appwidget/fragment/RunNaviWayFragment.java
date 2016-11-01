@@ -49,7 +49,6 @@ import com.amap.api.services.route.WalkRouteResult;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
-import com.xiaopeng.xmapnavi.mode.NaviViewProvide;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
 import com.xiaopeng.xmapnavi.presenter.INaviViewProvide;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
@@ -176,6 +175,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         mBtnStartNavi       .setOnClickListener(this);
         findViewById(R.id.btn_start_route_navi).setOnClickListener(this);
         findViewById(R.id.tv_right).setOnClickListener(this);
+        findViewById(R.id.btn_exit).setOnClickListener(this);
         mBtnStartNavi.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -501,6 +501,9 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                 mNaviChioceDialog.show();
                 break;
 
+            case  R.id.btn_exit:
+                getActivity().finish();
+                break;
             default:
                 break;
 

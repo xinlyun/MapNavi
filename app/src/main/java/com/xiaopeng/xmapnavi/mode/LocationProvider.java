@@ -56,6 +56,8 @@ import java.util.List;
 
 /**
  * Created by linzx on 2016/10/12.
+ * 中央数据提供者
+ *
  */
 public class LocationProvider implements ILocationProvider,AMapLocationListener,AMapNaviListener
         ,PoiSearch.OnPoiSearchListener
@@ -91,6 +93,12 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     private long timeSave  = 0;
 
+
+    //---static useful object----//
+    private static final int QUEST_PAGE_SIZE = 10;
+    private static final int EMULATOR_NAVISPEED = 60;
+    //---------------------------//
+
     public static void init(Context context) {
         mContext = context;
         mLp      = new LocationProvider(context);
@@ -103,7 +111,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void addLocationListener(XpLocationListener xpLocationListener) {
         mListeners.add(xpLocationListener);
-        updateLoction.sendEmptyMessageDelayed(0,200);
+        updateLoction.sendEmptyMessageDelayed(REQUEST_UPDATE,200);
     }
 
     @Override
@@ -265,7 +273,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         aMapNavi.addAMapNaviListener(this);
         aMapNavi.addAMapNaviListener(ttsManager);
 
-        updateLoction.sendEmptyMessageDelayed(1,1000);
+        updateLoction.sendEmptyMessageDelayed(REQUEST_INIT,1000);
 
         mRoutePower = new RoutePower();
         mRoutePower .setXpRouteListner(this);
@@ -278,10 +286,10 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what){
-                case 0:
+                case REQUEST_UPDATE:
                     onLocationChanged(LocationProvider.this.mAmapLocation);
                     break;
-                case 1:
+                case REQUEST_INIT:
                     mAmapLocation = LocationSaver.getSaveLocation();
                     onLocationChanged(mAmapLocation);
                     break;
@@ -505,8 +513,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         AMapLocationClientOption mOption = new AMapLocationClientOption();
         mOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);//可选，设置定位模式，可选的模式有高精度、仅设备、仅网络。默认为高精度模式
         mOption.setGpsFirst(true);//可选，设置是否gps优先，只在高精度模式下有效。默认关闭
-        mOption.setHttpTimeOut(30000);//可选，设置网络请求超时时间。默认为30秒。在仅设备模式下无效
-        mOption.setInterval(30*1000);//可选，设置定位间隔。默认为2秒
+        mOption.setHttpTimeOut(30 *1000);//可选，设置网络请求超时时间。默认为30秒。在仅设备模式下无效
+        mOption.setInterval(30 * 1000);//可选，设置定位间隔。默认为2秒
         mOption.setNeedAddress(true);//可选，设置是否返回逆地理地址信息。默认是ture
         mOption.setOnceLocation(false);//可选，设置是否单次定位。默认是false
         mOption.setOnceLocationLatest(false);//可选，设置是否等待wifi刷新，默认为false.如果设置为true,会自动变为单次定位，持续定位时不要使用
@@ -524,7 +532,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
             cityCode = mAmapLocation.getCityCode();
         }
         PoiSearch.Query query  = new PoiSearch.Query(str, "", cityCode);
-        query.setPageSize(10);
+        query.setPageSize(QUEST_PAGE_SIZE); //设置10 页
         query.setPageNum(0);
 
         if (mPoiSearch == null) {
@@ -568,7 +576,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public boolean startNavi(int var1) {
         aMapNavi.stopAimlessMode();
-        aMapNavi.setEmulatorNaviSpeed(60);
+        aMapNavi.setEmulatorNaviSpeed(EMULATOR_NAVISPEED);
         return aMapNavi.startNavi(var1);
     }
 

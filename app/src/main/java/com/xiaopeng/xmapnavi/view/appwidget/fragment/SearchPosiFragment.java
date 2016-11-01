@@ -90,6 +90,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
         ((TextView)findViewById(R.id.title_title)).setText(R.string.search);
         mLvShowMsg = (ListView) findViewById(R.id.lv_show_tip_his);
         findViewById(R.id.title_return).setOnClickListener(this);
+        findViewById(R.id.title_title).setOnClickListener(this);
         findViewById(R.id.pre_beginnavi).setOnClickListener(this);
         mEtvSearch = (EditText) findViewById(R.id.prepare_edittext);
         mEtvSearch.addTextChangedListener(this);
@@ -142,8 +143,11 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
     @Override
     public void onClick(View view) {
         switch (view.getId()){
+            case R.id.title_title:
+                //down//
             case R.id.title_return:
-                ((MainActivity)getActivity()).exitFragment();
+//                ((MainActivity)getActivity()).exitFragment();
+                getFragmentManager().popBackStack();
                 break;
 
             case R.id.pre_beginnavi:
