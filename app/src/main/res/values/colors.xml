@@ -64,4 +64,7 @@
     <color name="transparent_01">#00000000</color>
 
     <color name="black_p50">#7f000000</color>
+
+    <color name="bg_color">#994ebeff</color>
+    <color name="bg_color_2">#4cde124d</color>
 </resources>

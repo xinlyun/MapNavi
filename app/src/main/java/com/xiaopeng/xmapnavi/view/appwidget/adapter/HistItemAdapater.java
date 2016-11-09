@@ -39,7 +39,11 @@ public class HistItemAdapater extends ArrayAdapter {
 
     @Override
     public int getCount() {
-        return hisItems.size() + 1;
+        if (hisItems.size()!=0) {
+            return hisItems.size() + 1;
+        }else {
+            return 0;
+        }
     }
 
     public void setDate(List<HisItem> hisItems){

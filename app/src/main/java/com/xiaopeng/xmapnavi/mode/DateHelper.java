@@ -5,8 +5,12 @@ import android.os.Message;
 
 import com.activeandroid.query.Select;
 import com.amap.api.services.core.PoiItem;
+import com.amap.api.services.route.RouteSearch;
+import com.xiaopeng.xmapnavi.bean.CollectItem;
 import com.xiaopeng.xmapnavi.bean.HisItem;
+import com.xiaopeng.xmapnavi.presenter.ICollectDateHelper;
 import com.xiaopeng.xmapnavi.presenter.IHistoryDateHelper;
+import com.xiaopeng.xmapnavi.presenter.callback.XpCollectListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpHisDateListner;
 
 import java.util.ArrayList;
@@ -15,9 +19,13 @@ import java.util.List;
 /**
  * Created by linzx on 2016/10/17.
  */
-public class DateHelper implements IHistoryDateHelper {
+public class DateHelper implements IHistoryDateHelper ,ICollectDateHelper {
+    private static final int HIS_BACK = 0;
+    private static final int COLLECT_BACK = 1;
+
     public static final int TYPE_NAME = 0,TYPE_POSI = 1,TYPE_WAY = 2 ;
     private XpHisDateListner mHistoryListner;
+    private XpCollectListener mCollectListener;
     private static final long LENGTHST_TIME = 604800000; // 7 * 24 * 60 * 60 *1000 一周时间
 
     @Override
@@ -56,6 +64,21 @@ public class DateHelper implements IHistoryDateHelper {
         new ClearHistory().start();
     }
 
+    @Override
+    public void setOnCollectListener(XpCollectListener listener) {
+        mCollectListener = listener;
+    }
+
+    @Override
+    public void getCollectItems() {
+        new ReadCollectDate().start();
+    }
+
+    @Override
+    public void saveCollect(String name, String desc, double poiLat, double poiLon) {
+        new SaveCollectThread(name,desc,poiLat,poiLon);
+    }
+
     class SaveThread extends Thread{
         String msg,path;
         PoiItem poiItem;
@@ -90,13 +113,49 @@ public class DateHelper implements IHistoryDateHelper {
             hisItem.save();
         }
     }
+    class SaveCollectThread extends  Thread{
+        private String name,desc;
+        private Double poiLat,poiLon;
+        SaveCollectThread(String name,String desc,double poiLat,double poiLon){
+            this.name =  name;
+            this.desc = desc;
+            this.poiLat = poiLat;
+            this.poiLon = poiLon;
+        }
+
+        @Override
+        public void run() {
+            super.run();
+            CollectItem collectItem = new CollectItem();
+            collectItem.pName = name;
+            collectItem.pDesc = desc;
+            collectItem.posLat = poiLat;
+            collectItem.posLon = poiLon;
+            collectItem.time = System.currentTimeMillis();
+            collectItem.save();
+        }
+    }
+
     Handler callBackHandler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            List<HisItem> hisItems = (List<HisItem>) msg.obj;
-            if (mHistoryListner != null){
-                mHistoryListner.onHistoryDate(hisItems);
+            switch (msg.what) {
+                case HIS_BACK: {
+                    List<HisItem> hisItems = (List<HisItem>) msg.obj;
+                    if (mHistoryListner != null) {
+                        mHistoryListner.onHistoryDate(hisItems);
+                    }
+                }
+                break;
+
+                case COLLECT_BACK:
+                    List<CollectItem> collectItems = (List<CollectItem>) msg.obj;
+                    if (mCollectListener!=null){
+                        mCollectListener.onCollectCallBack(collectItems);
+                    }
+                    break;
+
             }
         }
     };
@@ -111,6 +170,7 @@ public class DateHelper implements IHistoryDateHelper {
                 hisItem.delete();
             }
             Message msg = callBackHandler.obtainMessage();
+            msg.what = HIS_BACK;
             msg.obj = null;
             callBackHandler.sendMessage(msg);
         }
@@ -137,15 +197,36 @@ public class DateHelper implements IHistoryDateHelper {
                 }
             }
             Message msg = callBackHandler.obtainMessage();
+            msg.what = HIS_BACK;
             msg.obj = rebackItems;
             callBackHandler.sendMessage(msg);
 
         }
     }
 
+    class ReadCollectDate extends Thread{
+        @Override
+        public void run() {
+            super.run();
+            List<CollectItem> list = getCollectData();
+            Message msg  = callBackHandler.obtainMessage();
+            msg.what = COLLECT_BACK;
+            msg.obj = list;
+            callBackHandler.sendMessage(msg);
+        }
+    }
+
+
     public static List<HisItem> getHistoryMsg(){
         return new Select()
                 .from(HisItem.class)
+                .orderBy("time desc")
+                .execute();
+    }
+
+    public static List<CollectItem> getCollectData(){
+        return new Select()
+                .from(CollectItem.class)
                 .orderBy("time desc")
                 .execute();
     }

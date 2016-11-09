@@ -1,6 +1,7 @@
 package com.xiaopeng.xmapnavi.view.appwidget.activity;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
@@ -68,6 +69,7 @@ import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
 import com.xiaopeng.xmapnavi.utils.Utils;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.SearchPosiFragment;
+import com.xiaopeng.xmapnavi.view.appwidget.fragment.ShowCollectFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.ShowPosiFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.StereoView;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.TipPopWindow;
@@ -127,7 +129,8 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
     private EditText mEtvSearch;
     //Activity最外层的Layout视图
     private View activityRootView;
-    private SearchPosiFragment mSearchFragment;
+//    private SearchPosiFragment mSearchFragment;
+    private List<Fragment> mFragments;
     private Marker marker,mMarkerPoi;
     private PolylineOptions polylineOptions = new PolylineOptions();
 
@@ -144,6 +147,9 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
     //----//
     private ProgressDialog mProgDialog;
     private boolean isTraff = true;
+    private boolean isCanShow = false;//make the mTxShowPoiName can be show
+    private RelativeLayout mMainTitleLayout;
+    private TextView mTxShowPoiName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -160,8 +166,8 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
         screenHeight = this.getWindowManager().getDefaultDisplay().getHeight();
         //阀值设置为屏幕高度的1/5
         keyHeight = screenHeight/5;
+        mFragments = new ArrayList<>();
 
-        mSearchFragment = new SearchPosiFragment();
         LocationProvider.getInstence(this);
 
         mapView.postDelayed(new Runnable() {
@@ -270,6 +276,8 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
         mEtvSearch          .setImeOptions(EditorInfo.IME_ACTION_SEARCH);
         mTvSearch           = (TextView) findViewById(R.id.tx_search_start);
         mStvSearch          = (StereoView) findViewById(R.id.stv_search);
+        mMainTitleLayout    = (RelativeLayout) findViewById(R.id.main_title);
+        mTxShowPoiName      = (TextView) findViewById(R.id.tx_show_poi_name);
         mTipWindow          = new TipPopWindow(mEtvSearch);
         mDownLayout0        = (LinearLayout) findViewById(R.id.navistart_down_llayout3);
         mDownLayout1        = (LinearLayout) findViewById(R.id.layout_down);
@@ -288,6 +296,9 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
         mTipWindow          .setOnTipItemClickListener(this);
         findViewById(R.id.btn_begin_navi).setOnClickListener(this);
         findViewById(R.id.d3_dinwei).setOnClickListener(this);
+        findViewById(R.id.btn_zoom_plus).setOnClickListener(this);
+        findViewById(R.id.btn_zoom_jian).setOnClickListener(this);
+        findViewById(R.id.btn_exit_show).setOnClickListener(this);
         mProgDialog = new ProgressDialog(this);
         mProgDialog.setTitle("正在搜索数据");
         mProgDialog.setMessage("正在搜索相关信息....");
@@ -528,6 +539,24 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
                 changeWatchWay();
                 break;
 
+            case R.id.btn_zoom_plus:
+                if (aMap!=null) {
+                 aMap.animateCamera(CameraUpdateFactory.zoomIn());
+                }
+                break;
+
+            case R.id.btn_zoom_jian:
+
+                if (aMap!=null) {
+                    aMap.animateCamera(CameraUpdateFactory.zoomOut());
+                }
+                break;
+
+            case R.id.btn_exit_show:
+                mMainTitleLayout.setVisibility(View.VISIBLE);
+                mDownLayout1.setVisibility(View.GONE);
+                break;
+
             default:
                 break;
         }
@@ -693,18 +722,40 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
     private void startSearch(){
         FragmentManager manager = getFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-        transaction.add(R.id.ll_show_fragment,mSearchFragment);
-        transaction.addToBackStack(null);
+        SearchPosiFragment mSearchFragment = new SearchPosiFragment();
+        mFragments.add(mSearchFragment);
+        transaction.replace(R.id.ll_show_fragment,mSearchFragment);
+//        transaction.addToBackStack(null);
         transaction.commit();
-        mLocationProvider.removeNaviCalueListner(this);
+//        mLocationProvider.removeNaviCalueListner(this);
     }
 
-    public void exitFragment(){
+    public void showColloe(){
         FragmentManager manager = getFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
-        transaction.remove(mSearchFragment);
+        ShowCollectFragment mSearchFragment = new ShowCollectFragment();
+        mFragments.add(mSearchFragment);
+        transaction.replace(R.id.ll_show_fragment,mSearchFragment);
+//        transaction.addToBackStack(null);
         transaction.commit();
-        mLocationProvider.addNaviCalueListner(this);
+    }
+
+
+    public void exitFragment(){
+        if (mFragments.size()==0)return;
+        if (mFragments.size()==1) {
+            FragmentManager manager = getFragmentManager();
+            FragmentTransaction transaction = manager.beginTransaction();
+            transaction.remove(mFragments.remove(mFragments.size() - 1));
+            transaction.commit();
+        }else {
+            mFragments.remove(mFragments.size()-1);
+            FragmentManager manager = getFragmentManager();
+            FragmentTransaction transaction = manager.beginTransaction();
+            Fragment tFragment = mFragments.get(mFragments.size()-1);
+            transaction.replace(R.id.ll_show_fragment,tFragment);
+            transaction.commit();
+        }
 
     }
 
@@ -721,7 +772,13 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
         intent.putExtra(ACTION_NAVI_COMP,bundle);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         startActivity(intent);
-
+        if (mFragments.size()>0) {
+            FragmentManager manager = getFragmentManager();
+            FragmentTransaction transaction = manager.beginTransaction();
+            transaction.remove(mFragments.remove(mFragments.size() - 1));
+            transaction.commit();
+            mFragments .clear();
+        }
     }
 
 
@@ -742,6 +799,7 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
 
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
+
         if (marker!=null) {
             marker.setVisible(true);
         }
@@ -754,6 +812,14 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
             mDownLayout1.setVisibility(View.GONE);
             mDownLayout0.setVisibility(View.VISIBLE);
         }
+        if (mMainTitleLayout.getVisibility()== View.VISIBLE){
+            mMainTitleLayout.setVisibility(View.GONE);
+        }
+
+        if (mTxShowPoiName.getVisibility() == View.VISIBLE){
+            mTxShowPoiName.setVisibility(View.GONE);
+            isCanShow = false;
+        }
     }
 
     @Override
@@ -761,10 +827,19 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
         mLatLng = cameraPosition.target;
         marker.setVisible(false);
 
+        RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(cameraPosition.target.latitude,cameraPosition.target.longitude), 200, GeocodeSearch.AMAP);
+        geocodeSearch.getFromLocationAsyn(query);
         if (!equalNavLat(cameraPosition.target,new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude())) ){
             mMarkerPoi.setAnimation(scaleAnimation);
             mMarkerPoi.setVisible(true);
             mMarkerPoi.startAnimation();
+            isCanShow = true;
+            mTvPoiName.setText(getString(R.string.load_get_msg));
+        }else {
+            isCanShow = false;
+            mTxShowPoiName .setVisibility(View.GONE);
+            mMainTitleLayout.setVisibility(View.VISIBLE);
+
         }
     }
 
@@ -792,8 +867,10 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
     @Override
     public boolean onMarkerClick(Marker marker) {
         if (marker.getId() == mMarkerPoi.getId()) {
+            mTxShowPoiName.setVisibility(View.GONE);
+            isCanShow = false;
             LatLng latLng = mMarkerPoi.getPosition();
-            mTvPoiName.setText(getString(R.string.load_get_msg));
+
 
             int dis = (int) AMapUtils.calculateLineDistance(latLng,new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
             if (dis > 1000){
@@ -802,8 +879,7 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
                 mTvPoiDis.setText(""+dis+getString(R.string.mile));
             }
             mTvPoiStr.setText("");
-            RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(latLng.latitude,latLng.longitude), 200, GeocodeSearch.AMAP);
-            geocodeSearch.getFromLocationAsyn(query);
+
             mDownLayout0.setVisibility(View.GONE);
             mDownLayout1.setVisibility(View.VISIBLE);
             return true;
@@ -818,9 +894,16 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
             AoiItem aoiItem = address.getAois().get(0);
             mTvPoiName.setText(aoiItem.getAoiName());
             mTvPoiStr.setText(getUsefulInfo(address));
+            mTxShowPoiName.setText(aoiItem.getAoiName());
         }else {
             mTvPoiName.setText(getUsefulInfo(address));
+            mTxShowPoiName.setText(getUsefulInfo(address));
         }
+
+        if (isCanShow){
+            mTxShowPoiName.setVisibility(View.VISIBLE);
+        }
+
 
     }
 
@@ -891,6 +974,8 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
 //                    CameraUpdate update0 = CameraUpdateFactory.changeBearing(mLocationProvider.getAmapLocation().getBearing());
 //                    aMap.animateCamera(update0);
                     aMap.setMyLocationType(AMap.LOCATION_TYPE_MAP_ROTATE);
+                    CameraUpdate update1 = CameraUpdateFactory.changeTilt(0);
+                    aMap.animateCamera(update1);
                 }
                 break;
 

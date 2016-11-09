@@ -18,5 +18,19 @@
     <string name="cost">避免收费</string>
     <string name="hightspeed">高速优先</string>
     <string name="avoidhightspeed">不走高速</string>
+    <string name="exit">退出</string>
+    <string name="calue_navi">规划路线</string>
+    <string name="delete">删除</string>
+    <string name="collor_poi">收藏的点</string>
+    <string name="power_dong">充电桩</string>
+    <string name="collect_poi">收藏的点</string>
+    <string name="killmile_more">公里后</string>
+    <string name="mile_more">米后</string>
+    <string name="from">从</string>
+    <string name="into">进入</string>
+    <string name="hour">小时</string>
+    <string name="min">分钟</string>
+    <string name="need">剩余</string>
+    <string name="second">秒</string>
 
 </resources>

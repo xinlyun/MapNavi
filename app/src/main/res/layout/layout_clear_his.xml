@@ -6,6 +6,8 @@
     android:minHeight="131px"
     android:layout_height="131px">
     <TextView
+        android:textSize="35px"
+        android:textColor="@color/black"
         android:gravity="center"
         android:text="清除历史记录"
         android:layout_width="match_parent"

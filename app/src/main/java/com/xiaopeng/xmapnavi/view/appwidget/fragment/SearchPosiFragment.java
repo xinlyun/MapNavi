@@ -36,6 +36,8 @@ import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.MainActivity;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.HistItemAdapater;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.TipItemAdapter;
+import com.xiaopeng.xmapnavi.view.appwidget.selfview.DelSlideListView;
+import com.xiaopeng.xmapnavi.view.appwidget.selfview.OnDeleteListioner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,13 +48,14 @@ import java.util.List;
 public class SearchPosiFragment extends Fragment implements XpSearchListner
         ,View.OnClickListener,TextWatcher
         ,Inputtips.InputtipsListener,XpHisDateListner
-        ,XpNaviCalueListener ,OnClickRightItem{
+        ,XpNaviCalueListener ,OnClickRightItem
+        ,OnDeleteListioner{
     private static final String TAG = "SearchPosiFragment";
     private ILocationProvider mLocationProvider;
     private View rootView;
     private EditText mEtvSearch;
     private String mCity;
-    private ListView mLvShowMsg;
+    private DelSlideListView mLvShowMsg;
     private IHistoryDateHelper mDateHelper;
     private ProgressDialog mProgDialog;
     private List<HisItem> mHisItems;
@@ -61,6 +64,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
     private HistItemAdapater mHistAdapter;
     private AMapLocation mLocation;
     private float poiLat,poiLon;
+    private boolean isHistoryList = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,10 +92,12 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
 
     private void initView(){
         ((TextView)findViewById(R.id.title_title)).setText(R.string.search);
-        mLvShowMsg = (ListView) findViewById(R.id.lv_show_tip_his);
+        mLvShowMsg = (DelSlideListView) findViewById(R.id.lv_show_tip_his);
+        mLvShowMsg.setDeleteListioner(this);
         findViewById(R.id.title_return).setOnClickListener(this);
         findViewById(R.id.title_title).setOnClickListener(this);
         findViewById(R.id.pre_beginnavi).setOnClickListener(this);
+        findViewById(R.id.btn_go_collect).setOnClickListener(this);
         mEtvSearch = (EditText) findViewById(R.id.prepare_edittext);
         mEtvSearch.addTextChangedListener(this);
 
@@ -146,12 +152,16 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
             case R.id.title_title:
                 //down//
             case R.id.title_return:
-//                ((MainActivity)getActivity()).exitFragment();
-                getFragmentManager().popBackStack();
+                ((MainActivity)getActivity()).exitFragment();
+//                getFragmentManager().popBackStack();
                 break;
 
             case R.id.pre_beginnavi:
                 readyToSearch(mEtvSearch.getText().toString());
+                break;
+
+            case R.id.btn_go_collect:
+                ((MainActivity)getActivity()).showColloe();
                 break;
 
             default:
@@ -205,6 +215,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
             mTipAdapter.setDate(mTips);
             mLvShowMsg.setAdapter(mTipAdapter);
             mLvShowMsg.setOnItemClickListener(mItemTipClickListner);
+            isHistoryList = false;
         }
     }
 
@@ -216,6 +227,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
         mHistAdapter.setOnClickRightItem(this);
         mLvShowMsg.setAdapter(mHistAdapter);
         mLvShowMsg.setOnItemClickListener(mItemHisClickListner);
+        isHistoryList = true;
     }
 
     @Override
@@ -309,5 +321,25 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
                 }
             },6000);
         }
+    }
+
+    @Override
+    public boolean isCandelete(int position) {
+        if (!isHistoryList)return false;
+        if (position==mHisItems.size()) {
+            return false;
+        }else {
+            return true;
+        }
+    }
+
+    @Override
+    public void onDelete(int ID) {
+
+    }
+
+    @Override
+    public void onBack() {
+
     }
 }

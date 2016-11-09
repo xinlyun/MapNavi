@@ -2,26 +2,22 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_alignParentBottom="true"
-    android:layout_marginBottom="20px"
+    android:layout_marginTop="80px"
+    android:visibility="gone"
     android:orientation="horizontal"
-    android:layout_marginLeft="40px"
+    android:layout_marginLeft="100px"
     android:background="@drawable/navistart_down_llayout3_bg"
     android:id="@+id/layout_down"
-    android:visibility="gone"
-    android:layout_width="1000px"
-    android:layout_height="180px">
+    android:layout_width="880px"
+    android:layout_height="340px">
     <Button
-        android:id="@+id/btn_begin_navi"
-        android:textColor="@color/white"
-        android:textSize="60px"
-        android:text="@string/navi"
-        android:background="@color/blue"
-        android:layout_width="300px"
-        android:layout_height="match_parent" />
+        android:id="@+id/btn_exit_show"
+        android:text="@string/exit"
+        android:layout_width="150px"
+        android:layout_height="150px" />
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="500px"
+        android:layout_width="580px"
         android:layout_height="match_parent">
         <TextView
             android:id="@+id/tv_poi_name"
@@ -50,13 +46,26 @@
             android:layout_weight="2"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-
+        <Button
+            android:text="@string/calue_navi"
+            android:textSize="32px"
+            android:layout_marginLeft="100px"
+            android:layout_marginRight="100px"
+            android:textColor="@color/trans_black"
+            android:id="@+id/btn_begin_navi"
+            android:gravity="center"
+            android:singleLine="true"
+            android:layout_weight="1.8"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
     </LinearLayout>
     <LinearLayout
+
         android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="150px"
+        android:layout_height="150px">
         <Button
+            android:visibility="gone"
             android:text="@string/around"
             android:layout_weight="1"
             android:layout_width="match_parent"

@@ -31,7 +31,7 @@
             android:value="518079e13164d2910ff81c078e073bcd"/>
 
         <meta-data android:name="AA_DB_NAME" android:value="SearchInfo.db" />
-        <meta-data android:name="AA_DB_VERSION" android:value="2" />
+        <meta-data android:name="AA_DB_VERSION" android:value="3" />
 
 
         <!--android:configChanges="orientation|keyboardHidden|screenSize"-->

@@ -3,11 +3,13 @@ package com.xiaopeng.xmapnavi.presenter;
 import android.content.Context;
 
 import com.amap.api.location.AMapLocation;
+import com.amap.api.maps.offlinemap.OfflineMapManager;
 import com.amap.api.navi.model.AMapNaviPath;
 import com.amap.api.navi.model.NaviLatLng;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.poisearch.PoiResult;
+import com.xiaopeng.xmapnavi.presenter.callback.XpCollectListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviInfoListener;
@@ -43,8 +45,12 @@ public interface ILocationProvider {
     void addSensorListner(XpSensorListener xpSensorListener);
     void removeSensorListner(XpSensorListener xpSensorListener);
 
+    void setOfflineMapListner(OfflineMapManager.OfflineMapDownloadListener listner);
+
+
     void trySearchPosi(String str);
     void calueRunWay(List<NaviLatLng> startList, List<NaviLatLng> wayList, List<NaviLatLng> endList);
+    boolean tryCalueRunWay(List<NaviLatLng> endList);
     AMapNaviPath getNaviPath();
     HashMap<Integer,AMapNaviPath> getNaviPaths();
     AMapLocation getAmapLocation();
@@ -56,4 +62,5 @@ public interface ILocationProvider {
     void startRouteNavi();
     void stopRouteNavi();
     void setNaviStyle(boolean congestion, boolean avHighSpeed, boolean avCost, boolean highSpeed);
+    OfflineMapManager getOfflineMapManager();
 }

@@ -14,6 +14,7 @@
     </com.amap.api.maps.MapView>
 
     <RelativeLayout
+        android:id="@+id/main_title"
         android:background="@drawable/bg_navi_title"
         android:layout_width="match_parent"
         android:layout_height="93px">
@@ -114,8 +115,20 @@
         </com.xiaopeng.xmapnavi.view.appwidget.selfview.StereoView>
 
     </RelativeLayout>
-
+    <TextView
+        android:id="@+id/tx_show_poi_name"
+        android:gravity="center"
+        android:visibility="gone"
+        android:textColor="@color/white"
+        android:textSize="38px"
+        android:background="@drawable/bg_navi_title"
+        android:layout_marginLeft="80px"
+        android:layout_marginRight="80px"
+        android:layout_marginTop="93px"
+        android:layout_width="match_parent"
+        android:layout_height="100px" />
     <LinearLayout
+        android:visibility="gone"
         android:id="@+id/navistart_down_llayout3"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="20px"
@@ -233,11 +246,40 @@
         android:layout_width="94px"
         android:layout_height="94px" />
 
+    <Button
+        android:background="@drawable/dinwei_dra"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="38px"
+        android:layout_marginBottom="286px"
+        android:id="@+id/btn_zoom_plus"
+        android:text="+"
+        android:textSize="35px"
+        android:textColor="@color/black"
+        android:layout_width="94px"
+        android:layout_height="94px" />
+    <Button
+        android:textColor="@color/black"
+        android:text="-"
+        android:textSize="35px"
+        android:background="@drawable/dinwei_dra"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="38px"
+        android:layout_marginBottom="192px"
+        android:id="@+id/btn_zoom_jian"
+        android:layout_width="94px"
+        android:layout_height="94px" />
+
     <include layout="@layout/layout_down_title"
         />
     <FrameLayout
         android:id="@+id/ll_show_fragment"
         android:layout_width="match_parent"
+        android:layout_marginLeft="80px"
+        android:layout_marginRight="80px"
+        android:layout_marginTop="120px"
+        android:layout_marginBottom="50px"
         android:layout_height="match_parent"></FrameLayout>
 
 

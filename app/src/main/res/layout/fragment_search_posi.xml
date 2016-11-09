@@ -17,7 +17,7 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:background="@drawable/bg_prepare_input_edittext"
-            android:layout_width="785px"
+            android:layout_width="625px"
             android:layout_height="116px">
             <EditText
                 android:background="@null"
@@ -49,13 +49,34 @@
             android:layout_height="116px" />
 
     </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:background="@drawable/bg_activity_prepare_input"
+        android:layout_width="match_parent"
+        android:layout_height="150px">
+        <Button
+            android:id="@+id/btn_go_collect"
+            android:textSize="45px"
+            android:textColor="@color/white"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:text="@string/collor_poi"
+            android:layout_height="match_parent" />
 
-    <ListView
+        <Button
+            android:textSize="45px"
+            android:text="@string/power_dong"
+            android:textColor="@color/white"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+    <com.xiaopeng.xmapnavi.view.appwidget.selfview.DelSlideListView
         android:id="@+id/lv_show_tip_his"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </ListView>
+    </com.xiaopeng.xmapnavi.view.appwidget.selfview.DelSlideListView>
 
 
 </LinearLayout>

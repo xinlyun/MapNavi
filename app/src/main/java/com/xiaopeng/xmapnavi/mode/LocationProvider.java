@@ -1,5 +1,6 @@
 package com.xiaopeng.xmapnavi.mode;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -7,6 +8,8 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Handler;
 import android.os.Message;
+
+import com.amap.api.maps.offlinemap.OfflineMapManager;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import android.util.SparseArray;
 import android.widget.Toast;
@@ -43,6 +46,7 @@ import com.xiaopeng.amaplib.util.TTSController;
 import com.xiaopeng.xmapnavi.bean.LocationSaver;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
 import com.xiaopeng.xmapnavi.presenter.IRoutePower;
+import com.xiaopeng.xmapnavi.presenter.callback.XpCollectListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviInfoListener;
@@ -62,6 +66,7 @@ import java.util.List;
 public class LocationProvider implements ILocationProvider,AMapLocationListener,AMapNaviListener
         ,PoiSearch.OnPoiSearchListener
         ,XpRouteListener , SensorEventListener
+        , OfflineMapManager.OfflineMapDownloadListener
 {
     private static final String TAG = "LocationProvider";
     private static final String NAVI_TAG = "Lp_NaviMsg";
@@ -78,6 +83,9 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private static List<XpRouteListener> mRouteListeners;
     private static List<XpNaviInfoListener> mNaviInfoListners;
     private static List<XpSensorListener> mSensorListners;
+    private static List<XpCollectListener> mCollectListeners;
+    private OfflineMapManager.OfflineMapDownloadListener mMapDownListener;
+    private OfflineMapManager mDownMapManager;
     private PoiSearch mPoiSearch;
     private SensorManager manager;
     private boolean congestion = true, cost = false, hightspeed = false, avoidhightspeed = false;
@@ -186,6 +194,12 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     }
 
     @Override
+    public void setOfflineMapListner(OfflineMapManager.OfflineMapDownloadListener listner) {
+        mMapDownListener = listner;
+    }
+
+
+    @Override
     public void trySearchPosi(String str) {
         beginSearchAddr(str);
     }
@@ -216,6 +230,25 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     }
 
     @Override
+    public boolean tryCalueRunWay(List<NaviLatLng> endList) {
+        if (mAmapLocation==null)return false;
+        List<NaviLatLng> startList = new ArrayList<>();
+        startList.add(new NaviLatLng(mAmapLocation.getLatitude(),mAmapLocation.getLongitude()));
+        List<NaviLatLng> wayList = new ArrayList<>();
+        int strategyFlag = 0;
+        try {
+            strategyFlag = aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (strategyFlag >= 0) {
+            aMapNavi.calculateDriveRoute(startList, endList, wayList, strategyFlag);
+            LogUtils.d(TAG,"策略:" + strategyFlag);
+        }
+        return true;
+    }
+
+    @Override
     public AMapNaviPath getNaviPath() {
         AMapNaviPath path = aMapNavi.getNaviPath();
         AMapNaviStep step = path.getSteps().get(0);
@@ -239,12 +272,13 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     }
 
     private LocationProvider(Context context){
-        mListeners = new ArrayList<>();
-        mSearchListeners = new ArrayList<>();
+        mListeners          = new ArrayList<>();
+        mSearchListeners    = new ArrayList<>();
         mNaviCalueListeners = new ArrayList<>();
-        mRouteListeners = new ArrayList<>();
-        mNaviInfoListners = new ArrayList<>();
-        mSensorListners = new ArrayList<>();
+        mRouteListeners     = new ArrayList<>();
+        mNaviInfoListners   = new ArrayList<>();
+        mSensorListners     = new ArrayList<>();
+        mCollectListeners   = new ArrayList<>();
         if (mLocationClient == null) {
             mLocationClient = new AMapLocationClient(context.getApplicationContext());
             mLocationOption = getDefaultOption();
@@ -279,6 +313,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         mRoutePower .setXpRouteListner(this);
 
        manager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        mDownMapManager = new OfflineMapManager(context,this);
     }
 
     Handler updateLoction = new Handler(){
@@ -568,6 +603,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         return mPoiItem;
     }
 
+
     @Override
     public void selectRouteId(int id) {
         aMapNavi.selectRouteId(id);
@@ -599,6 +635,29 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
             listener.onAccuracyChanged(sensor,i);
         }
     }
+
+    /**
+     *
+     *  onDownload
+     *  onCheckUpdate
+     *  onRemove
+     */
+    //-----------
+    @Override
+    public void onDownload(int i, int i1, String s) {
+
+    }
+
+    @Override
+    public void onCheckUpdate(boolean b, String s) {
+
+    }
+
+    @Override
+    public void onRemove(boolean b, String s, String s1) {
+
+    }
+    //-------------
 
 
     class SaveThread extends Thread{
@@ -636,6 +695,11 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         this.avoidhightspeed = avHighSpeed;
         this.cost = avCost;
         this.hightspeed = highSpeed;
+    }
+
+    @Override
+    public OfflineMapManager getOfflineMapManager() {
+        return mDownMapManager;
     }
 
 
