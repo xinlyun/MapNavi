@@ -3,8 +3,11 @@ package com.xiaopeng.xmapnavi.view.appwidget.fragment;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ProviderInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -33,7 +36,8 @@ import com.xiaopeng.xmapnavi.presenter.callback.OnClickRightItem;
 import com.xiaopeng.xmapnavi.presenter.callback.XpHisDateListner;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
-import com.xiaopeng.xmapnavi.view.appwidget.activity.MainActivity;
+import com.xiaopeng.xmapnavi.view.appwidget.activity.BaseFuncActivityInteface;
+import com.xiaopeng.xmapnavi.view.appwidget.activity.ShowPosiActivity;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.HistItemAdapater;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.TipItemAdapter;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.DelSlideListView;
@@ -152,7 +156,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
             case R.id.title_title:
                 //down//
             case R.id.title_return:
-                ((MainActivity)getActivity()).exitFragment();
+                ((BaseFuncActivityInteface)getActivity()).exitFragment();
 //                getFragmentManager().popBackStack();
                 break;
 
@@ -161,7 +165,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
                 break;
 
             case R.id.btn_go_collect:
-                ((MainActivity)getActivity()).showColloe();
+                ((BaseFuncActivityInteface)getActivity()).startFragment(new ShowCollectFragment());
                 break;
 
             default:
@@ -234,10 +238,23 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
     public void searchSucceful() {
         mProgDialog.dismiss();
         mEtvSearch.setText("");
-        MainActivity activity = (MainActivity) getActivity();
-        activity.tryToShowPosi();
+        BaseFuncActivityInteface activity = (BaseFuncActivityInteface) getActivity();
+        tryToShowPosi();
         activity.exitFragment();
     }
+    private void tryToShowPosi(){
+        LogUtils.d(TAG,"searchSucceful");
+        if (mLocationProvider.getPoiResult() != null && mLocationProvider.getPoiResult().getPois().size()>=1){
+
+            Intent intent = new Intent(getActivity(),ShowPosiActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+
+            startActivity(intent);
+        } else if ( mLocationProvider.getPoiResult() == null  || mLocationProvider.getPoiResult().getPois().size() < 1){
+            Toast.makeText(getActivity(),"查无结果，请重试",Toast.LENGTH_LONG).show();
+        }
+    }
+
 
     private AdapterView.OnItemClickListener mItemHisClickListner = new AdapterView.OnItemClickListener() {
         @Override
@@ -290,9 +307,9 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
     public void onCalculateMultipleRoutesSuccess(int[] ints) {
         mProgDialog.dismiss();
         mEtvSearch.setText("");
-        MainActivity activity = (MainActivity) getActivity();
-        activity.haveCalueNaviSucceful(ints,poiLat,poiLon);
-        activity.exitFragment();
+//        BaseFuncActivityInteface activity = (BaseFuncActivityInteface) getActivity();
+//        activity.haveCalueNaviSucceful(ints,poiLat,poiLon);
+//        activity.exitFragment();
     }
 
     @Override

@@ -84,7 +84,7 @@ import java.util.TimerTask;
 
 import okhttp3.internal.Util;
 
-public class MainActivity extends Activity implements LocationSource,XpLocationListener,View.OnClickListener,TextWatcher
+public class MainActivity extends Activity implements BaseFuncActivityInteface,LocationSource,XpLocationListener,View.OnClickListener,TextWatcher
         ,View.OnFocusChangeListener, View.OnLayoutChangeListener
         ,Inputtips.InputtipsListener ,TipItemClickListener
         ,XpSearchListner ,AMap.OnMarkerDragListener
@@ -725,22 +725,10 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
         SearchPosiFragment mSearchFragment = new SearchPosiFragment();
         mFragments.add(mSearchFragment);
         transaction.replace(R.id.ll_show_fragment,mSearchFragment);
-//        transaction.addToBackStack(null);
-        transaction.commit();
-//        mLocationProvider.removeNaviCalueListner(this);
-    }
-
-    public void showColloe(){
-        FragmentManager manager = getFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-        ShowCollectFragment mSearchFragment = new ShowCollectFragment();
-        mFragments.add(mSearchFragment);
-        transaction.replace(R.id.ll_show_fragment,mSearchFragment);
-//        transaction.addToBackStack(null);
         transaction.commit();
     }
 
-
+    @Override
     public void exitFragment(){
         if (mFragments.size()==0)return;
         if (mFragments.size()==1) {
@@ -757,6 +745,34 @@ public class MainActivity extends Activity implements LocationSource,XpLocationL
             transaction.commit();
         }
 
+    }
+
+    @Override
+    public void shouldFinish() {
+        this.finish();
+    }
+
+    @Override
+    public void startAcitivity(Class<?> cls ,Bundle bundle) {
+        Intent intent = new Intent(this,cls);
+        if (bundle!=null){
+            intent.putExtras(bundle);
+        }
+        startActivity(intent);
+    }
+
+    @Override
+    public void startFragment(Fragment fragment) {
+        mFragments.add(fragment);
+        FragmentManager manager = getFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.ll_show_fragment,fragment);
+        transaction.commit();
+    }
+
+    @Override
+    public void startFragment(Class<?> cls) {
+        //TODO
     }
 
     public void haveCalueNaviSucceful(int[] ints,float posLat,float posLon){

@@ -17,7 +17,7 @@ import com.xiaopeng.xmapnavi.bean.CollectItem;
 import com.xiaopeng.xmapnavi.presenter.callback.XpCollectListener;
 import com.xiaopeng.xmapnavi.presenter.collect.IShowCollectPresenter;
 import com.xiaopeng.xmapnavi.presenter.collect.ShowCollectPresenter;
-import com.xiaopeng.xmapnavi.view.appwidget.activity.MainActivity;
+import com.xiaopeng.xmapnavi.view.appwidget.activity.BaseFuncActivityInteface;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.CollectShowAdapter;
 
 import java.util.List;
@@ -97,7 +97,7 @@ public class ShowCollectFragment extends Fragment implements View.OnClickListene
             case R.id.title_return:
                 //down
             case R.id.title_title:
-                ((MainActivity)getActivity()).exitFragment();
+                ((BaseFuncActivityInteface)getActivity()).exitFragment();
                 break;
 
         }
