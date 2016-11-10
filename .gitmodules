@@ -1,3 +1,6 @@
 [submodule "lib_utils"]
 	path = lib_utils
 	url = ssh://git@192.168.0.188:10022/Android_App/Lib_Utils.git
+[submodule "lib_bughunter"]
+	path = lib_bughunter
+	url = ssh://git@192.168.0.188:10022/Android_App/bughunter.git

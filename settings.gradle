@@ -1,1 +1,1 @@
-include ':app', ':amaplib',':ActiveAndroid',':MaterialDesign',':lib_utils'
+include ':app', ':amaplib',':MaterialDesign',':lib_utils',':lib_bughunter'

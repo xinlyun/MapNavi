@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
 
     package="com.xiaopeng.xmapnavi">
     <!--android:sharedUserId="android.uid.system"-->
@@ -30,8 +31,13 @@
             android:name="com.amap.api.v2.apikey"
             android:value="518079e13164d2910ff81c078e073bcd"/>
 
-        <meta-data android:name="AA_DB_NAME" android:value="SearchInfo.db" />
-        <meta-data android:name="AA_DB_VERSION" android:value="3" />
+        <meta-data android:name="AA_DB_NAME" android:value="SearchInfo.db"
+            tools:replace="android:value"/>
+        <meta-data android:name="AA_DB_VERSION" android:value="3" tools:replace="android:value"/>
+        <meta-data
+            android:name="AA_MODELS"
+            android:value="com.xiaopeng.xmapnavi.bean.CollectItem,com.xiaopeng.xmapnavi.bean.HisItem,com.xiaopeng.xmapnavi.bean.HistoryPosi,com.xiaopeng.xmapnavi.bean.LocationSaver"
+            tools:replace="android:value"/>
 
 
         <!--android:configChanges="orientation|keyboardHidden|screenSize"-->
