@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+
+import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -124,6 +126,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
     private View rootView;
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
         super.onCreate(savedInstanceState);
         mLocationPro    = LocationProvider.getInstence(this.getActivity());
         lp          = Utils.getLatLonFromLocation(mLocationPro.getAmapLocation());
@@ -209,6 +212,12 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
         initListView(this.getActivity());
         initMap();
         showResult();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        BugHunter.statisticsEnd(getActivity().getApplication(),BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
     }
 
     @Override

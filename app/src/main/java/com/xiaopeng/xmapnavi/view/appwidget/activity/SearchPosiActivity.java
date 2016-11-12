@@ -11,6 +11,8 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
+
+import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,6 +65,7 @@ public class SearchPosiActivity  extends Activity implements XpSearchListner
     private AMapLocation mLocation;
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
         super.onCreate(savedInstanceState);
         mLocationProvider = LocationProvider.getInstence(this);
         mLocation = mLocationProvider.getAmapLocation();
@@ -119,6 +122,7 @@ public class SearchPosiActivity  extends Activity implements XpSearchListner
     public void onResume() {
         super.onResume();
         mLocationProvider.addSearchListner(this);
+        BugHunter.statisticsEnd(getApplication(),BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
     }
 
     /**

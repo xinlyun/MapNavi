@@ -30,6 +30,7 @@ import com.xiaopeng.amaplib.amap.offlinemap.OfflineDownloadedAdapter;
 import com.xiaopeng.amaplib.amap.offlinemap.OfflineListAdapter;
 import com.xiaopeng.amaplib.amap.offlinemap.OfflinePagerAdapter;
 import com.xiaopeng.amaplib.amap.offlinemap.ToastUtil;
+import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
 
@@ -41,7 +42,7 @@ import java.util.List;
  */
 public class OfflineMapFragment extends Fragment implements
         OfflineMapManager.OfflineMapDownloadListener, View.OnClickListener, ViewPager.OnPageChangeListener {
-
+    private static final String TAG = "OfflineMapFragment";
     private OfflineMapManager amapManager = null;// 离线地图下载控制器
     private List<OfflineMapProvince> provinceList = new ArrayList<OfflineMapProvince>();// 保存一级目录的省直辖市
     private View rootView;
@@ -118,6 +119,7 @@ public class OfflineMapFragment extends Fragment implements
     };
 
     public void onCreate(Bundle savedInstanceState) {
+        BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
         super.onCreate(savedInstanceState);
 		/*
 		 * 设置离线地图存储目录，在下载离线地图或初始化地图设置; 使用过程中可自行设置, 若自行设置了离线地图存储的路径，
@@ -152,7 +154,7 @@ public class OfflineMapFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-
+        BugHunter.statisticsEnd(getActivity().getApplication(),BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
     }
 
     /**

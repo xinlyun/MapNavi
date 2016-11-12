@@ -39,6 +39,7 @@ import com.amap.api.navi.view.RouteOverLay;
 import com.autonavi.tbt.NaviStaticInfo;
 import com.autonavi.tbt.TrafficFacilityInfo;
 import com.xiaopeng.amaplib.util.TTSController;
+import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
@@ -64,6 +65,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	private CircleImageView mCivShow;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
 		super.onCreate(savedInstanceState);
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -137,6 +139,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		if (mTmap!=null) {
 			mTmap.onResume();
 		}
+		BugHunter.statisticsEnd(getApplication(),BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
 	}
 
 	@Override

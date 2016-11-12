@@ -16,6 +16,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+
+import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import android.view.MotionEvent;
 import android.view.View;
@@ -103,6 +105,7 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_posi);
 //        setDragEdge(SwipeBackLayout.DragEdge.LEFT);
@@ -302,6 +305,7 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
     protected void onResume() {
         super.onResume();
         mapView.onResume();
+        BugHunter.statisticsEnd(getApplication(),BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
     }
 
     @Override

@@ -10,12 +10,19 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.SpannableString;
 import android.text.TextWatcher;
+
+import com.amap.api.maps.Projection;
+import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.lib.utils.utils.LogUtils;
+
+import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -71,6 +78,7 @@ import com.xiaopeng.xmapnavi.utils.Utils;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.SearchPosiFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.ShowCollectFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.ShowPosiFragment;
+import com.xiaopeng.xmapnavi.view.appwidget.selfview.LineShowView;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.StereoView;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.TipPopWindow;
 import com.xiaopeng.xmapnavi.view.appwidget.services.LocationProService;
@@ -81,6 +89,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutionException;
 
 import okhttp3.internal.Util;
 
@@ -90,6 +99,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         ,XpSearchListner ,AMap.OnMarkerDragListener
         ,AMap.OnCameraChangeListener, AMap.OnMarkerClickListener
         ,GeocodeSearch.OnGeocodeSearchListener,XpNaviCalueListener
+        ,AMap.InfoWindowAdapter
 {
     public static final String TAG = "MainActivity";
     private static final String ACTION_SEARCH = "ACTION_SEARCH";
@@ -150,8 +160,12 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     private boolean isCanShow = false;//make the mTxShowPoiName can be show
     private RelativeLayout mMainTitleLayout;
     private TextView mTxShowPoiName;
+    private LineShowView mLsv;
+    private View mMarkInfoView;
+    private TextView mTxMarkTitle;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mLocationProvider    = LocationProvider.getInstence(this);
@@ -186,9 +200,13 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                         .icon(BitmapDescriptorFactory
                                 .fromResource(R.drawable.pre_list_img0))
                         .draggable(true));
+
+                mMarkerPoi.setTitle("title");
+                mMarkerPoi.setSnippet("snippet");
                 mMarkerPoi.setPositionByPixels(540,720);
                 mMarkerPoi.setAnchor(0.5f,1f);
                 mMarkerPoi.setVisible(false);
+                mMarkerPoi.setInfoWindowEnable(true);
                 scaleAnimation.setDuration(540);
                 mapView.getMap().setOnMarkerClickListener(MainActivity.this);
                 geocodeSearch = new GeocodeSearch(MainActivity.this);
@@ -236,6 +254,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             aMap.setMapType(AMap.MAP_TYPE_NAVI);
             // 初始化 显示我的位置的Marker
             aMap.setTrafficEnabled(isTraff);
+            aMap.setInfoWindowAdapter(this);
             myLocationMarker = aMap.addMarker(new MarkerOptions()
                     .icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
                             .decodeResource(getResources(), com.xiaopeng.amaplib.R.drawable.car))));
@@ -272,6 +291,8 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
      *  初始化View
      */
     private void initView(){
+
+        mLsv                = (LineShowView) findViewById(R.id.lsv_line);
         mEtvSearch          = (EditText) findViewById(R.id.edt_search);
         mEtvSearch          .setImeOptions(EditorInfo.IME_ACTION_SEARCH);
         mTvSearch           = (TextView) findViewById(R.id.tx_search_start);
@@ -312,6 +333,13 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
             }
         });
+        initMarkInfo();
+    }
+
+    private void initMarkInfo(){
+        mMarkInfoView       = getLayoutInflater().inflate(R.layout.layout_tip_show,null);
+        mTxMarkTitle        = (TextView) mMarkInfoView.findViewById(R.id.tx_tip_show);
+
     }
 
 
@@ -397,6 +425,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
         mLocationProvider   .addLocationListener(this);
         mLocationProvider.addSearchListner(this);
+        BugHunter.statisticsEnd(getApplication(),BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
     }
 
     /**
@@ -813,9 +842,21 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
     }
 
+    private void upDateLineTo(CameraPosition cameraPosition){
+        try{
+            LatLng mLatlon = new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude());
+            Projection projection = aMap.getProjection();
+            Point pM =  projection.toScreenLocation(mLatlon);
+//            Point pT = projection.toScreenLocation(cameraPosition.target);
+            mLsv.setPoint(pM);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
-
+        upDateLineTo(cameraPosition);
         if (marker!=null) {
             marker.setVisible(true);
         }
@@ -836,15 +877,20 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             mTxShowPoiName.setVisibility(View.GONE);
             isCanShow = false;
         }
+        if (mMarkerPoi!=null) {
+            mMarkerPoi.hideInfoWindow();
+        }
     }
 
     @Override
     public void onCameraChangeFinish(CameraPosition cameraPosition) {
+        upDateLineTo(cameraPosition);
         mLatLng = cameraPosition.target;
         marker.setVisible(false);
 
         RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(cameraPosition.target.latitude,cameraPosition.target.longitude), 200, GeocodeSearch.AMAP);
         geocodeSearch.getFromLocationAsyn(query);
+
         if (!equalNavLat(cameraPosition.target,new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude())) ){
             mMarkerPoi.setAnimation(scaleAnimation);
             mMarkerPoi.setVisible(true);
@@ -911,10 +957,14 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             mTvPoiName.setText(aoiItem.getAoiName());
             mTvPoiStr.setText(getUsefulInfo(address));
             mTxShowPoiName.setText(aoiItem.getAoiName());
+            mTxMarkTitle.setText(aoiItem.getAoiName());
+
         }else {
             mTvPoiName.setText(getUsefulInfo(address));
             mTxShowPoiName.setText(getUsefulInfo(address));
+            mTxMarkTitle.setText(getUsefulInfo(address));
         }
+        mMarkerPoi.showInfoWindow();
 
         if (isCanShow){
             mTxShowPoiName.setVisibility(View.VISIBLE);
@@ -1000,5 +1050,19 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                 aMap.animateCamera(update1);
                 break;
         }}
+    }
+
+
+    @Override
+    public View getInfoWindow(Marker marker) {
+        LogUtils.d(TAG,"getInfoWindow");
+        return mMarkInfoView;
+    }
+
+    @Override
+    public View getInfoContents(Marker marker)
+    {
+        LogUtils.d(TAG,"getInfoContents");
+        return mMarkInfoView;
     }
 }

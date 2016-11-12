@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/act_background"
+    android:layout_width="450px"
+    android:layout_height="200px"
+    >
+    <LinearLayout
+        android:orientation="horizontal"
+        android:background="@color/act_background"
+        android:layout_width="450px"
+        android:layout_height="150px">
+        <TextView
+            android:id="@+id/tx_tip_show"
+            android:textSize="28px"
+            android:textColor="@color/black"
+            android:gravity="center"
+            android:text="@string/loading_hard"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <Button
+            android:text="@string/navi"
+            android:textSize="25px"
+            android:layout_weight="3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+    <TextView
+        android:textSize="30px"
+        android:text="    "
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

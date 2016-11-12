@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.bean.CollectItem;
 import com.xiaopeng.xmapnavi.presenter.callback.XpCollectListener;
@@ -27,7 +28,7 @@ import java.util.List;
  */
 public class ShowCollectFragment extends Fragment implements View.OnClickListener
             ,XpCollectListener ,AdapterView.OnItemClickListener{
-
+    private static final String TAG = "ShowCollectFragment";
     private View rootView;
     private ListView mListView;
     private IShowCollectPresenter mPresenter;
@@ -36,6 +37,7 @@ public class ShowCollectFragment extends Fragment implements View.OnClickListene
     private ProgressDialog mProgDialog;
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
         super.onCreate(savedInstanceState);
         mPresenter = new ShowCollectPresenter(getActivity());
         mPresenter.init();
@@ -79,6 +81,12 @@ public class ShowCollectFragment extends Fragment implements View.OnClickListene
     public void onStart() {
         super.onStart();
         mPresenter.getCollect();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        BugHunter.statisticsEnd(getActivity().getApplication(),BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
     }
 
     private void initView(){

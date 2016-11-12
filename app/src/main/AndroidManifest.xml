@@ -36,7 +36,7 @@
         <meta-data android:name="AA_DB_VERSION" android:value="3" tools:replace="android:value"/>
         <meta-data
             android:name="AA_MODELS"
-            android:value="com.xiaopeng.xmapnavi.bean.CollectItem,com.xiaopeng.xmapnavi.bean.HisItem,com.xiaopeng.xmapnavi.bean.HistoryPosi,com.xiaopeng.xmapnavi.bean.LocationSaver"
+            android:value="com.xiaopeng.xmapnavi.bean.CollectItem,com.xiaopeng.xmapnavi.bean.HisItem,com.xiaopeng.xmapnavi.bean.HistoryPosi,com.xiaopeng.xmapnavi.bean.LocationSaver,com.xiaopeng.lib.bughunter.bean.CustomReportLocal"
             tools:replace="android:value"/>
 
 

@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
+import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -91,6 +92,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     private Marker mLocationMarker;
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
         super.onCreate(savedInstanceState);
         mLocationPro = LocationProvider.getInstence(getActivity());
         mAmap.setLocationSource(this);// 设置定位监听
@@ -119,6 +121,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     public void onResume() {
         super.onResume();
         mMapView.onResume();
+        BugHunter.statisticsEnd(getActivity().getApplication(),BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
     }
 
     @Nullable

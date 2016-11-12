@@ -46,6 +46,7 @@ import com.amap.api.services.route.DriveRouteResult;
 import com.amap.api.services.route.RideRouteResult;
 import com.amap.api.services.route.RouteSearch;
 import com.amap.api.services.route.WalkRouteResult;
+import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
@@ -138,6 +139,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     private ProgressDialog mProgDialog;
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
         super.onCreate(savedInstanceState);
         mLocaionPro = LocationProvider.getInstence(getActivity());
         mStartMarker = mAMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), com.xiaopeng.amaplib.R.drawable.start))));
@@ -164,6 +166,12 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         readNaviMsg();
 
         mLocaionPro.addNaviCalueListner(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        BugHunter.statisticsEnd(getActivity().getApplication(),BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
     }
 
     private void initView(){
