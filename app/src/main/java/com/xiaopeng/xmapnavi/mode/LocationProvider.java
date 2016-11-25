@@ -73,6 +73,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private TTSController ttsManager;
     private static Context mContext;
     private static ILocationProvider mLp;
+    private int[] mInts;
     private AMapNavi aMapNavi;
     private AMapLocationClient mLocationClient;
     private AMapLocationClientOption mLocationOption;
@@ -91,7 +92,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private boolean congestion = true, cost = false, hightspeed = false, avoidhightspeed = false;
 
     private SparseArray<RouteOverLay> routeOverlays = new SparseArray<RouteOverLay>();
-
+    private ISendNaviBroad mSendNaviBroad;
     //-Resume-//
     private PoiResult mPoiResult;
     private PoiItem mPoiItem;
@@ -100,7 +101,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private IRoutePower mRoutePower;
 
     private long timeSave  = 0;
-
+    private String saveSearchStr;
 
     //---static useful object----//
     private static final int QUEST_PAGE_SIZE = 10;
@@ -110,6 +111,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     public static void init(Context context) {
         mContext = context;
         mLp      = new LocationProvider(context);
+
     }
 
     public AMapLocation getAmapLocation() {
@@ -279,6 +281,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         mNaviInfoListners   = new ArrayList<>();
         mSensorListners     = new ArrayList<>();
         mCollectListeners   = new ArrayList<>();
+        mSendNaviBroad = new SendNaviBroad();
+        mSendNaviBroad  .initBroad(context);
         if (mLocationClient == null) {
             mLocationClient = new AMapLocationClient(context.getApplicationContext());
             mLocationOption = getDefaultOption();
@@ -453,6 +457,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         for (XpNaviInfoListener naviInfoListener:mNaviInfoListners){
             naviInfoListener.onNaviInfoUpdate(naviInfo);
         }
+        mSendNaviBroad.sendNaviMsg(naviInfo);
 
     }
 
@@ -495,6 +500,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void onCalculateMultipleRoutesSuccess(int[] ints) {
         LogUtils.d(NAVI_TAG,"onCalculateMultipleRoutesSuccess");
+        mInts = ints;
         mRoutePower.setPath(aMapNavi.getNaviPaths(),ints);
         for (XpNaviCalueListener listener:mNaviCalueListeners){
             listener.onCalculateMultipleRoutesSuccess(ints);
@@ -562,6 +568,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
      * @param str
      */
     private void beginSearchAddr(String str){
+        saveSearchStr = str;
         String cityCode = "";
         if (mAmapLocation != null){
             cityCode = mAmapLocation.getCityCode();
@@ -620,6 +627,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     public void stopNavi() {
         aMapNavi.stopNavi();
         aMapNavi.startAimlessMode(AimLessMode.CAMERA_AND_SPECIALROAD_DETECTED);
+        mSendNaviBroad.stopNavi();
     }
 
     @Override
@@ -698,8 +706,37 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     }
 
     @Override
+    public void reCalue() {
+        try {
+            aMapNavi.reCalculateRoute(aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, true));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public int[] getPathsInts() {
+        return mInts;
+    }
+
+    @Override
+    public NaviLatLng getNaviEndPoi() {
+        try {
+            return aMapNavi.getNaviPaths().get(mInts[0]).getEndPoint();
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
     public OfflineMapManager getOfflineMapManager() {
         return mDownMapManager;
+    }
+
+    @Override
+    public String getSearchStr() {
+        return saveSearchStr;
     }
 
 
@@ -712,6 +749,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
             listener.nearBy(pathId,stepNum,poiNum);
         }
     }
+
+
 
 
 

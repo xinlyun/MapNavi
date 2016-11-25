@@ -22,6 +22,7 @@
     <color name="darkgrey"> #C0C0C0</color>
     <color name="white"> #FFFFFF</color>
     <color name="red"> #FF0000</color>
+    <color name="line_grad">#cacaca</color>
     <color name="darkyellow"> #FFCC33</color>
 
     <color name="lucensy">#00000001</color>
@@ -64,7 +65,13 @@
     <color name="transparent_01">#00000000</color>
 
     <color name="black_p50">#7f000000</color>
-
+    <color name="black_p90">#ee000000</color>
+    <color name="black_p80">#ae000000</color>
     <color name="bg_color">#994ebeff</color>
     <color name="bg_color_2">#4cde124d</color>
+    <color name="first_text_color">#333333</color>
+    <color name= "a3a3a3">#a3a3a3</color>
+    <color name="text_blue">#4f9bfe</color>
+
+    <color name="line_red">#ff2222</color>
 </resources>

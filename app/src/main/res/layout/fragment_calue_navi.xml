@@ -2,40 +2,53 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_marginTop="-1000px"
+    <FrameLayout
+        android:paddingBottom="0px"
+        android:layout_marginLeft="3px"
+        android:layout_marginRight="3px"
+        android:paddingTop="5px"
+        android:paddingLeft="9px"
+        android:paddingRight="9px"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/shadowss"
         android:layout_width="match_parent"
-        android:layout_height="1340px">
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="1100px"></ListView>
+        android:layout_height="305px">
+        <!--<include layout="@layout/layout_title_v1"/>-->
+    <LinearLayout
+
+        android:background="@drawable/white_backgrouad"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="240px">
-            <LinearLayout
-                android:layout_weight="4"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <Button
-                    android:id="@+id/btn_start_navi"
-                    android:text="导航"
-                    android:layout_weight="1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-                <Button
-                    android:id="@+id/btn_start_route_navi"
-                    android:text="轻导航"
-                    android:layout_weight="1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+            android:layout_height="150px">
+            <Button
+                android:id="@+id/btn_exit"
+                android:text="x"
+                android:layout_width="88px"
+                android:layout_height="88px" />
+            <GridView
+                android:background="@color/trans_half_white"
+                android:id="@+id/gv_show_an"
 
-            </LinearLayout>
+                android:numColumns="auto_fit"
+                android:columnWidth="292px"
+                android:layout_width="888px"
+                android:layout_height="match_parent"></GridView>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="72px">
+
             <LinearLayout
-                android:layout_weight="1"
+
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -47,26 +60,150 @@
                 <!--android:layout_height="match_parent">-->
 
                 <!--</LinearLayout>-->
-                <GridView
-                    android:background="@color/trans_half_white"
-                    android:id="@+id/gv_show_an"
-                    android:layout_weight="1"
-                    android:numColumns="auto_fit"
-                    android:columnWidth="288px"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"></GridView>
+
                 <TextView
-                    android:gravity="center"
+                    android:textColor="@color/text_blue"
+                    android:layout_marginLeft="86px"
+                    android:textSize="22px"
+                    android:gravity="center_vertical|left"
                     android:id="@+id/tv_show_msg"
                     android:layout_weight="2"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="72px" />
+
             </LinearLayout>
 
 
         </LinearLayout>
+        <ImageView
+            android:background="@color/gray_btn_bg_pressed_color"
+            android:layout_width="match_parent"
+            android:layout_height="1px" />
+        <LinearLayout
 
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:gravity="center"
+                android:textColor="@color/text_blue"
+                android:id="@+id/btn_start_navi"
+                android:text="导航"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+            <ImageView
+                android:background="@color/gray_btn_bg_pressed_color"
+                android:layout_width="1px"
+                android:layout_height="match_parent" />
+            <TextView
+                android:gravity="center"
+                android:id="@+id/btn_start_route_navi"
+                android:text="轻导航"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
     </LinearLayout>
+    </FrameLayout>
+    <FrameLayout
 
-    <include layout="@layout/layout_title_v1"/>
+        android:background="@drawable/shadowss"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="315px"
+        android:layout_marginRight="3px"
+        android:layout_width="106px"
+        android:paddingTop="4px"
+        android:paddingLeft="9px"
+        android:paddingRight="9px"
+        android:paddingBottom="14px"
+        android:layout_height="196px">
+        <LinearLayout
+            android:background="@drawable/white_backgrouad"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+            <Button
+                android:background="@drawable/transparent"
+                android:id="@+id/btn_zoom_plus"
+                android:text="+"
+                android:textSize="45px"
+                android:textColor="@color/black"
+                android:layout_width="94px"
+                android:layout_height="94px" />
+            <ImageView
+                android:background="@color/gray_btn_bg_color"
+                android:layout_marginLeft="12px"
+                android:layout_marginRight="12px"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
+            <Button
+                android:textColor="@color/black"
+                android:text="--"
+                android:textSize="45px"
+                android:background="@drawable/transparent"
+                android:id="@+id/btn_zoom_jian"
+                android:layout_width="94px"
+                android:layout_height="94px" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <FrameLayout
+        android:background="@drawable/shadowss"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="2px"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="546px"
+        android:layout_width="108px"
+        android:layout_height="343px"
+        android:paddingLeft="9px"
+        android:paddingRight="9px"
+        android:paddingTop="4px"
+        android:paddingBottom="14px"
+        >
+        <LinearLayout
+            android:background="@drawable/white_backgrouad"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/btn_pianhao"
+                android:background="@drawable/text_trans_bg"
+                android:textSize="22px"
+                android:gravity="center"
+                android:textColor="@color/first_text_color"
+                android:text="@string/pianhao"
+                android:layout_width="match_parent"
+                android:layout_height="107px" />
+            <ImageView
+                android:background="@color/gray_btn_bg_color"
+                android:layout_marginLeft="12px"
+                android:layout_marginRight="12px"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
+            <TextView
+                android:background="@drawable/text_trans_bg"
+                android:textSize="22px"
+                android:gravity="center"
+                android:textColor="@color/first_text_color"
+                android:text="@string/way_poi"
+                android:layout_width="match_parent"
+                android:layout_height="107px" />
+            <ImageView
+                android:background="@color/gray_btn_bg_color"
+                android:layout_marginLeft="12px"
+                android:layout_marginRight="12px"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </FrameLayout>
 </RelativeLayout>

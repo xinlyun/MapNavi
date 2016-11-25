@@ -33,16 +33,17 @@
 
         <meta-data android:name="AA_DB_NAME" android:value="SearchInfo.db"
             tools:replace="android:value"/>
-        <meta-data android:name="AA_DB_VERSION" android:value="3" tools:replace="android:value"/>
+        <meta-data android:name="AA_DB_VERSION" android:value="4" tools:replace="android:value"/>
         <meta-data
             android:name="AA_MODELS"
-            android:value="com.xiaopeng.xmapnavi.bean.CollectItem,com.xiaopeng.xmapnavi.bean.HisItem,com.xiaopeng.xmapnavi.bean.HistoryPosi,com.xiaopeng.xmapnavi.bean.LocationSaver,com.xiaopeng.lib.bughunter.bean.CustomReportLocal"
+            android:value="com.xiaopeng.xmapnavi.bean.CollectItem,com.xiaopeng.xmapnavi.bean.HisItem,com.xiaopeng.xmapnavi.bean.HistoryPosi,com.xiaopeng.xmapnavi.bean.LocationSaver
+            ,com.xiaopeng.lib.bughunter.bean.CustomReportLocal,com.xiaopeng.xmapnavi.bean.WherePoi"
             tools:replace="android:value"/>
 
 
         <!--android:configChanges="orientation|keyboardHidden|screenSize"-->
         <activity android:name=".view.appwidget.activity.MainActivity"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:theme="@style/MyTheme"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
@@ -55,20 +56,26 @@
         </activity>
         <!--android:theme="@style/Theme.Swipe.Back.Second"-->
         <activity android:name=".view.appwidget.activity.ShowPosiActivity"
-            android:launchMode="singleInstance"
-
+            android:theme="@style/Theme.Swipe.Back"
             >
             </activity>
         <activity android:name=".view.appwidget.activity.RouteNaviActivity"
-            android:launchMode="singleInstance"
 
             >
         </activity>
         <activity android:name=".view.appwidget.activity.SearchPosiActivity"
-            android:launchMode="singleInstance"
             >
             </activity>
+        <activity android:name=".view.appwidget.activity.RadarNaviActivity"
 
+            >
+
+        </activity>
+        <activity android:name=".view.appwidget.activity.SearchCollectActivity"
+
+            >
+
+        </activity>
         <!-- 定位需要的服务 使用2.0的定位需要加上这个 -->
         <service android:name="com.amap.api.location.APSService" >
         </service>

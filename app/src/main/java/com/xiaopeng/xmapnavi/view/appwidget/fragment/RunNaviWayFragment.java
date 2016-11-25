@@ -38,6 +38,7 @@ import com.amap.api.maps.model.Polyline;
 import com.amap.api.navi.model.AMapNaviPath;
 import com.amap.api.navi.model.AMapNaviStep;
 import com.amap.api.navi.model.NaviLatLng;
+import com.amap.api.navi.model.NaviPath;
 import com.amap.api.navi.view.RouteOverLay;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.route.BusRouteResult;
@@ -129,12 +130,12 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     private GridView mGvShowNaviPaths;
     private TextView mTvShowMsg;
     private int[] ints;
-    private Button mBtnStartNavi;
+    private TextView mBtnStartNavi;
     MarkerOptions mOptions;
     long timeRe ;
     Bitmap bi;
     private List<RouteOverLay> deletLay = new ArrayList<>();
-
+    private AMapNaviPath pathx;
     private NaviChanDialog mNaviChioceDialog;
     private ProgressDialog mProgDialog;
     @Override
@@ -164,7 +165,6 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     public void onStart() {
         super.onStart();
         readNaviMsg();
-
         mLocaionPro.addNaviCalueListner(this);
     }
 
@@ -177,12 +177,12 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     private void initView(){
         mGvShowNaviPaths    = (GridView) findViewById(R.id.gv_show_an);
         mTvShowMsg          = (TextView) findViewById(R.id.tv_show_msg);
-        mBtnStartNavi       = (Button) findViewById(R.id.btn_start_navi);
+        mBtnStartNavi       = (TextView) findViewById(R.id.btn_start_navi);
 
         //--listener--//
         mBtnStartNavi       .setOnClickListener(this);
         findViewById(R.id.btn_start_route_navi).setOnClickListener(this);
-        findViewById(R.id.tv_right).setOnClickListener(this);
+        findViewById(R.id.btn_pianhao).setOnClickListener(this);
         findViewById(R.id.btn_exit).setOnClickListener(this);
         mBtnStartNavi.postDelayed(new Runnable() {
             @Override
@@ -214,7 +214,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     public void onStop() {
         super.onStop();
         mLocaionPro.removeNaviCalueListner(this);
-        mAMap.setOnMapTouchListener(null);
+//        mAMap.setOnMapTouchListener(null);
         if (mAMap!=null) {
             mAMap.getUiSettings().setAllGesturesEnabled(false);
         }
@@ -235,13 +235,9 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                             .include(new LatLng(toPoint.getLatitude(), toPoint.getLongitude())).build();
                     CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, 100);
                     mAMap.animateCamera(update);
-                    mAMap.setOnMapTouchListener(RunNaviWayFragment.this);
 
                     changeRoute();
 
-//                    if (mAMap!=null) {
-//                            mAMap.getUiSettings().setAllGesturesEnabled(false);
-//                    }
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -249,22 +245,31 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         },800);
 
         paths = mLocaionPro.getNaviPaths();
-
-        mAmapView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-//                HashMap<Integer, AMapNaviPath> paths = mLocaionPro.getNaviPaths();
-//                INaviViewProvide naviViewProvide = new NaviViewProvide(RunNaviWayFragment.this.getActivity());
-//                HashMap<Integer,View> viewHashMap = naviViewProvide.createViewByPath(paths);
-//                addViewWithViews(viewHashMap);
-                adapter = new NaviPathAdapter(getActivity(),R.layout.layout_gradview_item);
-                adapter.setDate(paths,ints);
-                mGvShowNaviPaths.setAdapter(adapter);
-                mGvShowNaviPaths.setOnItemClickListener(mClickPathItemListner);
-            }
-        },400);
-
-
+        pathx = mLocaionPro.getNaviPath();
+        if (ints!=null && paths!=null && paths.size() == ints.length) {
+//            mAmapView.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+            adapter = new NaviPathAdapter(getActivity(), R.layout.layout_gradview_item);
+            adapter.setDate(paths, ints);
+            mGvShowNaviPaths.setAdapter(adapter);
+            mGvShowNaviPaths.setOnItemClickListener(mClickPathItemListner);
+//                }
+//            }, 400);
+        }else if (pathx!=null){
+//            mAmapView.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+            adapter = new NaviPathAdapter(getActivity(), R.layout.layout_gradview_item);
+            HashMap<Integer,AMapNaviPath> pathHashMap = new HashMap<Integer, AMapNaviPath>();
+            pathHashMap.put(0,pathx);
+            int[] ints1 = new int[]{0};
+            adapter.setDate(pathHashMap, ints1);
+            mGvShowNaviPaths.setAdapter(adapter);
+            mGvShowNaviPaths.setOnItemClickListener(mClickPathItemListner);
+//                }
+//            }, 400);
+        }
         if (paths != null && paths.size() > 1 && ints != null){
             for (int i = 0; i < ints.length; i++) {
                 AMapNaviPath path = paths.get(ints[i]);
@@ -352,6 +357,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                     }
                 }
                 routeOverlays.get(routeID).setTransparency(1f);
+                routeOverlays.get(routeID).zoomToSpan();
                 /**
                  * 把用户选择的那条路的权值弄高，使路线高亮显示的同时，重合路段不会变的透明
                  **/
@@ -379,6 +385,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                             LogUtils.d(TAG,"ready to changeRoute \nfrom:"+fromPoint+"\n toPoint："+toPoint);
                             LatLngBounds bounds = LatLngBounds.builder().include(new LatLng(fromPoint.getLatitude(), fromPoint.getLongitude()))
                                     .include(new LatLng(toPoint.getLatitude(), toPoint.getLongitude())).build();
+
                             CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, 100);
                             mAMap.animateCamera(update);
                             mAMap.setOnMapTouchListener(RunNaviWayFragment.this);
@@ -439,6 +446,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             routeOverlays.get(key).setTransparency(0.4f);
         }
         routeOverlays.get(routeID).setTransparency(1f);
+        routeOverlays.get(routeID).zoomToSpan();
         /**
          * 把用户选择的那条路的权值弄高，使路线高亮显示的同时，重合路段不会变的透明
          **/
@@ -505,7 +513,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                 ((ShowPosiActivity)getActivity()).requestRouteNavi();
                 break;
 
-            case R.id.tv_right:
+            case R.id.btn_pianhao:
                 mNaviChioceDialog.show();
                 break;
 

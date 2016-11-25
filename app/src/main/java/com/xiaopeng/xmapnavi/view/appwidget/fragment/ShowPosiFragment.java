@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -116,7 +117,8 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
 //    private EditText mEtvReq;
     private ProgressDialog mProgDialog;
     private IHistoryDateHelper dateHelper;
-
+    private LinearLayout mLlExit;
+    private EditText mEdtShowSearch;
     public void setMapView(MapView mapView){
         mAmapView = mapView;
         mAMap = mAmapView.getMap();
@@ -150,6 +152,8 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
 
 
     private void initView(){
+        mLlExit         = (LinearLayout) findViewById(R.id.ll_exit);
+        mEdtShowSearch  = (EditText) findViewById(R.id.edt_show_search);
         mBtPull         = (Button) findViewById(R.id.btn_pull);
         mLlByPull       = (LinearLayout) findViewById(R.id.ll_search_layout);
         mHistoryLv      = (ListView) findViewById(R.id.prepare_listview);
@@ -171,6 +175,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
         });
 
         mBtPull .setOnTouchListener(this);
+        mLlExit         .setOnClickListener(this);
 
     }
     /**
@@ -212,6 +217,10 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
         initListView(this.getActivity());
         initMap();
         showResult();
+        String string = mLocationPro.getSearchStr();
+        if (string!=null){
+            mEdtShowSearch.setText(string);
+        }
     }
 
     @Override
@@ -289,6 +298,10 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
                 //down
             case R.id.title_title:
                 getFragmentManager().popBackStack();
+                break;
+
+            case R.id.ll_exit:
+                getActivity().finish();
                 break;
         }
     }
@@ -559,7 +572,9 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
             LogUtils.d(TAG,"onItemClick posi:"+poiItems);
 //            mAdapter.setIndex(i);
 //            ShowPosiActivity.this.onMarkerClick(poiOverlay.getMarker(i));
-            ShowPosiFragment.this.runMarkerChange(poiOverlay.getMarker(i),i);
+            if (poiOverlay!=null) {
+                ShowPosiFragment.this.runMarkerChange(poiOverlay.getMarker(i), i);
+            }
         }
     };
 

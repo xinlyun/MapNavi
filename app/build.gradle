@@ -16,7 +16,7 @@ android {
     signingConfigs {
         release {
             try {
-                storeFile file('/home/jenkins/.jenkins/workspace/xiaopeng_app_debug.keystore')
+                storeFile file('C:/Users/linzx/Documents/debug.keystore')
                 storePassword KEYSTORE_PASSWORD
                 keyAlias "androiddebugkey"
                 keyPassword KEY_PASSWORD
@@ -78,13 +78,14 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile project(':amaplib')
     compile project(':MaterialDesign')
-//    compile files('libs/bugly_crash_release.jar')
+    //    compile files('libs/bugly_crash_release.jar')
     compile files('libs/fastjson-1.2.2.jar')
     compile files('libs/okhttp-3.4.0-RC1.jar')
     compile files('libs/okio-1.6.0.jar')
     compile files('libs/universal-image-loader-1.9.5.jar')
     compile project(':lib_utils')
-    compile (project(':lib_bughunter'),{
+    compile 'com.github.wangjiegulu:ShadowViewHelper:1.0.1'
+    compile(project(':lib_bughunter'), {
         exclude group: 'com.google.code.gson'
 //        , module: 'gson-parent'
     })

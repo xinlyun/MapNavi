@@ -19,6 +19,9 @@ import android.text.SpannableString;
 import android.text.TextWatcher;
 
 import com.amap.api.maps.Projection;
+import com.amap.api.maps.model.Circle;
+import com.wangjie.shadowviewhelper.ShadowProperty;
+import com.wangjie.shadowviewhelper.ShadowViewHelper;
 import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 
@@ -67,18 +70,28 @@ import com.amap.api.services.geocoder.RegeocodeResult;
 import com.amap.api.services.help.Inputtips;
 import com.amap.api.services.help.InputtipsQuery;
 import com.amap.api.services.help.Tip;
+import com.xiaopeng.lib.utils.utils.UIUtils;
 import com.xiaopeng.xmapnavi.R;
+import com.xiaopeng.xmapnavi.bean.CollectItem;
+import com.xiaopeng.xmapnavi.bean.WherePoi;
+import com.xiaopeng.xmapnavi.mode.DateHelper;
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
+import com.xiaopeng.xmapnavi.presenter.ICollectDateHelper;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
+import com.xiaopeng.xmapnavi.presenter.IWhereDateHelper;
 import com.xiaopeng.xmapnavi.presenter.callback.TipItemClickListener;
+import com.xiaopeng.xmapnavi.presenter.callback.XpCollectListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
+import com.xiaopeng.xmapnavi.presenter.callback.XpWhereListener;
 import com.xiaopeng.xmapnavi.utils.Utils;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.SearchPosiFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.ShowCollectFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.ShowPosiFragment;
+import com.xiaopeng.xmapnavi.view.appwidget.selfview.CircleImageView;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.LineShowView;
+import com.xiaopeng.xmapnavi.view.appwidget.selfview.ShowCollectDialog;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.StereoView;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.TipPopWindow;
 import com.xiaopeng.xmapnavi.view.appwidget.services.LocationProService;
@@ -93,13 +106,12 @@ import java.util.concurrent.ExecutionException;
 
 import okhttp3.internal.Util;
 
-public class MainActivity extends Activity implements BaseFuncActivityInteface,LocationSource,XpLocationListener,View.OnClickListener,TextWatcher
-        ,View.OnFocusChangeListener, View.OnLayoutChangeListener
-        ,Inputtips.InputtipsListener ,TipItemClickListener
+public class MainActivity extends Activity implements BaseFuncActivityInteface,LocationSource,XpLocationListener,View.OnClickListener
         ,XpSearchListner ,AMap.OnMarkerDragListener
         ,AMap.OnCameraChangeListener, AMap.OnMarkerClickListener
         ,GeocodeSearch.OnGeocodeSearchListener,XpNaviCalueListener
-        ,AMap.InfoWindowAdapter
+        ,AMap.InfoWindowAdapter , XpCollectListener
+        ,ShowCollectDialog.CollectDialogListener
 {
     public static final String TAG = "MainActivity";
     private static final String ACTION_SEARCH = "ACTION_SEARCH";
@@ -108,11 +120,13 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     private static final String ACTION_NAVI_COMP = "ACTION_COMP";
     private static final String NAVI_MSG ="ints";
     private static final String NAVI_POI ="NAVI_POI";
+    private static final int REQUEST_FIND_HOME = 1;
+    private static final int REQUEST_FIND_COMPLETE = 0;
     private static final int WATCH_NORTH = 0;
     private static final int WATCH_2D = 1;
     private static final int WATCH_3D = 2;
-    private int[] IMG_WEK = {R.drawable.dialog_icon_00,R.drawable.dialog_icon_01,R.drawable.dialog_icon_02};
-
+    private int[] IMG_WEK = {R.drawable.icon_seewatch_2,R.drawable.icon_seewatch_1,R.drawable.icon_seewatch_0};
+    private String[] SEEWATCH_TEXT ;
 
     private int mWatchStyle = WATCH_NORTH;
     private String mSearchName ;
@@ -120,7 +134,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     private MapView mapView;
     private AMap aMap;
     private Marker myLocationMarker;
-    private TipPopWindow mTipWindow;
+//    private TipPopWindow mTipWindow;
     private OnLocationChangedListener mListener;
     // 是否需要跟随定位
     private boolean isNeedFollow = true;
@@ -134,12 +148,12 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     private int keyHeight = 0;
     private int screenHeight = 0;
     //View//
-    private TextView mTvSearch;
-    private StereoView mStvSearch;
-    private EditText mEtvSearch;
+//    private TextView mTvSearch;
+//    private StereoView mStvSearch;
+//    private EditText mEtvSearch;
     //Activity最外层的Layout视图
     private View activityRootView;
-//    private SearchPosiFragment mSearchFragment;
+    //    private SearchPosiFragment mSearchFragment;
     private List<Fragment> mFragments;
     private Marker marker,mMarkerPoi;
     private PolylineOptions polylineOptions = new PolylineOptions();
@@ -147,27 +161,46 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     private Polyline mPolyline;
     private ScaleAnimation scaleAnimation = new ScaleAnimation (0,1,0,1);
     private GeocodeSearch geocodeSearch;
-    private LinearLayout mDownLayout0,mDownLayout1;
+    private FrameLayout mDownLayout1;
 
     private TextView mTvPoiName,mTvPoiStr,mTvPoiDis;
-    private ImageView mImgBtnLukuang;
-    private ImageView mImgBtnSeeWay;
+//    private ImageView mImgBtnSeeWay;
 
     private LatLng mLatLng;
     //----//
     private ProgressDialog mProgDialog;
     private boolean isTraff = true;
     private boolean isCanShow = false;//make the mTxShowPoiName can be show
-    private RelativeLayout mMainTitleLayout;
-    private TextView mTxShowPoiName;
+//    private RelativeLayout mMainTitleLayout;
+//    private TextView mTxShowPoiName;
     private LineShowView mLsv;
     private View mMarkInfoView;
     private TextView mTxMarkTitle;
+//    private CircleImageView mCirIV;
+    private ShadowProperty mShadowPro ;
+
+    private DateHelper mCollectDateHelper;
+    private String poiName,poiDesc;
+    private ShowCollectDialog mCollectDialog;
+
+    private WherePoi mHome,mComplete;
+    private int height = 0 ;
+    private RelativeLayout mReleavieView;
+    private ImageView mIvShowTraffic;
+    private ImageView mIvSeeWatch;
+    private TextView mTxSeeWatch;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mCollectDateHelper = new DateHelper();
+        mCollectDateHelper.setOnCollectListener(this);
+        mCollectDateHelper.setOnWhereListener(mWhereListener);
+        mShadowPro = new ShadowProperty()
+                .setShadowColor(0x77000000)
+                .setShadowDy(0)
+                .setShadowRadius(UIUtils.dip2px(this,5));
         mLocationProvider    = LocationProvider.getInstence(this);
         mLocationProvider   .addNaviCalueListner(this);
         activityRootView = findViewById(R.id.root_layout);
@@ -187,6 +220,8 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         mapView.postDelayed(new Runnable() {
             @Override
             public void run() {
+                mCollectDialog = new ShowCollectDialog(MainActivity.this);
+                mCollectDialog .setCollectDialogListener(MainActivity.this);
                 FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) activityRootView.getLayoutParams();
                 LogUtils.d(TAG,"layoutparams width:"+layoutParams.width);
                 marker = aMap.addMarker(new MarkerOptions()
@@ -194,7 +229,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                                 .fromResource(R.drawable.amap_car))
                         .draggable(true));
                 marker.setPositionByPixels(540,720);
-                marker.setAnchor(0.5f,0.5f);
+                marker.setAnchor(0.5f,1f);
 
                 mMarkerPoi = aMap.addMarker(new MarkerOptions()
                         .icon(BitmapDescriptorFactory
@@ -213,7 +248,11 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                 geocodeSearch.setOnGeocodeSearchListener(MainActivity.this);
             }
         },1000);
-
+        SEEWATCH_TEXT = new String[]{
+                getResources().getString(R.string.watch_north),
+                getResources().getString(R.string.watch_follow),
+                getResources().getString(R.string.watch_3d)
+        };
     }
 
 
@@ -225,10 +264,9 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         mLocationProvider    = LocationProvider.getInstence(this);
 
 //        mLocationProvider   .addSearchListner(this);
-        activityRootView    .addOnLayoutChangeListener(this);
 
         mapView.setVisibility(View.VISIBLE);
-
+        mCollectDateHelper.getWhereItems();
     }
 
 
@@ -237,10 +275,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     @Override
     protected void onStop() {
         super.onStop();
-//        mLocationProvider   .removeLocationListener(this);
         mLocationProvider   .removeNaviCalueListner(this);
-//        mLocationProvider   = null;
-        activityRootView    .removeOnLayoutChangeListener(this);
         mapView.setVisibility(View.GONE);
 
     }
@@ -262,7 +297,8 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             settings.setTiltGesturesEnabled(false);
             settings.setRotateGesturesEnabled(false);
             aMap.setLocationSource(this);// 设置定位监听
-            aMap.getUiSettings().setMyLocationButtonEnabled(true);// 设置默认定位按钮是否显示
+            aMap.getUiSettings().setMyLocationButtonEnabled(false);// 设置默认定位按钮是否显示
+            aMap.getUiSettings().setZoomControlsEnabled(false);
             aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
             // 设置定位的类型为定位模式 ，可以由定位、跟随或地图根据面向方向旋转几种
             aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
@@ -272,7 +308,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                     CameraUpdate update = CameraUpdateFactory.zoomTo(15);
                     aMap.animateCamera(update);
                 }
-            },2000);
+            },800);
             aMap.setOnMarkerDragListener(this);
             aMap.setOnCameraChangeListener(this);
             polylineOptions = new PolylineOptions();
@@ -291,41 +327,52 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
      *  初始化View
      */
     private void initView(){
-
+//        mCirIV              = (CircleImageView) findViewById(R.id.civ_all_big);
+        mReleavieView       = (RelativeLayout) findViewById(R.id.all_view_relati_view);
         mLsv                = (LineShowView) findViewById(R.id.lsv_line);
-        mEtvSearch          = (EditText) findViewById(R.id.edt_search);
-        mEtvSearch          .setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-        mTvSearch           = (TextView) findViewById(R.id.tx_search_start);
-        mStvSearch          = (StereoView) findViewById(R.id.stv_search);
-        mMainTitleLayout    = (RelativeLayout) findViewById(R.id.main_title);
-        mTxShowPoiName      = (TextView) findViewById(R.id.tx_show_poi_name);
-        mTipWindow          = new TipPopWindow(mEtvSearch);
-        mDownLayout0        = (LinearLayout) findViewById(R.id.navistart_down_llayout3);
-        mDownLayout1        = (LinearLayout) findViewById(R.id.layout_down);
+        mIvShowTraffic      = (ImageView) findViewById(R.id.iv_show_traffic);
+        mIvSeeWatch         = (ImageView) findViewById(R.id.iv_seewatch);
+        mTxSeeWatch         = (TextView) findViewById(R.id.tx_seewatch);
+//        mEtvSearch          = (EditText) findViewById(R.id.edt_search);
+//        mEtvSearch          .setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+//        mTvSearch           = (TextView) findViewById(R.id.tx_search_start);
+//        mStvSearch          = (StereoView) findViewById(R.id.stv_search);
+//        mMainTitleLayout    = (RelativeLayout) findViewById(R.id.main_title);
+//        mTxShowPoiName      = (TextView) findViewById(R.id.tx_show_poi_name);
+//        mTxShowPoiName      . setOnClickListener(this);
+//        mTipWindow          = new TipPopWindow(mEtvSearch);
+//        mDownLayout0        = (LinearLayout) findViewById(R.id.navistart_down_llayout3);
+        mDownLayout1        = (FrameLayout) findViewById(R.id.layout_down);
         mTvPoiName          = (TextView) findViewById(R.id.tv_poi_name);
         mTvPoiStr           = (TextView) findViewById(R.id.tv_poi_str);
         mTvPoiDis           = (TextView) findViewById(R.id.tv_poi_dis);
-        mImgBtnLukuang      = (ImageView) findViewById(R.id.d3_lukuang);
-        mImgBtnSeeWay       = (ImageView) findViewById(R.id.d3_setting);
+//        mImgBtnLukuang      = (ImageView) findViewById(R.id.d3_lukuang);
+//        mImgBtnSeeWay       = (ImageView) findViewById(R.id.d3_setting);
 
         //--listener--//
-        mImgBtnLukuang      .setOnClickListener(this);
-        mTvSearch           .setOnClickListener(this);
-        mImgBtnSeeWay       .setOnClickListener(this);
-        mEtvSearch          .addTextChangedListener(this);
-        mEtvSearch          .setOnFocusChangeListener(this);
-        mTipWindow          .setOnTipItemClickListener(this);
+//        mImgBtnLukuang      .setOnClickListener(this);
+//        mTvSearch           .setOnClickListener(this);
+//        mImgBtnSeeWay       .setOnClickListener(this);
+
+//        mEtvSearch          .addTextChangedListener(this);
+//        mEtvSearch          .setOnFocusChangeListener(this);
+//        mTipWindow          .setOnTipItemClickListener(this);
+        findViewById(R.id.d3_setting).setOnClickListener(this);
+        findViewById(R.id.d3_lukuang).setOnClickListener(this);
         findViewById(R.id.btn_begin_navi).setOnClickListener(this);
+        findViewById(R.id.civ_all_big).setOnClickListener(this);
         findViewById(R.id.d3_dinwei).setOnClickListener(this);
         findViewById(R.id.btn_zoom_plus).setOnClickListener(this);
         findViewById(R.id.btn_zoom_jian).setOnClickListener(this);
         findViewById(R.id.btn_exit_show).setOnClickListener(this);
+        findViewById(R.id.icon_open_collect).setOnClickListener(this);
+        findViewById(R.id.tx_goto_complete).setOnClickListener(this);
+        findViewById(R.id.tx_goto_home).setOnClickListener(this);
+        findViewById(R.id.btn_collect).setOnClickListener(this);
         mProgDialog = new ProgressDialog(this);
         mProgDialog.setTitle("正在搜索数据");
         mProgDialog.setMessage("正在搜索相关信息....");
         mProgDialog.setCancelable(true);
-
-
         //----init listener ---//
         mProgDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
@@ -339,7 +386,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     private void initMarkInfo(){
         mMarkInfoView       = getLayoutInflater().inflate(R.layout.layout_tip_show,null);
         mTxMarkTitle        = (TextView) mMarkInfoView.findViewById(R.id.tx_tip_show);
-
+        mTxMarkTitle        .setOnClickListener(this);
     }
 
 
@@ -355,7 +402,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        hideKeyboard(mEtvSearch);
+//                        hideKeyboard(mEtvSearch);
                         // 按下屏幕
                         // 如果timer在执行，关掉它
                         clearTimer();
@@ -379,15 +426,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         });
 
     }
-    //隐藏虚拟键盘
-    public static void hideKeyboard(View v)
-    {
-        InputMethodManager imm = ( InputMethodManager ) v.getContext( ).getSystemService( Context.INPUT_METHOD_SERVICE );
-        if ( imm.isActive( ) ) {
-            imm.hideSoftInputFromWindow( v.getApplicationWindowToken( ) , 0 );
 
-        }
-    }
 
     /**
      * 取消timer任务
@@ -479,8 +518,6 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         if (aMapLocation != null) {
             mCity = aMapLocation.getCity();
             if (aMap !=null && mWatchStyle!= WATCH_NORTH){
-//                CameraUpdate update = CameraUpdateFactory.changeBearing(aMapLocation.getBearing());
-//                aMap.animateCamera(update);
             }
         }
         if (mListener != null){
@@ -495,65 +532,16 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
     @Override
     public void searchSucceful() {
-
-        mTipWindow.dismiss();
-        tryToShowPosi();
     }
-    public void tryToShowPosi(){
-        if (!handler.hasMessages(0)){
-            handler.sendEmptyMessageDelayed(0,10);
-        }
-    }
-    Handler handler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            LogUtils.d(TAG,"searchSucceful");
-            if (mStvSearch != null){
-                if (mLocationProvider.getPoiResult() != null && mLocationProvider.getPoiResult().getPois().size()>=1){
-
-                    Intent intent = new Intent(MainActivity.this,ShowPosiActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                    intent.putExtra(ACTION_SEARCH,REQ_HAVE_RESULT);
-                    intent.putExtra(ACTION_MSG,mSearchName);
-                    startActivity(intent);
-                } else if ( mLocationProvider.getPoiResult() == null  || mLocationProvider.getPoiResult().getPois().size() < 1){
-                    Toast.makeText(MainActivity.this,"查无结果，请重试",Toast.LENGTH_LONG).show();
-                }
-            }
-        }
-    };
 
 
     @Override
     public void onClick(View view) {
         switch (view.getId()){
-            case R.id.tx_search_start:
-//                mStvSearch.setFocusable(false);
-//                mStvSearch.setFocusableInTouchMode(false);
-//
-//                mEtvSearch.setFocusable(true);
-//                mEtvSearch.setFocusableInTouchMode(true);
-//                mEtvSearch.requestFocus();
-//                mEtvSearch.findFocus();
-
-                startSearch();
-
-//                Intent intent = new Intent(this,SearchPosiActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-//                startActivity(intent);
-//                finish();
-                break;
 
             case R.id.btn_begin_navi:
                 mProgDialog.show();
                 startCalueNavi();
-                mDownLayout0.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mProgDialog.dismiss();
-                    }
-                },6 * 1000);
                 break;
 
             case R.id.d3_dinwei:
@@ -570,7 +558,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
             case R.id.btn_zoom_plus:
                 if (aMap!=null) {
-                 aMap.animateCamera(CameraUpdateFactory.zoomIn());
+                    aMap.animateCamera(CameraUpdateFactory.zoomIn());
                 }
                 break;
 
@@ -582,13 +570,79 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                 break;
 
             case R.id.btn_exit_show:
-                mMainTitleLayout.setVisibility(View.VISIBLE);
                 mDownLayout1.setVisibility(View.GONE);
+                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mReleavieView.getLayoutParams();
+                layoutParams.height = height;
+                mReleavieView.setLayoutParams(layoutParams);
+                break;
+
+            case R.id.icon_open_collect:
+
+                openCollect();
+                break;
+
+//            case R.id.tx_show_poi_name:
+//                collectThePoi();
+//                break;
+
+            case R.id.civ_all_big:
+                startSearch();
+                break;
+
+            case R.id.tx_goto_complete:
+                clickComplete();
+                break;
+
+            case R.id.tx_goto_home:
+                clickHome();
+                break;
+
+            case R.id.tx_tip_show:
+                if (mDownLayout1.getVisibility()== View.GONE) {
+                    mDownLayout1.setVisibility(View.VISIBLE);
+                    RelativeLayout.LayoutParams layoutParams2 = (RelativeLayout.LayoutParams) mReleavieView.getLayoutParams();
+                    height = layoutParams2.height;
+                    layoutParams2.height = 1100;
+                    mReleavieView.setLayoutParams(layoutParams2);
+                }
+                break;
+
+            case R.id.btn_collect:
+                collectThePoi();
                 break;
 
             default:
                 break;
         }
+    }
+
+    private void clickComplete(){
+        if (mComplete==null) {
+            startActivityForResult(new Intent(this, SearchCollectActivity.class), REQUEST_FIND_COMPLETE);
+        }else {
+            mLatLng = new LatLng(mComplete.posLat,mComplete.posLon);
+            mProgDialog.show();
+            startCalueNavi();
+        }
+    }
+
+    private void clickHome(){
+        if (mHome==null) {
+            startActivityForResult(new Intent(this, SearchCollectActivity.class), REQUEST_FIND_HOME);
+        }else {
+            mLatLng = new LatLng(mHome.posLat,mHome.posLon);
+            mProgDialog.show();
+            startCalueNavi();
+        }
+    }
+
+    private void collectThePoi(){
+        mCollectDateHelper.saveCollect(poiName,poiDesc,mLatLng.latitude,mLatLng.longitude);
+    }
+
+
+    private void openCollect(){
+        mCollectDateHelper.getCollectItems();
     }
 
 
@@ -613,6 +667,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     }
 
     private void startCalueNavi(){
+        LogUtils.d(TAG,"startCalueNavi");
         mLocationProvider.removeNaviCalueListner(this);
         mLocationProvider.addNaviCalueListner(this);
         List<NaviLatLng> startPoi = new ArrayList<>();
@@ -623,130 +678,23 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         mLocationProvider.calueRunWay(startPoi,wayPoi,endPoi);
     }
 
-    @Override
-    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-    }
-
-    @Override
-    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        String newText = charSequence.toString().trim();
-        if (newText.length()>1) {
-            InputtipsQuery inputquery = new InputtipsQuery(newText, mCity);
-            inputquery.setCityLimit(true);
-            Inputtips inputTips = new Inputtips(MainActivity.this, inputquery);
-            inputTips.setInputtipsListener(this);
-            inputTips.requestInputtipsAsyn();
-        }else {
-            mTipWindow.dismiss();
-        }
-    }
-
-    @Override
-    public void afterTextChanged(Editable editable) {
-
-    }
-
-    @Override
-    public void onFocusChange(View view, boolean b) {
-        if (view.getId() == R.id.edt_search){
-            if (b){
-
-                view.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        ((InputMethodManager)MainActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE)).showSoftInput(mEtvSearch,InputMethodManager.SHOW_FORCED);
-                    }
-                },200);
-
-                if (mStvSearch.getCurScreen() == 1){
-                    mStvSearch.toNext();
-                }
-            }else {
-                if (mStvSearch.getCurScreen() != 1){
-                    mStvSearch.toPre();
-                }
-            }
-        }
-    }
-
-    @Override
-    public void  onLayoutChange(View v, int left, int top, int right,
-                                int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-        if(oldBottom != 0 && bottom != 0 &&(oldBottom - bottom > keyHeight)){
-
-//            Toast.makeText(MainActivity.this, "监听到软键盘弹起...", Toast.LENGTH_SHORT).show();
-
-        }else if(oldBottom != 0 && bottom != 0 &&(bottom - oldBottom > keyHeight)){
-
-//            Toast.makeText(MainActivity.this, "监听到软件盘关闭...", Toast.LENGTH_SHORT).show();
-
-            if (mEtvSearch!=null && mStvSearch != null){
-                mEtvSearch.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mEtvSearch.setFocusable(false);
-                        mEtvSearch.setFocusableInTouchMode(false);
-                        if (mStvSearch.getCurScreen() == 2){
-                            mStvSearch.toPre();
-                        }
-                        mEtvSearch.setText("");
-                    }
-                },200);
-
-            }
-        }
-    }
 
 
-    @Override
-    public void onGetInputtips(List<Tip> tipList, int index) {
-        List<HashMap<String, String>> listString = new ArrayList<HashMap<String, String>>();
-        for (int i = 0; i < tipList.size(); i++) {
-            HashMap<String, String> map = new HashMap<String, String>();
-            map.put("name", tipList.get(i).getName());
-            map.put("address", tipList.get(i).getDistrict());
-            listString.add(map);
-        }
-        if (mTipWindow != null){
-            mTipWindow.setData(listString);
-            mTipWindow .show();
-        }
 
-    }
+
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if(event.getKeyCode() == KeyEvent.KEYCODE_ENTER){
             /*隐藏软键盘*/
-            hideKeyboard(mEtvSearch);
-            return readAndCompleInput();
+            return true;
         }
         return super.dispatchKeyEvent(event);
     }
 
-    private boolean readAndCompleInput(){
-        String searchReqStr = mEtvSearch.getText().toString();
-        mSearchName = searchReqStr;
-        if (searchReqStr.length() > 1){
-            if (mStvSearch.getCurScreen() == 2){
-                mStvSearch.toNext();
-            }
-            mLocationProvider.trySearchPosi(searchReqStr);
-            return true;
-        }else {
-            return false;
-        }
-    }
 
 
-    @Override
-    public void onClickItem(int index, HashMap<String, String> hashStr) {
-        String strName = hashStr.get("name");
-        mEtvSearch  .setText(strName);
-        hideKeyboard(mEtvSearch);
-        readAndCompleInput();
-    }
+
 
     private void startSearch(){
         FragmentManager manager = getFragmentManager();
@@ -804,7 +752,8 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         //TODO
     }
 
-    public void haveCalueNaviSucceful(int[] ints,float posLat,float posLon){
+    public void haveCalueNaviSucceful(int[] ints,double posLat,double posLon){
+        LogUtils.d(TAG,"haveCalueNaviSucceful:posLat:"+posLat+"  posLon:"+posLon);
         Intent intent = new Intent(this, ShowPosiActivity.class);
         Bundle bundle = new Bundle();
         bundle.putIntArray(NAVI_MSG,ints);
@@ -856,6 +805,13 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
+        if (mDownLayout1.getVisibility()==View.VISIBLE) {
+            mDownLayout1.setVisibility(View.GONE);
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mReleavieView.getLayoutParams();
+            layoutParams.height = height;
+            mReleavieView.setLayoutParams(layoutParams);
+        }
+
         upDateLineTo(cameraPosition);
         if (marker!=null) {
             marker.setVisible(true);
@@ -865,18 +821,6 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             mMarkerPoi.setVisible(false);
         }
 
-        if (mDownLayout0.getVisibility() == View.GONE){
-            mDownLayout1.setVisibility(View.GONE);
-            mDownLayout0.setVisibility(View.VISIBLE);
-        }
-        if (mMainTitleLayout.getVisibility()== View.VISIBLE){
-            mMainTitleLayout.setVisibility(View.GONE);
-        }
-
-        if (mTxShowPoiName.getVisibility() == View.VISIBLE){
-            mTxShowPoiName.setVisibility(View.GONE);
-            isCanShow = false;
-        }
         if (mMarkerPoi!=null) {
             mMarkerPoi.hideInfoWindow();
         }
@@ -899,8 +843,6 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             mTvPoiName.setText(getString(R.string.load_get_msg));
         }else {
             isCanShow = false;
-            mTxShowPoiName .setVisibility(View.GONE);
-            mMainTitleLayout.setVisibility(View.VISIBLE);
 
         }
     }
@@ -929,7 +871,6 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     @Override
     public boolean onMarkerClick(Marker marker) {
         if (marker.getId() == mMarkerPoi.getId()) {
-            mTxShowPoiName.setVisibility(View.GONE);
             isCanShow = false;
             LatLng latLng = mMarkerPoi.getPosition();
 
@@ -941,9 +882,13 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                 mTvPoiDis.setText(""+dis+getString(R.string.mile));
             }
             mTvPoiStr.setText("");
-
-            mDownLayout0.setVisibility(View.GONE);
-            mDownLayout1.setVisibility(View.VISIBLE);
+            if (mDownLayout1.getVisibility()==View.GONE) {
+                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mReleavieView.getLayoutParams();
+                height = layoutParams.height;
+                mDownLayout1.setVisibility(View.VISIBLE);
+                layoutParams.height = 1100;
+                mReleavieView.setLayoutParams(layoutParams);
+            }
             return true;
         }
         return false;
@@ -954,21 +899,20 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         RegeocodeAddress address = regeocodeResult.getRegeocodeAddress();
         if (address.getAois()!=null && address.getAois().size()>0) {
             AoiItem aoiItem = address.getAois().get(0);
-            mTvPoiName.setText(aoiItem.getAoiName());
-            mTvPoiStr.setText(getUsefulInfo(address));
-            mTxShowPoiName.setText(aoiItem.getAoiName());
-            mTxMarkTitle.setText(aoiItem.getAoiName());
 
+            poiName = aoiItem.getAoiName();
+            poiDesc = getUsefulInfo(address);
+            mTvPoiName.setText(poiName);
+            mTvPoiStr.setText(poiDesc);
+            mTxMarkTitle.setText(poiName);
         }else {
-            mTvPoiName.setText(getUsefulInfo(address));
-            mTxShowPoiName.setText(getUsefulInfo(address));
-            mTxMarkTitle.setText(getUsefulInfo(address));
+            poiName = getUsefulInfo(address);
+            poiDesc = "";
+            mTvPoiName.setText(poiName);
+            mTxMarkTitle.setText(poiName);
         }
         mMarkerPoi.showInfoWindow();
 
-        if (isCanShow){
-            mTxShowPoiName.setVisibility(View.VISIBLE);
-        }
 
 
     }
@@ -999,7 +943,8 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
     @Override
     public void onCalculateMultipleRoutesSuccess(int[] ints) {
-        haveCalueNaviSucceful(ints,(float)mLatLng.latitude,(float)mLatLng.longitude);
+        LogUtils.d(TAG,"onCalculateMultipleRoutesSuccess: mLatLng:"+mLatLng);
+        haveCalueNaviSucceful(ints,mLatLng.latitude,mLatLng.longitude);
     }
 
     @Override
@@ -1012,44 +957,44 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             isTraff = !isTraff;
             aMap.setTrafficEnabled(isTraff);
             if (isTraff){
-                mImgBtnLukuang.setImageResource(R.drawable.lukuang_00);
+                mIvShowTraffic.setImageResource(R.drawable.icon_lukuang_01);
             }else {
-                mImgBtnLukuang.setImageResource(R.drawable.lukuang_01);
+                mIvShowTraffic.setImageResource(R.drawable.icon_lukuang_02);
             }
-
         }
     }
 
     private void changeWatchWay(){
         mWatchStyle = (mWatchStyle+1)%3;
-        mImgBtnSeeWay.setImageResource(IMG_WEK[mWatchStyle]);
+        mIvSeeWatch.setImageResource(IMG_WEK[mWatchStyle]);
+        mTxSeeWatch.setText(SEEWATCH_TEXT[mWatchStyle]);
         if (aMap!=null){
-        switch (mWatchStyle){
-            case WATCH_NORTH:
-                if ( mLocationProvider!=null && mLocationProvider.getAmapLocation()!=null) {
-                    CameraUpdate update0 = CameraUpdateFactory.changeBearing(0);
-                    aMap.animateCamera(update0);
-                    CameraUpdate update1 = CameraUpdateFactory.changeTilt(0);
-                    aMap.animateCamera(update1);
-                    aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
-                }
-                break;
+            switch (mWatchStyle){
+                case WATCH_NORTH:
+                    if ( mLocationProvider!=null && mLocationProvider.getAmapLocation()!=null) {
+                        CameraUpdate update0 = CameraUpdateFactory.changeBearing(0);
+                        aMap.animateCamera(update0);
+                        CameraUpdate update1 = CameraUpdateFactory.changeTilt(0);
+                        aMap.animateCamera(update1);
+                        aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
+                    }
+                    break;
 
-            case WATCH_2D:
-                if ( mLocationProvider!=null && mLocationProvider.getAmapLocation()!=null) {
+                case WATCH_2D:
+                    if ( mLocationProvider!=null && mLocationProvider.getAmapLocation()!=null) {
 //                    CameraUpdate update0 = CameraUpdateFactory.changeBearing(mLocationProvider.getAmapLocation().getBearing());
 //                    aMap.animateCamera(update0);
-                    aMap.setMyLocationType(AMap.LOCATION_TYPE_MAP_ROTATE);
-                    CameraUpdate update1 = CameraUpdateFactory.changeTilt(0);
-                    aMap.animateCamera(update1);
-                }
-                break;
+                        aMap.setMyLocationType(AMap.LOCATION_TYPE_MAP_ROTATE);
+                        CameraUpdate update1 = CameraUpdateFactory.changeTilt(0);
+                        aMap.animateCamera(update1);
+                    }
+                    break;
 
-            case WATCH_3D:
-                CameraUpdate update1 = CameraUpdateFactory.changeTilt(30);
-                aMap.animateCamera(update1);
-                break;
-        }}
+                case WATCH_3D:
+                    CameraUpdate update1 = CameraUpdateFactory.changeTilt(30);
+                    aMap.animateCamera(update1);
+                    break;
+            }}
     }
 
 
@@ -1065,4 +1010,79 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         LogUtils.d(TAG,"getInfoContents");
         return mMarkInfoView;
     }
+
+    @Override
+    public void onCollectCallBack(List<CollectItem> collectItems) {
+        if (collectItems!=null) {
+            LogUtils.d(TAG, "onCollectCallBack:SIZE" + collectItems.size());
+        }
+        if (collectItems==null || collectItems.size()==0)return;
+        if (mCollectDialog!=null) {
+            mCollectDialog.setDate(collectItems);
+            mCollectDialog.show();
+        }
+    }
+
+    @Override
+    public void onClickCollectItem(int position, CollectItem item) {
+        //TODO
+        if (item!=null) {
+            mLatLng = new LatLng(item.posLat, item.posLon);
+            startCalueNavi();
+        }
+    }
+
+    public void setPosi(double lat,double lon){
+        mLatLng = new LatLng(lat,lon);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        LogUtils.d(TAG,"onActivityResult："+"requestCode "+requestCode+"  resultCode:"+resultCode);
+        if (resultCode == RESULT_OK){
+            if (data==null)return;
+            Bundle bundle = data.getExtras();
+            if (bundle==null)return;
+            String name = bundle.getString("name");
+            String desc = bundle.getString("desc");
+            double posLat = bundle.getDouble("poiLat");
+            double posLon = bundle.getDouble("poiLon");
+            mCollectDateHelper.saveWhereIten(requestCode,name,desc,posLat,posLon);
+            mLatLng = new LatLng(posLat,posLon);
+            mProgDialog.show();
+            startCalueNavi();
+            switch (requestCode){
+                case REQUEST_FIND_COMPLETE:
+
+                    break;
+
+                case REQUEST_FIND_HOME:
+
+                    break;
+
+                default:
+                    break;
+
+
+            }
+
+        }
+//        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+
+    private XpWhereListener mWhereListener = new XpWhereListener() {
+        @Override
+        public void onWhereCallBack(List<WherePoi> wherePois) {
+            for (WherePoi wherePoi:wherePois){
+                if (wherePoi.type == REQUEST_FIND_COMPLETE){
+                    mComplete = wherePoi;
+                }else {
+                    mHome = wherePoi;
+                }
+            }
+
+        }
+    };
 }

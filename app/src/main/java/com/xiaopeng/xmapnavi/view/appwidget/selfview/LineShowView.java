@@ -33,8 +33,9 @@ public class LineShowView extends View{
     private void init(Context context){
         mContext = context;
         mPaint = new Paint();
-        mPaint.setColor(context.getResources().getColor(R.color.red));
-        mPaint.setStrokeWidth(2);
+        mPaint.setAntiAlias(true);
+        mPaint.setColor(context.getResources().getColor(R.color.line_red));
+        mPaint.setStrokeWidth(1);
         mCent = new Point();
     }
 

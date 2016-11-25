@@ -17,274 +17,446 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
-    <RelativeLayout
-        android:id="@+id/main_title"
-        android:background="@drawable/bg_navi_title"
-        android:layout_width="match_parent"
-        android:layout_height="93px">
+    <!--<TextView-->
+    <!--android:id="@+id/tx_show_poi_name"-->
+    <!--android:gravity="center"-->
+    <!---->
+    <!--android:textColor="@color/white"-->
+    <!--android:textSize="38px"-->
+    <!--android:background="@drawable/bg_navi_title"-->
+    <!--android:layout_marginLeft="80px"-->
+    <!--android:layout_marginRight="80px"-->
+    <!--android:layout_marginTop="93px"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="100px" />-->
 
-        <com.xiaopeng.xmapnavi.view.appwidget.selfview.StereoView
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:id="@+id/stv_search"
-            android:layout_marginTop="13px"
-            android:layout_marginLeft="41px"
+    <RelativeLayout
+
+        android:id="@+id/all_view_relati_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:visibility="gone"
+            android:background="@drawable/lukuang_00"
             android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_width="998px"
-            android:layout_height="66px"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20px"
+            android:layout_marginTop="219px"
+
+            android:layout_width="94px"
+            android:layout_height="94px" />
+
+        <FrameLayout
+            android:id="@+id/d3_dinwei"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/shadowss"
+            android:layout_marginLeft="3px"
+            android:layout_marginBottom="16px"
+            android:layout_width="106px"
+            android:layout_height="106px"
+            android:paddingLeft="9px"
+            android:paddingRight="9px"
+            android:paddingBottom="14px"
+            android:paddingTop="4px"
+            >
+            <ImageView
+
+                android:background="@drawable/white_backgrouad"
+                android:src="@drawable/icon_locationing"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+
+                />
+        </FrameLayout>
+
+        <FrameLayout
+            android:background="@drawable/shadowss"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="2px"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/second_bottom"
+            android:layout_width="108px"
+            android:layout_height="343px"
+            android:paddingLeft="9px"
+            android:paddingRight="9px"
+            android:paddingTop="4px"
+            android:paddingBottom="14px"
             >
             <LinearLayout
-                android:orientation="horizontal"
-                android:background="@drawable/bg_navi_title_1"
-                android:layout_width="998px"
-                android:layout_height="66px">
-                <com.gc.materialdesign.views.ProgressBarCircularIndeterminate
-                    android:layout_width="66px"
-                    android:layout_height="66px"
-                    />
-                <TextView
-                    android:textColor="#88ffffff"
-                    android:gravity="center_vertical"
+                android:background="@drawable/white_backgrouad"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <LinearLayout
 
-                    android:textSize="30px"
-                    android:text="@string/searching"
-                    android:layout_marginLeft="11px"
-                    android:layout_width="wrap_content"
-                    android:layout_height="66px" />
-                <TextView
-                    android:textColor="@color/white"
-                    android:textSize="35px"
-                    android:layout_width="wrap_content"
-                    android:layout_height="66px" />
-
-            </LinearLayout>
-            <LinearLayout
-                android:orientation="horizontal"
-                android:background="@drawable/bg_navi_title_1"
-                android:layout_width="998px"
-                android:layout_height="66px">
-                <ImageView
-                    android:src="@drawable/icon_navistart_search_start"
-                    android:layout_marginLeft="22px"
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="40px"
-                    android:layout_height="40px" />
-                <TextView
-                    android:id="@+id/tx_search_start"
-                    android:textColor="#ffffff"
-                    android:gravity="center_vertical"
-
-                    android:textSize="30px"
-                    android:text=" 搜索目的地"
-                    android:layout_marginLeft="11px"
-                    android:layout_width="600px"
-                    android:layout_height="66px" />
-                <RelativeLayout
-                    android:id="@+id/navistart_search_yuyin"
-                    android:layout_gravity="center"
-                    android:layout_width="fill_parent"
-                    android:layout_height="40px">
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="107px">
                     <ImageView
-                        android:layout_alignParentRight="true"
-                        android:layout_marginRight="22px"
-                        android:src="@drawable/icon_set"
+                        android:src="@drawable/icon_setting"
+                        android:layout_width="match_parent"
+                        android:layout_height="72px" />
+                    <TextView
+                        android:background="@drawable/text_trans_bg"
+                        android:textSize="22px"
+                        android:gravity="center"
+                        android:textColor="@color/first_text_color"
+                        android:text="@string/setting"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
 
-                        android:layout_width="40px"
-                        android:layout_height="40px" />
-                </RelativeLayout>
+                <ImageView
+                    android:background="@color/line_grad"
+                    android:layout_marginLeft="12px"
+                    android:layout_marginRight="12px"
+                    android:layout_width="match_parent"
+                    android:layout_height="1px" />
+
+                <LinearLayout
+                    android:id="@+id/d3_lukuang"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="107px">
+                    <ImageView
+                        android:id="@+id/iv_show_traffic"
+                        android:src="@drawable/icon_lukuang_01"
+                        android:layout_width="match_parent"
+                        android:layout_height="72px" />
+                    <TextView
+                        android:background="@drawable/text_trans_bg"
+                        android:textSize="22px"
+                        android:gravity="center"
+                        android:textColor="@color/first_text_color"
+                        android:text="@string/lukuagg"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+
+                <ImageView
+                    android:background="@color/line_grad"
+                    android:layout_marginLeft="12px"
+                    android:layout_marginRight="12px"
+                    android:layout_width="match_parent"
+                    android:layout_height="1px" />
+                <LinearLayout
+                    android:id="@+id/d3_setting"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:id="@+id/iv_seewatch"
+                        android:src="@drawable/icon_seewatch_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="72px" />
+                    <TextView
+                        android:id="@+id/tx_seewatch"
+                        android:background="@drawable/text_trans_bg"
+                        android:textSize="22px"
+                        android:gravity="center"
+                        android:textColor="@color/first_text_color"
+                        android:text="@string/watch_north"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </FrameLayout>
+
+        <FrameLayout
+            android:background="@drawable/shadowss"
+            android:layout_marginLeft="2px"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/second_bottom"
+            android:layout_width="108px"
+            android:layout_height="343px"
+            android:paddingLeft="9px"
+            android:paddingRight="9px"
+            android:paddingTop="4px"
+            android:paddingBottom="14px"
+            >
+            <LinearLayout
+                android:background="@drawable/white_backgrouad"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <LinearLayout
+                    android:id="@+id/tx_goto_complete"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="107px">
+                    <ImageView
+                        android:src="@drawable/icon_company"
+                        android:layout_width="match_parent"
+                        android:layout_height="72px" />
+                    <TextView
+
+                        android:background="@drawable/text_trans_bg"
+                        android:textSize="22px"
+                        android:gravity="center"
+                        android:textColor="@color/first_text_color"
+                        android:text="@string/company"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+
+                <ImageView
+                    android:background="@color/line_grad"
+                    android:layout_marginLeft="12px"
+                    android:layout_marginRight="12px"
+                    android:layout_width="match_parent"
+                    android:layout_height="1px" />
+                <LinearLayout
+                    android:id="@+id/tx_goto_home"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="107px">
+                    <ImageView
+                        android:src="@drawable/icon_home"
+                        android:layout_width="match_parent"
+                        android:layout_height="72px" />
+                    <TextView
+
+                        android:background="@drawable/text_trans_bg"
+                        android:textSize="22px"
+                        android:gravity="center"
+                        android:textColor="@color/first_text_color"
+                        android:text="@string/back_home"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+
+                <ImageView
+                    android:background="@color/line_grad"
+                    android:layout_marginLeft="12px"
+                    android:layout_marginRight="12px"
+                    android:layout_width="match_parent"
+                    android:layout_height="1px" />
+                <LinearLayout
+                    android:background="@drawable/text_trans_bg"
+                    android:orientation="vertical"
+                    android:id="@+id/icon_open_collect"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:src="@drawable/icon_collect"
+                        android:layout_width="match_parent"
+                        android:layout_height="72px" />
+
+                    <TextView
+
+                        android:background="@drawable/text_trans_bg"
+                        android:textSize="22px"
+                        android:gravity="center"
+                        android:textColor="@color/first_text_color"
+                        android:text="@string/collect"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </FrameLayout>
+        <FrameLayout
+            android:background="@drawable/shadowss"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="@dimen/bottom_first"
+            android:layout_marginRight="2px"
+            android:layout_width="108px"
+            android:paddingTop="4px"
+            android:paddingLeft="9px"
+            android:paddingRight="9px"
+            android:paddingBottom="14px"
+            android:layout_height="196px">
+            <LinearLayout
+                android:background="@drawable/white_backgrouad"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                >
+                <Button
+                    android:background="@drawable/icon_zoom_plus"
+                    android:id="@+id/btn_zoom_plus"
+                    android:textSize="45px"
+                    android:textColor="@color/black"
+                    android:layout_width="94px"
+                    android:layout_height="94px" />
+                <ImageView
+                    android:background="@color/gray_btn_bg_color"
+                    android:layout_marginLeft="12px"
+                    android:layout_marginRight="12px"
+                    android:layout_width="match_parent"
+                    android:layout_height="1px" />
+                <Button
+                    android:textColor="@color/black"
+                    android:textSize="45px"
+                    android:background="@drawable/icon_zoom_small"
+                    android:id="@+id/btn_zoom_jian"
+                    android:layout_width="94px"
+                    android:layout_height="94px" />
+            </LinearLayout>
+        </FrameLayout>
+
+
+        <!--<com.xiaopeng.xmapnavi.view.appwidget.selfview.CircleImageView-->
+        <!--android:id="@+id/civ_all_big"-->
+        <!--android:src="@drawable/bg_kk"-->
+        <!--android:layout_marginTop="12px"-->
+        <!--android:layout_marginLeft="12px"-->
+        <!--android:layout_width="146px"-->
+        <!--android:layout_height="146px" />-->
+        <FrameLayout
+            android:background="@drawable/shadowss"
+            android:paddingLeft="9px"
+            android:paddingRight="9px"
+            android:paddingTop="4px"
+            android:paddingBottom="13px"
+            android:layout_marginTop="7px"
+            android:layout_marginLeft="90px"
+            android:layout_width="900px"
+            android:layout_height="92px">
+            <LinearLayout
+                android:id="@+id/civ_all_big"
+                android:background="@drawable/white_backgrouad"
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:src="@drawable/icon_search_01"
+                    android:layout_width="64px"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:textSize="24px"
+                    android:text="@string/findwhere_and_path"
+                    android:textColor="@color/gray_text_color"
+                    android:gravity="center_vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
+        </FrameLayout>
+
+        <ImageView
+            android:visibility="gone"
+            android:background="@drawable/dialog_icon_00"
+            android:layout_marginRight="20px"
+
+            android:layout_width="94px"
+            android:layout_height="94px"
+
+             />
+    </RelativeLayout>
+
+    <FrameLayout
+        android:visibility="gone"
+        android:id="@+id/layout_down"
+        android:layout_marginLeft="2px"
+        android:layout_marginRight="2px"
+        android:paddingLeft="12px"
+        android:paddingRight="12px"
+        android:paddingTop="4px"
+        android:paddingBottom="0px"
+        android:background="@drawable/shadowss"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+
+        android:layout_height="340px">
+
+        <LinearLayout
+            android:background="@drawable/white_backgrouad"
+
+            android:orientation="horizontal"
+
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+
+                android:orientation="vertical"
+                android:layout_width="88px"
+                android:layout_height="88px">
+                <Button
+                    android:visibility="gone"
+                    android:text="@string/around"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+                <Button
+                    android:id="@+id/btn_collect"
+                    android:text="@string/shouchang"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
 
             </LinearLayout>
 
             <LinearLayout
-
-                android:orientation="horizontal"
-                android:background="@drawable/bg_navi_title_1"
-                android:layout_width="998px"
-                android:layout_height="66px">
-                <EditText
-                    android:background="#00000000"
-                    android:imeOptions="actionSearch"
-                    android:id="@+id/edt_search"
-                    android:textColor="#ffffff"
-                    android:textColorHint="#60ffffff"
-                    android:gravity="center_vertical"
-                    android:hint="@string/perease_input"
+                android:orientation="vertical"
+                android:layout_width="880px"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_marginTop="28px"
+                    android:text="广东省广州市..."
+                    android:id="@+id/tv_poi_name"
+                    android:textColor="@color/first_text_color"
+                    android:textSize="30px"
+                    android:singleLine="true"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_marginTop="16px"
+                    android:text="华南师范"
+                    android:textColor="@color/a3a3a3"
+                    android:singleLine="true"
+                    android:id="@+id/tv_poi_str"
+                    android:textSize="24px"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_marginTop="40px"
+                    android:textSize="36px"
+                    android:text="21.6公里"
+                    android:textColor="@color/text_blue"
+                    android:id="@+id/tv_poi_dis"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <Button
+                    android:layout_gravity="center_horizontal"
+                    android:text="@string/calue_navi"
+                    android:background="@color/text_blue"
                     android:textSize="30px"
 
-                    android:layout_marginLeft="20px"
-                    android:layout_width="600px"
-                    android:layout_height="66px" />
+                    android:layout_marginTop="40px"
+                    android:layout_marginBottom="12px"
+                    android:textColor="@color/white"
+                    android:id="@+id/btn_begin_navi"
+                    android:gravity="center"
+                    android:singleLine="true"
+                    android:layout_weight="1.8"
+                    android:layout_width="420px"
+                    android:layout_height="68px" />
             </LinearLayout>
-        </com.xiaopeng.xmapnavi.view.appwidget.selfview.StereoView>
-
-    </RelativeLayout>
-    <TextView
-        android:id="@+id/tx_show_poi_name"
-        android:gravity="center"
-        android:visibility="gone"
-        android:textColor="@color/white"
-        android:textSize="38px"
-        android:background="@drawable/bg_navi_title"
-        android:layout_marginLeft="80px"
-        android:layout_marginRight="80px"
-        android:layout_marginTop="93px"
-        android:layout_width="match_parent"
-        android:layout_height="100px" />
-    <LinearLayout
-        android:visibility="gone"
-        android:id="@+id/navistart_down_llayout3"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="20px"
-        android:orientation="horizontal"
-        android:layout_marginLeft="40px"
-        android:background="@drawable/navistart_down_llayout3_bg"
-        android:layout_width="1000px"
-        android:layout_height="121px">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:gravity="center"
-
-
-            android:id="@+id/navistart_down_navi_btn"
-
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_height="match_parent">
-            <ImageView
-                android:src="@drawable/daohang_icon"
-                android:layout_width="80px"
-                android:layout_height="80px" />
-            <TextView
-                android:text="导航"
-                android:textSize="20px"
-                android:textColor="#414141"
-                android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="fill_parent" />
+            <Button
+                android:background="@color/transparent"
+                android:id="@+id/btn_exit_show"
+                android:text="@string/exit"
+                android:layout_width="88px"
+                android:layout_height="88px" />
         </LinearLayout>
+    </FrameLayout>
 
-        <ImageView
-            android:layout_marginTop="15px"
-            android:layout_marginBottom="15px"
-            android:layout_width="2px"
-            android:background="@color/Grey"
-            android:layout_height="match_parent" />
-        <LinearLayout
-            android:id="@+id/navistart_down_neigh_btn"
-            android:layout_width="match_parent"
-            android:gravity="center"
-
-
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_height="match_parent">
-            <ImageView
-                android:src="@drawable/icon_fujin"
-                android:layout_width="80px"
-                android:layout_height="80px" />
-            <TextView
-                android:text="附近"
-                android:textSize="20px"
-                android:textColor="#414141"
-                android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="fill_parent" />
-        </LinearLayout>
-
-        <ImageView
-            android:layout_marginTop="15px"
-            android:layout_marginBottom="15px"
-            android:layout_width="2px"
-            android:background="@color/Grey"
-            android:layout_height="match_parent" />
-        <LinearLayout
-            android:id="@+id/navistart_down_setting_btn"
-            android:layout_width="match_parent"
-            android:gravity="center"
-
-
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_height="match_parent">
-            <ImageView
-                android:src="@drawable/icon_set"
-                android:layout_width="80px"
-                android:layout_height="80px" />
-            <TextView
-                android:text="设置"
-                android:textSize="20px"
-                android:textColor="#414141"
-                android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="fill_parent" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <ImageView
-        android:background="@drawable/lukuang_00"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="20px"
-        android:layout_marginTop="219px"
-        android:id="@+id/d3_lukuang"
-        android:layout_width="94px"
-        android:layout_height="94px" />
-
-    <ImageView
-        android:background="@drawable/dialog_icon_00"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="20px"
-        android:layout_marginTop="324px"
-        android:id="@+id/d3_setting"
-        android:layout_width="94px"
-        android:layout_height="94px" />
-    <ImageView
-        android:background="@drawable/dinwei_dra"
-        android:layout_alignParentBottom="true"
-        android:layout_marginLeft="38px"
-        android:layout_marginBottom="192px"
-        android:id="@+id/d3_dinwei"
-        android:layout_width="94px"
-        android:layout_height="94px" />
-
-    <Button
-        android:background="@drawable/dinwei_dra"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="38px"
-        android:layout_marginBottom="286px"
-        android:id="@+id/btn_zoom_plus"
-        android:text="+"
-        android:textSize="35px"
-        android:textColor="@color/black"
-        android:layout_width="94px"
-        android:layout_height="94px" />
-    <Button
-        android:textColor="@color/black"
-        android:text="-"
-        android:textSize="35px"
-        android:background="@drawable/dinwei_dra"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="38px"
-        android:layout_marginBottom="192px"
-        android:id="@+id/btn_zoom_jian"
-        android:layout_width="94px"
-        android:layout_height="94px" />
-
-    <include layout="@layout/layout_down_title"
-        />
     <FrameLayout
         android:id="@+id/ll_show_fragment"
-        android:layout_width="match_parent"
-        android:layout_marginLeft="80px"
-        android:layout_marginRight="80px"
-        android:layout_marginTop="120px"
-        android:layout_marginBottom="50px"
-        android:layout_height="match_parent"></FrameLayout>
+        android:layout_width="900px"
+        android:layout_marginLeft="90px"
+
+        android:layout_marginTop="5px"
+
+        android:layout_height="1016px"></FrameLayout>
 
 
 </RelativeLayout>

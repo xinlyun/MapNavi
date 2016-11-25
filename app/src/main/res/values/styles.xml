@@ -8,6 +8,16 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="BaseAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <!--android:fitsSystemWindows=true-->
+        <!--android:clipToPadding=true-->
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="android:clipToPadding">true</item>
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
     <style name="MyTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/bg_kk</item>
     </style>

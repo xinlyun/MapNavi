@@ -60,7 +60,11 @@ public class HistItemAdapater extends ArrayAdapter {
             View view = null;
             ItemHolder itemHolder = new ItemHolder();
             HisItem hisItem = hisItems.get(position);
-            if (convertView == null) {
+            if (convertView!=null && convertView.getTag()!=null){
+                view = convertView;
+                itemHolder = (ItemHolder) view.getTag();
+            }else {
+                //begin view
                 if (hisItem.type == DateHelper.TYPE_POSI) {
                     view = LayoutInflater.from(getContext()).inflate(R.layout.layout_fix_list_item, null);
                     itemHolder.tvShowName = (TextView) view.findViewById(R.id.pre_list_name);
@@ -71,11 +75,10 @@ public class HistItemAdapater extends ArrayAdapter {
                     view = LayoutInflater.from(getContext()).inflate(R.layout.layout_fix_list_item_1, null);
                     itemHolder.tvShowMsg = (TextView) view.findViewById(R.id.pre_list_name);
                 }
+                //end view
                 view.setTag(itemHolder);
-            } else {
-                view = convertView;
-                itemHolder = (ItemHolder) view.getTag();
             }
+
             if (hisItem.type == DateHelper.TYPE_POSI) {
                 itemHolder.tvShowName.setText(hisItem.posiName);
                 itemHolder.tvShowMsg.setText(hisItem.posiArt);

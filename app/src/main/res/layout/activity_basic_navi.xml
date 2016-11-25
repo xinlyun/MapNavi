@@ -1,25 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <com.amap.api.navi.AMapNaviView
         android:id="@+id/navi_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
-    <com.amap.api.maps.TextureMapView
-        android:id="@+id/navi_map_view"
-        android:layout_marginRight="70px"
-        android:layout_marginLeft="90px"
-        android:layout_marginTop="90px"
-        android:layout_width="375px"
-        android:layout_height="375px"
-        />
+    <FrameLayout
+        android:paddingLeft="9px"
+        android:paddingRight="9px"
+        android:paddingTop="4px"
+        android:paddingBottom="14px"
+        android:id="@+id/mapview_frlayout"
+        android:background="@drawable/shadowss"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/bottom_first"
+        android:layout_width="268px"
+        android:layout_height="268px">
+        <com.amap.api.maps.TextureMapView
+
+            android:id="@+id/navi_map_view"
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    </FrameLayout>
+
     <LinearLayout
+        android:visibility="gone"
         android:background="@color/taobao_black"
-        android:layout_marginLeft="80px"
+        android:layout_marginLeft="500px"
         android:layout_marginTop="80px"
         android:orientation="vertical"
         android:layout_width="600px"
@@ -34,14 +48,12 @@
                 android:layout_height="match_parent">
                 <TextView
                     android:textSize="38px"
-                    android:id="@+id/tx_length"
                     android:textColor="@color/green"
                     android:gravity="center"
                     android:text="104米后"
                     android:layout_width="match_parent"
                     android:layout_height="80px" />
                 <com.amap.api.navi.view.NextTurnTipView
-                    android:id="@+id/nttv_navi"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_alignParentBottom="true"
@@ -67,7 +79,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="80px" />
                 <TextView
-                    android:id="@+id/tx_to_road"
                     android:textSize="45px"
                     android:text="无名道路"
                     android:gravity="center"
@@ -82,7 +93,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <TextView
-                android:id="@+id/tx_time_need"
                 android:textSize="38px"
                 android:textColor="@color/white"
                 android:gravity="center"
@@ -91,7 +101,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
             <TextView
-                android:id="@+id/tx_length_need"
                 android:textSize="38px"
                 android:textColor="@color/white"
                 android:gravity="center"
@@ -101,7 +110,109 @@
                 android:layout_height="match_parent" />
         </LinearLayout>
     </LinearLayout>
+
+    <FrameLayout
+        android:paddingTop="4px"
+        android:paddingBottom="14px"
+        android:paddingLeft="9px"
+        android:paddingRight="9px"
+        android:layout_marginLeft="3px"
+        android:layout_marginTop="8px"
+        android:background="@drawable/shadowss"
+        android:layout_width="288px"
+        android:layout_height="378px">
+        <LinearLayout
+            android:background="@color/black_p80"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:id="@+id/btn_exit"
+                android:gravity="center"
+                android:textSize="45px"
+                android:text="x"
+                android:textColor="@color/white"
+                android:layout_width="88px"
+                android:layout_height="88px" />
+            <com.amap.api.navi.view.NextTurnTipView
+                android:id="@+id/nttv_navi"
+                android:layout_width="match_parent"
+                android:layout_height="134px"
+
+                android:layout_centerHorizontal="true"
+                >
+
+            </com.amap.api.navi.view.NextTurnTipView>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_marginLeft="24px"
+                    android:gravity="center_vertical|bottom"
+                    android:text="260米后"
+                    android:id="@+id/tx_length"
+                    android:textSize="33px"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:textSize="24px"
+                    android:textColor="@color/gray_btn_bg_pressed_color"
+                    android:layout_marginLeft="5px"
+                    android:text="@string/entra"
+                    android:gravity="left|bottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+            <TextView
+                android:layout_marginTop="12px"
+                android:id="@+id/tx_to_road"
+                android:textSize="24px"
+                android:textColor="@color/white"
+                android:text="无名道路"
+                android:layout_marginLeft="24px"
+                android:gravity="center_vertical|left"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:layout_marginTop="18px"
+                android:orientation="horizontal"
+                android:background="@color/text_black"
+                android:layout_width="match_parent"
+                android:layout_height="40px">
+                <TextView
+                    android:text="@string/shengyu"
+                    android:textColor="@color/gray_btn_bg_pressed_color"
+                    android:textSize="22px"
+                    android:layout_marginLeft="24px"
+                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:id="@+id/tx_time_need"
+                    android:text="30分钟"
+                    android:textColor="@color/white"
+                    android:textSize="20px"
+                    android:layout_marginLeft="10px"
+                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:id="@+id/tx_length_need"
+                    android:text="18.4公里"
+                    android:textColor="@color/white"
+                    android:textSize="20px"
+                    android:layout_marginLeft="10px"
+                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </FrameLayout>
     <com.xiaopeng.xmapnavi.view.appwidget.selfview.CircleImageView
+        android:visibility="gone"
         android:id="@+id/civ_show_all"
         android:layout_width="390px"
         android:layout_height="390px"
@@ -110,5 +221,201 @@
 
         />
 
+    <com.amap.api.navi.view.TrafficBarView
+        android:id="@+id/tbv_show"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20px"
+        android:layout_marginTop="20px"
+        android:layout_width="45px"
+        android:layout_height="700px" />
+
+
+    <RelativeLayout
+        android:id="@+id/view_unlock"
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <FrameLayout
+            android:background="@drawable/shadowss"
+            android:paddingBottom="0px"
+            android:paddingTop="4px"
+            android:paddingLeft="9px"
+            android:paddingRight="9px"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="112px">
+
+            <LinearLayout
+                android:background="@drawable/white_backgrouad"
+                android:orientation="horizontal"
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:layout_width="100px"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:id="@+id/btn_goto_again"
+                    android:textColor="@color/text_bluse"
+                    android:textSize="40px"
+                    android:gravity="center"
+                    android:text="@string/navi_goon"
+                    android:layout_width="850px"
+                    android:layout_height="match_parent" />
+                <ImageView
+                    android:layout_marginTop="20px"
+                    android:layout_marginBottom="20px"
+                    android:background="@color/gray_btn_bg_pressed_color"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent" />
+                <LinearLayout
+                    android:id="@+id/btn_setting"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:layout_width="100px"
+                        android:layout_height="70px" />
+                    <TextView
+                        android:gravity="center"
+                        android:textSize="28px"
+                        android:text="@string/setting"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+        </FrameLayout>
+        <RelativeLayout
+            android:layout_alignParentRight="true"
+            android:layout_width="500px"
+            android:layout_height="1332px">
+            <FrameLayout
+                android:layout_marginBottom="@dimen/bottom_first"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/shadowss"
+                android:layout_width="140px"
+                android:layout_height="230px">
+                <LinearLayout
+                    android:background="@drawable/white_backgrouad"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+
+                        android:text="+"
+                        android:gravity="center"
+                        android:textSize="40px"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/btn_zoom_plus" />
+
+                    <ImageView
+                        android:layout_marginLeft="10px"
+                        android:layout_marginRight="10px"
+                        android:background="@color/gray_btn_bg_pressed_color"
+                        android:layout_width="match_parent"
+                        android:layout_height="1px" />
+                    <TextView
+                        android:text="--"
+                        android:gravity="center"
+                        android:textSize="40px"
+                        android:id="@+id/btn_zoom_jian"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                </LinearLayout>
+            </FrameLayout>
+            <FrameLayout
+
+                android:layout_marginBottom="@dimen/second_bottom"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/shadowss"
+                android:layout_width="140px"
+                android:layout_height="350px">
+                <LinearLayout
+                    android:background="@drawable/white_backgrouad"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:id="@+id/btn_recalue"
+                        android:text="@string/recalue"
+                        android:gravity="center"
+                        android:textSize="30px"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                    <ImageView
+                        android:layout_marginLeft="10px"
+                        android:layout_marginRight="10px"
+                        android:background="@color/gray_btn_bg_pressed_color"
+                        android:layout_width="match_parent"
+                        android:layout_height="1px" />
+                    <TextView
+                        android:id="@+id/btn_traffi_state"
+                        android:text="@string/lukuagg"
+                        android:gravity="center"
+                        android:textSize="30px"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                    <ImageView
+
+                        android:layout_marginLeft="10px"
+                        android:layout_marginRight="10px"
+                        android:background="@color/gray_btn_bg_pressed_color"
+                        android:layout_width="match_parent"
+                        android:layout_height="1px" />
+                    <TextView
+                        android:text="@string/seeyi"
+                        android:gravity="center"
+                        android:textSize="30px"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+
+
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/btn_rader_nave"
+                android:background="@drawable/shadowss"
+                android:layout_alignParentRight="true"
+
+                android:layout_width="140px"
+                android:layout_height="140px">
+                <ImageView
+                    android:background="@drawable/white_backgrouad"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            </FrameLayout>
+
+        </RelativeLayout>
+        <FrameLayout
+            android:visibility="gone"
+            android:background="@drawable/shadowss"
+            android:paddingBottom="0px"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="330px">
+            <RelativeLayout
+                android:background="@drawable/white_backgrouad"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </RelativeLayout>
+        </FrameLayout>
+    </RelativeLayout>
 
 </RelativeLayout>

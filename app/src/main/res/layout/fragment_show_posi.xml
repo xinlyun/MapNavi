@@ -5,8 +5,65 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
+    <FrameLayout
+        android:background="@drawable/shadowss"
+        android:layout_marginTop="10px"
+        android:layout_marginLeft="100px"
+        android:layout_marginRight="100px"
+        android:paddingTop="4px"
+        android:paddingBottom="14px"
+        android:layout_width="match_parent"
+        android:layout_height="118px">
+        <LinearLayout
+            android:id="@+id/ll_exit"
+            android:background="@color/gray_lite"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:layout_marginTop="34px"
+                android:layout_marginLeft="35px"
+                android:layout_width="31px"
+                android:layout_height="31px"
+                android:src="@drawable/icon_title_bg"/>
+            <LinearLayout
+                android:layout_marginTop="10px"
+                android:layout_marginBottom="10px"
+                android:background="@drawable/white_backgrouad"
+                android:layout_marginLeft="35px"
+                android:layout_width="550px"
+                android:orientation="horizontal"
+                android:layout_height="match_parent">
+                <EditText
+                    android:textSize="38px"
+                    android:background="@color/transparent"
+                    android:id="@+id/edt_show_search"
+                    android:layout_width="470px"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:textSize="38px"
+                    android:gravity="center"
+                    android:text="X"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+            <Button
+                android:background="@color/blue"
+                android:textSize="35px"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:text="@string/search"
+                android:layout_marginTop="10px"
+                android:layout_marginBottom="10px"
+                android:layout_marginRight="10px"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+    </FrameLayout>
     <LinearLayout
+        android:paddingTop="4px"
+        android:paddingBottom="0px"
+        android:background="@drawable/shadowss"
         android:layerType="hardware"
         android:layout_alignParentBottom="true"
         android:id="@+id/ll_search_layout"
@@ -57,14 +114,18 @@
         <!--android:layout_height="116px" />-->
 
         <!--</LinearLayout>-->
+
+
         <Button
+            android:visibility="gone"
             android:id="@+id/btn_pull"
             android:background="@drawable/bg_navi_title"
             android:layout_width="match_parent"
-            android:layout_height="100px" />
+            android:layout_height="1px" />
+
         <ListView
 
-            android:background="#ffffff"
+            android:background="@drawable/white_backgrouad"
             android:id="@+id/prepare_listview"
             android:layout_width="match_parent"
             android:dividerHeight="1px"

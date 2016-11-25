@@ -39,6 +39,7 @@ import com.xiaopeng.xmapnavi.presenter.callback.XpHisDateListner;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.BaseFuncActivityInteface;
+import com.xiaopeng.xmapnavi.view.appwidget.activity.MainActivity;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.ShowPosiActivity;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.HistItemAdapater;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.TipItemAdapter;
@@ -78,7 +79,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
         super.onCreate(savedInstanceState);
         mLocationProvider = LocationProvider.getInstence(getActivity());
         mLocation = mLocationProvider.getAmapLocation();
-        mCity = mLocationProvider.getAmapLocation().getCity();
+        mCity = mLocation.getCity();
         mDateHelper = new DateHelper();
         mDateHelper.setHisDateListner(this);
         mTipAdapter = new TipItemAdapter(getActivity(),R.layout.layout_tip_list_item);
@@ -244,7 +245,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
         mEtvSearch.setText("");
         BaseFuncActivityInteface activity = (BaseFuncActivityInteface) getActivity();
         tryToShowPosi();
-        activity.exitFragment();
+//        activity.exitFragment();
     }
     private void tryToShowPosi(){
         LogUtils.d(TAG,"searchSucceful");
@@ -333,6 +334,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
             endPoi.add(new NaviLatLng(hisItem.posiLat,hisItem.posiLon));
             poiLat = hisItem.posiLat;
             poiLon = hisItem.posiLon;
+            ((MainActivity)getActivity()).setPosi(poiLat,poiLon);
             mLocationProvider.calueRunWay(startPoi,wayPoi,endPoi);
             mProgDialog.show();
             mLvShowMsg.postDelayed(new Runnable() {

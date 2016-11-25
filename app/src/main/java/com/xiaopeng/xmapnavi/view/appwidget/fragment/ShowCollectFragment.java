@@ -27,7 +27,7 @@ import java.util.List;
  * Created by linzx on 2016/11/8.
  */
 public class ShowCollectFragment extends Fragment implements View.OnClickListener
-            ,XpCollectListener ,AdapterView.OnItemClickListener{
+        ,XpCollectListener ,AdapterView.OnItemClickListener{
     private static final String TAG = "ShowCollectFragment";
     private View rootView;
     private ListView mListView;
@@ -52,22 +52,22 @@ public class ShowCollectFragment extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_show_collect,container,false);
         initView();
-        rootView.postDelayed(new Runnable() {
+//        rootView.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+        mProgDialog = new ProgressDialog(ShowCollectFragment.this.getActivity());
+        mProgDialog.setTitle("正在搜索数据");
+        mProgDialog.setMessage("正在搜索相关信息....");
+        mProgDialog.setCancelable(true);
+        //----init listener ---//
+        mProgDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
-            public void run() {
-                mProgDialog = new ProgressDialog(ShowCollectFragment.this.getActivity());
-                mProgDialog.setTitle("正在搜索数据");
-                mProgDialog.setMessage("正在搜索相关信息....");
-                mProgDialog.setCancelable(true);
-                //----init listener ---//
-                mProgDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
+            public void onCancel(DialogInterface dialog) {
 
-                    }
-                });
             }
-        },500);
+        });
+//            }
+//        },500);
         return rootView;
     }
 

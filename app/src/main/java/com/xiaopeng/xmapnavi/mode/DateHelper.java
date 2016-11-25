@@ -6,12 +6,16 @@ import android.os.Message;
 import com.activeandroid.query.Select;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.route.RouteSearch;
+import com.xiaopeng.lib.utils.utils.LogUtils;
 import com.xiaopeng.xmapnavi.bean.CollectItem;
 import com.xiaopeng.xmapnavi.bean.HisItem;
+import com.xiaopeng.xmapnavi.bean.WherePoi;
 import com.xiaopeng.xmapnavi.presenter.ICollectDateHelper;
 import com.xiaopeng.xmapnavi.presenter.IHistoryDateHelper;
+import com.xiaopeng.xmapnavi.presenter.IWhereDateHelper;
 import com.xiaopeng.xmapnavi.presenter.callback.XpCollectListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpHisDateListner;
+import com.xiaopeng.xmapnavi.presenter.callback.XpWhereListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,13 +23,15 @@ import java.util.List;
 /**
  * Created by linzx on 2016/10/17.
  */
-public class DateHelper implements IHistoryDateHelper ,ICollectDateHelper {
+public class DateHelper implements IHistoryDateHelper ,ICollectDateHelper,IWhereDateHelper {
     private static final int HIS_BACK = 0;
     private static final int COLLECT_BACK = 1;
+    private static final int WHERE_BACK = 2;
 
     public static final int TYPE_NAME = 0,TYPE_POSI = 1,TYPE_WAY = 2 ;
     private XpHisDateListner mHistoryListner;
     private XpCollectListener mCollectListener;
+    private XpWhereListener mWhereListener;
     private static final long LENGTHST_TIME = 604800000; // 7 * 24 * 60 * 60 *1000 一周时间
 
     @Override
@@ -76,7 +82,22 @@ public class DateHelper implements IHistoryDateHelper ,ICollectDateHelper {
 
     @Override
     public void saveCollect(String name, String desc, double poiLat, double poiLon) {
-        new SaveCollectThread(name,desc,poiLat,poiLon);
+        new SaveCollectThread(name,desc,poiLat,poiLon).start();
+    }
+
+    @Override
+    public void setOnWhereListener(XpWhereListener listener) {
+        mWhereListener = listener;
+    }
+
+    @Override
+    public void getWhereItems() {
+        new ReadWhereDate().start();
+    }
+
+    @Override
+    public void saveWhereIten(int type, String name, String desc, double poiLat, double poiLon) {
+        new SaveWhereThread(type,name,desc,poiLat,poiLon).start();
     }
 
     class SaveThread extends Thread{
@@ -126,6 +147,7 @@ public class DateHelper implements IHistoryDateHelper ,ICollectDateHelper {
         @Override
         public void run() {
             super.run();
+            LogUtils.d("Date","SaveCollect");
             CollectItem collectItem = new CollectItem();
             collectItem.pName = name;
             collectItem.pDesc = desc;
@@ -133,6 +155,34 @@ public class DateHelper implements IHistoryDateHelper ,ICollectDateHelper {
             collectItem.posLon = poiLon;
             collectItem.time = System.currentTimeMillis();
             collectItem.save();
+        }
+    }
+
+    class SaveWhereThread extends Thread{
+        private String name,desc;
+        private Double poiLat,poiLon;
+        private int type;
+
+        private SaveWhereThread(int type,String name,String desc,double poiLat,double poiLon){
+            this.name =  name;
+            this.desc = desc;
+            this.poiLat = poiLat;
+            this.poiLon = poiLon;
+            this.type = type;
+        }
+
+        @Override
+        public void run() {
+            super.run();
+            LogUtils.d("Date","SaveCollect");
+            WherePoi whereItem = new WherePoi();
+            whereItem.pName = name;
+            whereItem.pDesc = desc;
+            whereItem.posLat = poiLat;
+            whereItem.posLon = poiLon;
+            whereItem.type = type;
+            whereItem.time = System.currentTimeMillis();
+            whereItem.save();
         }
     }
 
@@ -154,6 +204,16 @@ public class DateHelper implements IHistoryDateHelper ,ICollectDateHelper {
                     if (mCollectListener!=null){
                         mCollectListener.onCollectCallBack(collectItems);
                     }
+                    break;
+
+                case WHERE_BACK:
+                    List<WherePoi> wherePois = (List<WherePoi>) msg.obj;
+                    if (mWhereListener!=null){
+                        mWhereListener.onWhereCallBack(wherePois);
+                    }
+                    break;
+
+                default:
                     break;
 
             }
@@ -216,6 +276,18 @@ public class DateHelper implements IHistoryDateHelper ,ICollectDateHelper {
         }
     }
 
+    class ReadWhereDate extends Thread{
+        @Override
+        public void run() {
+            super.run();
+            List<WherePoi> list = getWhereMsg();
+            Message msg  = callBackHandler.obtainMessage();
+            msg.what = WHERE_BACK;
+            msg.obj = list;
+            callBackHandler.sendMessage(msg);
+        }
+    }
+
 
     public static List<HisItem> getHistoryMsg(){
         return new Select()
@@ -227,6 +299,12 @@ public class DateHelper implements IHistoryDateHelper ,ICollectDateHelper {
     public static List<CollectItem> getCollectData(){
         return new Select()
                 .from(CollectItem.class)
+                .orderBy("time desc")
+                .execute();
+    }
+    public static List<WherePoi> getWhereMsg(){
+        return new Select()
+                .from(WherePoi.class)
                 .orderBy("time desc")
                 .execute();
     }

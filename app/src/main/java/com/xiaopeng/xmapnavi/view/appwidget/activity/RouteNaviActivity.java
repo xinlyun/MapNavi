@@ -1,6 +1,7 @@
 package com.xiaopeng.xmapnavi.view.appwidget.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -9,6 +10,8 @@ import android.os.Message;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +39,7 @@ import com.amap.api.navi.model.NaviInfo;
 import com.amap.api.navi.model.NaviLatLng;
 import com.amap.api.navi.view.NextTurnTipView;
 import com.amap.api.navi.view.RouteOverLay;
+import com.amap.api.navi.view.TrafficBarView;
 import com.autonavi.tbt.NaviStaticInfo;
 import com.autonavi.tbt.TrafficFacilityInfo;
 import com.xiaopeng.amaplib.util.TTSController;
@@ -58,11 +62,15 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	AMapNaviView mAMapNaviView;
 	TextureMapView mTmap;
 	private AMap mAmap;
+	private AMap mNaviAmap;
 	private ILocationProvider mLocationPro;
 	private Bundle saveBundle;
 	NextTurnTipView mNextView;
 	private TextView mTxLenght,mTxFrom,mTxTo,mTxTimeNeed,mTxLenghtNeed;
 	private CircleImageView mCivShow;
+	private RelativeLayout mUnLockView;
+	private FrameLayout mTmapLayout;
+	private boolean isTraff = false;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
@@ -75,7 +83,8 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		mLocationPro = LocationProvider.getInstence(this);
 
 		mAMapNaviView = (AMapNaviView) findViewById(R.id.navi_view);
-		mAMapNaviView.setAMapNaviViewListener(this);
+
+
 		initView();
 		mAMapNaviView.postDelayed(new Runnable() {
 			@Override
@@ -92,6 +101,9 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 
 		mAMapNaviView.onCreate(saveBundle);
 		mAMapNaviView.setAMapNaviViewListener(RouteNaviActivity.this);
+
+		mNaviAmap = mAMapNaviView.getMap();
+		mNaviAmap.setTrafficEnabled(isTraff);
 		boolean gps=getIntent().getBooleanExtra("gps", true);
 		if(gps){
 			mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
@@ -121,6 +133,17 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		mTxTimeNeed		= (TextView) findViewById(R.id.tx_time_need);
 		mTxLenghtNeed	= (TextView) findViewById(R.id.tx_length_need);
 		mCivShow		= (CircleImageView) findViewById(R.id.civ_show_all);
+		mUnLockView		= (RelativeLayout) findViewById(R.id.view_unlock);
+		mTmapLayout		= (FrameLayout) findViewById(R.id.mapview_frlayout);
+
+		findViewById(R.id.btn_exit).setOnClickListener(this);
+		findViewById(R.id.btn_rader_nave).setOnClickListener(this);
+		findViewById(R.id.btn_recalue).setOnClickListener(this);
+		findViewById(R.id.btn_traffi_state).setOnClickListener(this);
+		findViewById(R.id.btn_zoom_plus).setOnClickListener(this);
+		findViewById(R.id.btn_zoom_jian).setOnClickListener(this);
+		findViewById(R.id.btn_setting).setOnClickListener(this);
+		findViewById(R.id.btn_goto_again).setOnClickListener(this);
 	}
 	private void initMap(){
 		AMapNaviViewOptions viewOptions = mAMapNaviView.getViewOptions();
@@ -128,6 +151,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		mAMapNaviView.setViewOptions(viewOptions);
 		mNextView = (NextTurnTipView) findViewById(R.id.nttv_navi);
 		mAMapNaviView.setLazyNextTurnTipView(mNextView);
+		mAMapNaviView.setLazyTrafficBarView((TrafficBarView) findViewById(R.id.tbv_show));
 	}
 
 	@Override
@@ -236,18 +260,18 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			strTimeNeed.append(getString(R.string.hour));
 			strTimeNeed.append(timeMinN);
 			strTimeNeed.append(getString(R.string.min));
-			strTimeNeed.append("\n");
-			strTimeNeed.append(getString(R.string.need));
+//			strTimeNeed.append("\n");
+//			strTimeNeed.append(getString(R.string.need));
 		}else if (timeMin>0){
 			strTimeNeed.append(timeMin);
 			strTimeNeed.append(getString(R.string.min));
-			strTimeNeed.append("\n");
-			strTimeNeed.append(getString(R.string.need));
+//			strTimeNeed.append("\n");
+//			strTimeNeed.append(getString(R.string.need));
 		}else {
 			strTimeNeed.append(allTime);
 			strTimeNeed.append(getString(R.string.second));
-			strTimeNeed.append("\n");
-			strTimeNeed.append(getString(R.string.need));
+//			strTimeNeed.append("\n");
+//			strTimeNeed.append(getString(R.string.need));
 		}
 		mTxTimeNeed.setText(strTimeNeed);
 
@@ -258,13 +282,13 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			int killMile = allPathLenght/1000;
 			strLengthNeed.append(killMile);
 			strLengthNeed.append(getString(R.string.kmile));
-			strLengthNeed.append("\n");
-			strLengthNeed.append(getString(R.string.need));
+//			strLengthNeed.append("\n");
+//			strLengthNeed.append(getString(R.string.need));
 		}else {
 			strLengthNeed.append(allPathLenght);
 			strLengthNeed.append(getString(R.string.mile));
-			strLengthNeed.append("\n");
-			strLengthNeed.append(getString(R.string.need));
+//			strLengthNeed.append("\n");
+//			strLengthNeed.append(getString(R.string.need));
 		}
 		mTxLenghtNeed.setText(strLengthNeed);
 	}
@@ -274,6 +298,13 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	@Override
 	public void onLockMap(boolean isLock) {
 		LogUtils.d(TAG,"onLockMap:"+isLock);
+		if (isLock){
+			mUnLockView.setVisibility(View.GONE);
+			mTmapLayout.setVisibility(View.VISIBLE);
+		}else {
+			mUnLockView.setVisibility(View.VISIBLE);
+			mTmapLayout.setVisibility(View.GONE);
+		}
 	}
 
 	@Override
@@ -288,7 +319,48 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	@Override
 	public void onClick(View view) {
 		switch (view.getId()){
+			case R.id.btn_exit:
+				finish();
+				break;
 
+			case R.id.btn_rader_nave:
+				//开始轻导航
+				beginRaderNavi();
+				break;
+
+			case R.id.btn_recalue:
+				//重新规划路径
+				mLocationPro.reCalue();
+				break;
+
+			case R.id.btn_traffi_state:
+				//路况
+				changeTriffical();
+				break;
+
+			case R.id.btn_zoom_plus:
+				//放大
+				if (mNaviAmap!=null) {
+					mNaviAmap.animateCamera(CameraUpdateFactory.zoomIn());
+				}
+				break;
+
+			case R.id.btn_zoom_jian:
+				//缩小
+				if (mNaviAmap!=null) {
+					mNaviAmap.animateCamera(CameraUpdateFactory.zoomOut());
+				}
+				break;
+
+			case R.id.btn_setting:
+				//TODO
+				//打开设置
+				break;
+
+			case R.id.btn_goto_again:
+				//继续导航
+				mAMapNaviView.recoverLockMode();
+				break;
 
 			default:
 				break;
@@ -325,7 +397,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 					if (toPoint!=null && fromPoint!=null) {
 						LatLngBounds bounds = LatLngBounds.builder().include(new LatLng(fromPoint.getLatitude(), fromPoint.getLongitude()))
 								.include(new LatLng(toPoint.getLatitude(), toPoint.getLongitude())).build();
-						CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, 60);
+						CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, 30);
 						mAmap.animateCamera(update);
 
 					}
@@ -359,13 +431,13 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 
 	@Override
 	public void onCameraChangeFinish(CameraPosition cameraPosition) {
-		mCivShow.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				mAmap.getMapScreenShot(listener);
-				deleyHandler.sendEmptyMessageDelayed(UPDATE_LITTLE_MAP,60 * 1000);
-			}
-		},600);
+//		mCivShow.postDelayed(new Runnable() {
+//			@Override
+//			public void run() {
+//				mAmap.getMapScreenShot(listener);
+//				deleyHandler.sendEmptyMessageDelayed(UPDATE_LITTLE_MAP,60 * 1000);
+//			}
+//		},600);
 
 	}
 
@@ -381,4 +453,28 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			}
 		}
 	};
+
+	private void changeTriffical(){
+		if (mNaviAmap!=null) {
+			isTraff = !isTraff;
+			mNaviAmap.setTrafficEnabled(isTraff);
+			if (isTraff){
+//				mImgBtnLukuang.setImageResource(R.drawable.lukuang_00);
+			}else {
+//				mImgBtnLukuang.setImageResource(R.drawable.lukuang_01);
+			}
+
+		}
+	}
+
+	private void beginRaderNavi(){
+		NaviLatLng naviLatLng = mLocationPro.getNaviEndPoi();
+		Intent intent = new Intent(this,RadarNaviActivity.class);
+		Bundle bundle = new Bundle();
+		bundle.putDouble("lat",naviLatLng.getLatitude());
+		bundle.putDouble("lon",naviLatLng.getLongitude());
+		intent.putExtras(bundle);
+		startActivity(intent);
+		this.finish();
+	}
 }

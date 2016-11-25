@@ -73,14 +73,14 @@ import java.util.Map;
 /**
  * Created by linzx on 2016/10/13.
  */
-public class ShowPosiActivity extends Activity implements XpNaviCalueListener
+public class ShowPosiActivity extends Activity implements XpNaviCalueListener,BaseFuncActivityInteface
 {
 
     private static final String TAG = "ShowPosiActivity";
     private static final String ACTION_NAVI_COMP = "ACTION_COMP";
     private static final String NAVI_MSG ="ints";
     private static final String NAVI_POI ="NAVI_POI";
-
+    private List<Fragment> mFragments;
 
     private MapView mapView ;
     private FrameLayout mLlFragAdd;
@@ -107,6 +107,7 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
         super.onCreate(savedInstanceState);
+        mFragments = new ArrayList<>();
         setContentView(R.layout.activity_search_posi);
 //        setDragEdge(SwipeBackLayout.DragEdge.LEFT);
         mLocationPro = LocationProvider.getInstence(this);
@@ -280,25 +281,33 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
     }
 
     public void requestRouteNavi(){
-        FragmentManager fragmentManager = getFragmentManager();
-        radarNaviFragment.setMapView(mapView);
-        radarNaviFragment.setToPoint(toPoint);
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.ll_show_fragment,radarNaviFragment);
-        transaction.commit();
-        mapView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (fromPoint!=null && toPoint!=null){
-                    isReadyNavi = false;
-                    startList.clear();
-                    startList.add(new NaviLatLng(fromPoint.getLatitude(),fromPoint.getLongitude()));
-                    endList.clear();
-                    endList.add(new NaviLatLng(toPoint.getLatitude(),toPoint.getLongitude()));
-                    mLocationPro.calueRunWay(startList,wayList,endList);
-                }
-            }
-        },150);
+//        isReadyNavi = false;
+//        FragmentManager fragmentManager = getFragmentManager();
+//        radarNaviFragment.setMapView(mapView);
+//        radarNaviFragment.setToPoint(toPoint);
+//        FragmentTransaction transaction = fragmentManager.beginTransaction();
+//        transaction.replace(R.id.ll_show_fragment,radarNaviFragment);
+//        transaction.commit();
+//        mapView.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (fromPoint!=null && toPoint!=null){
+//                    LogUtils.d(TAG,"reCalue navi");
+//                    startList.clear();
+//                    startList.add(new NaviLatLng(fromPoint.getLatitude(),fromPoint.getLongitude()));
+//                    endList.clear();
+//                    endList.add(new NaviLatLng(toPoint.getLatitude(),toPoint.getLongitude()));
+//                    mLocationPro.calueRunWay(startList,wayList,endList);
+//                }
+//            }
+//        },150);
+
+        Intent intent = new Intent(this,RadarNaviActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putDouble("lat",toPoint.getLatitude());
+        bundle.putDouble("lon",toPoint.getLongitude());
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     @Override
@@ -314,4 +323,47 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener
         mapView.onPause();
     }
 
+    @Override
+    public void exitFragment() {
+        if (mFragments.size()==0)return;
+        if (mFragments.size()==1) {
+            FragmentManager manager = getFragmentManager();
+            FragmentTransaction transaction = manager.beginTransaction();
+            transaction.remove(mFragments.remove(mFragments.size() - 1));
+            transaction.commit();
+        }else {
+            mFragments.remove(mFragments.size()-1);
+            FragmentManager manager = getFragmentManager();
+            FragmentTransaction transaction = manager.beginTransaction();
+            Fragment tFragment = mFragments.get(mFragments.size()-1);
+            transaction.replace(R.id.ll_show_fragment,tFragment);
+            transaction.commit();
+        }
+    }
+
+    @Override
+    public void shouldFinish() {
+        finish();
+    }
+
+    @Override
+    public void startAcitivity(Class<?> cls, Bundle bundle) {
+        Intent intent = new Intent(this,cls);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
+    @Override
+    public void startFragment(Fragment fragment) {
+        mFragments.add(fragment);
+        FragmentManager manager = getFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.ll_show_fragment,fragment);
+        transaction.commit();
+    }
+
+    @Override
+    public void startFragment(Class<?> cls) {
+
+    }
 }

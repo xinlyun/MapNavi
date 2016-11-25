@@ -24,9 +24,15 @@ public class NaviPathAdapter extends ArrayAdapter{
     private int[] ints;
 
     private int index = 0;
+    private Context mContext;
     public NaviPathAdapter(Context context, int resource) {
         super(context, resource);
         viewHashMap = new HashMap<>();
+        mContext = context;
+
+    }
+
+    public void clickOne(int id){
 
     }
 
@@ -41,10 +47,14 @@ public class NaviPathAdapter extends ArrayAdapter{
         for (int i = 0 ;i<hashMap.size();i++){
             typeStrs[i] = "方案"+(i+1);
         }
-        int wasInt = getMustWayLength(hashMap,ints);
-        typeStrs[wasInt] = "路程最短";
-        wasInt = getMustFastWay(hashMap,ints);
-        typeStrs[wasInt] = "用时最短";
+        try {
+            int wasInt = getMustWayLength(hashMap, ints);
+            typeStrs[wasInt] = "路程最短";
+            wasInt = getMustFastWay(hashMap, ints);
+            typeStrs[wasInt] = "用时最短";
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private int getMustWayLength(HashMap<Integer,AMapNaviPath> hashMap,int[] ints){
@@ -90,6 +100,7 @@ public class NaviPathAdapter extends ArrayAdapter{
             view = LayoutInflater.from(getContext()).inflate(R.layout.layout_gradview_item,null);
             itemHolder.tvShowType = (TextView) view .findViewById(R.id.tv_type_show);
             itemHolder.tvShowMsg = (TextView) view.findViewById(R.id.tv_msg_show);
+            itemHolder.tvShowDis = (TextView) view.findViewById(R.id.tv_type_show_2);
             view.setTag(itemHolder);
         }else {
             view = convertView;
@@ -117,7 +128,8 @@ public class NaviPathAdapter extends ArrayAdapter{
             minStr  = ""+min+"分";
         }
         secStr = ""+path.getAllTime()/60+"秒";
-        String timeString = "用时:"+hourStr+minStr;
+        String timeString = hourStr+minStr;
+
 //        +secStr;
 
         String lengthKm,lengthM;
@@ -128,10 +140,21 @@ public class NaviPathAdapter extends ArrayAdapter{
             lengthKm = ""+Km+"公里";
         }
         lengthM = ""+path.getAllLength()%1000+"米";
-        String lengthStr = "距离:"+lengthKm+lengthM;
+        String lengthStr = lengthKm+lengthM;
 
         String allMsg = timeString+"\n"+lengthStr;
-        itemHolder.tvShowMsg.setText(allMsg);
+        itemHolder.tvShowMsg.setText(timeString);
+        itemHolder.tvShowDis.setText(lengthStr);
+        if (index == position){
+            itemHolder.tvShowDis.setTextColor(mContext.getResources().getColor(R.color.blue));
+            itemHolder.tvShowType.setTextColor(mContext.getResources().getColor(R.color.blue));
+            itemHolder.tvShowMsg.setTextColor(mContext.getResources().getColor(R.color.blue));
+        }else {
+            itemHolder.tvShowDis.setTextColor(mContext.getResources().getColor(R.color.gray_btn_bg_pressed_color));
+            itemHolder.tvShowType.setTextColor(mContext.getResources().getColor(R.color.gray_btn_bg_pressed_color));
+            itemHolder.tvShowMsg.setTextColor(mContext.getResources().getColor(R.color.black));
+        }
+
         return view;
     }
 
@@ -141,6 +164,6 @@ public class NaviPathAdapter extends ArrayAdapter{
     }
 
     class ItemHolder{
-        TextView tvShowType,tvShowMsg;
+        TextView tvShowType,tvShowMsg,tvShowDis;
     }
 }
