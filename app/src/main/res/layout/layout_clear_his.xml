@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
+    android:orientation="vertical" android:layout_width="match_parent"
     android:id="@+id/back_ll"
-    android:minHeight="131px"
-    android:layout_height="131px">
+    android:gravity="center"
+    android:minHeight="149px"
+    android:layout_height="149px">
+
     <TextView
-        android:textSize="35px"
-        android:textColor="@color/black"
+        android:textSize="24px"
+        android:textColor="@color/a3a3a3"
         android:gravity="center"
         android:text="清除历史记录"
         android:layout_width="match_parent"

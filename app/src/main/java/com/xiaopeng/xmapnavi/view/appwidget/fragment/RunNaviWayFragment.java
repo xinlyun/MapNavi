@@ -3,24 +3,21 @@ package com.xiaopeng.xmapnavi.view.appwidget.fragment;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.pm.ProviderInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,21 +25,17 @@ import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdate;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
-import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.LatLngBounds;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
-import com.amap.api.maps.model.Polyline;
 import com.amap.api.navi.model.AMapNaviPath;
 import com.amap.api.navi.model.AMapNaviStep;
 import com.amap.api.navi.model.NaviLatLng;
-import com.amap.api.navi.model.NaviPath;
 import com.amap.api.navi.view.RouteOverLay;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.route.BusRouteResult;
-import com.amap.api.services.route.DrivePath;
 import com.amap.api.services.route.DriveRouteResult;
 import com.amap.api.services.route.RideRouteResult;
 import com.amap.api.services.route.RouteSearch;
@@ -52,16 +45,15 @@ import com.xiaopeng.lib.utils.utils.LogUtils;
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
-import com.xiaopeng.xmapnavi.presenter.INaviViewProvide;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.ShowPosiActivity;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.NaviPathAdapter;
+import com.xiaopeng.xmapnavi.view.appwidget.selfview.LikeChangeDialog;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.NaviChanDialog;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.RunnableFuture;
 
 /**
  * Created by linzx on 2016/10/15.
@@ -80,6 +72,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     private RouteOverLay mRouteOverLay;
     private boolean isTouch = false;
     private List<RouteOverLay> saveOverLay = new ArrayList<>();
+    private LikeChangeDialog mSelectLikeDialog;
     public void setMapView(MapView mapView){
         mAmapView = mapView;
         mAMap = mAmapView.getMap();
@@ -130,7 +123,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     private GridView mGvShowNaviPaths;
     private TextView mTvShowMsg;
     private int[] ints;
-    private TextView mBtnStartNavi;
+    private LinearLayout mBtnStartNavi;
     MarkerOptions mOptions;
     long timeRe ;
     Bitmap bi;
@@ -138,6 +131,8 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     private AMapNaviPath pathx;
     private NaviChanDialog mNaviChioceDialog;
     private ProgressDialog mProgDialog;
+    private boolean isTricall = true;
+    private ImageView mIvLKicon;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
@@ -166,6 +161,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         super.onStart();
         readNaviMsg();
         mLocaionPro.addNaviCalueListner(this);
+        mAMap.setTrafficEnabled(isTricall);
     }
 
     @Override
@@ -177,13 +173,16 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     private void initView(){
         mGvShowNaviPaths    = (GridView) findViewById(R.id.gv_show_an);
         mTvShowMsg          = (TextView) findViewById(R.id.tv_show_msg);
-        mBtnStartNavi       = (TextView) findViewById(R.id.btn_start_navi);
-
+        mBtnStartNavi       = (LinearLayout) findViewById(R.id.btn_start_navi);
+        mIvLKicon           = (ImageView) findViewById(R.id.iv_lukuang_icon);
         //--listener--//
         mBtnStartNavi       .setOnClickListener(this);
         findViewById(R.id.btn_start_route_navi).setOnClickListener(this);
         findViewById(R.id.btn_pianhao).setOnClickListener(this);
         findViewById(R.id.btn_exit).setOnClickListener(this);
+        findViewById(R.id.btn_zoom_plus).setOnClickListener(this);
+        findViewById(R.id.btn_zoom_jian).setOnClickListener(this);
+        findViewById(R.id.btn_lukuang).setOnClickListener(this);
         mBtnStartNavi.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -210,6 +209,8 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
 
 
+
+
     @Override
     public void onStop() {
         super.onStop();
@@ -222,10 +223,12 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
     public void setSucceful(int[] ints){
         this.ints = ints;
+
     }
     private HashMap<Integer, AMapNaviPath> paths;
     private void readNaviMsg(){
         routeOverlays.clear();
+        mAMap.clear(false);
         mAmapView.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -252,7 +255,9 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 //                public void run() {
             adapter = new NaviPathAdapter(getActivity(), R.layout.layout_gradview_item);
             adapter.setDate(paths, ints);
+            mGvShowNaviPaths.setNumColumns(ints.length);
             mGvShowNaviPaths.setAdapter(adapter);
+
             mGvShowNaviPaths.setOnItemClickListener(mClickPathItemListner);
 //                }
 //            }, 400);
@@ -514,12 +519,46 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                 break;
 
             case R.id.btn_pianhao:
-                mNaviChioceDialog.show();
+                if (mSelectLikeDialog==null){
+                    mSelectLikeDialog = new LikeChangeDialog(getActivity());
+                    mSelectLikeDialog.setOnSelectLikeStyle(likeStyle);
+                }
+                mSelectLikeDialog.show();
+//                mNaviChioceDialog.show();
                 break;
 
             case  R.id.btn_exit:
                 getActivity().finish();
                 break;
+
+            case R.id.btn_zoom_plus:
+                if(mAMap!=null){
+                    mAMap.animateCamera(CameraUpdateFactory.zoomIn());
+                }
+                break;
+
+            case R.id.btn_zoom_jian:
+                if(mAMap!=null){
+                    mAMap.animateCamera(CameraUpdateFactory.zoomOut());
+                }
+                break;
+
+            case R.id.btn_lukuang:
+                isTricall = !isTricall;
+                if (mAMap!=null){
+                    mAMap.setTrafficEnabled(isTricall);
+
+                }
+                if (mIvLKicon!=null) {
+                    if (isTricall) {
+                        mIvLKicon.setImageResource(R.drawable.icon_lukuang_01);
+                    }else {
+                        mIvLKicon.setImageResource(R.drawable.icon_lukuang_02);
+                    }
+                }
+
+                break;
+
             default:
                 break;
 
@@ -551,7 +590,6 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     private int nowNum;
     @Override
     public void onTouch(MotionEvent motionEvent) {
-        LogUtils.d(TAG,"onTouch:");
         if (mAMap!=null) {
             switch (motionEvent.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -715,4 +753,15 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             }
         },6 * 1000);
     }
+
+    private LikeChangeDialog.OnSelectLikeStyle likeStyle = new LikeChangeDialog.OnSelectLikeStyle() {
+
+        @Override
+        public void changeLikeStyle(boolean congestion, boolean avCost, boolean highSpeed, boolean avHighSpeed) {
+            mLocaionPro.setNaviStyle(congestion,avHighSpeed,avCost,highSpeed);
+            mLocaionPro.reCalue();
+        }
+    };
+
+
 }

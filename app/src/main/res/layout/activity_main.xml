@@ -88,7 +88,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
                 <LinearLayout
-
+                    android:background="@drawable/text_trans_bg"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="107px">
@@ -114,6 +114,7 @@
                     android:layout_height="1px" />
 
                 <LinearLayout
+                    android:background="@drawable/text_trans_bg"
                     android:id="@+id/d3_lukuang"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
@@ -140,6 +141,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1px" />
                 <LinearLayout
+                    android:background="@drawable/text_trans_bg"
                     android:id="@+id/d3_setting"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
@@ -181,6 +183,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
                 <LinearLayout
+                    android:background="@drawable/text_trans_bg"
                     android:id="@+id/tx_goto_complete"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
@@ -207,6 +210,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1px" />
                 <LinearLayout
+                    android:background="@drawable/text_trans_bg"
                     android:id="@+id/tx_goto_home"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
@@ -245,7 +249,7 @@
 
                     <TextView
 
-                        android:background="@drawable/text_trans_bg"
+
                         android:textSize="22px"
                         android:gravity="center"
                         android:textColor="@color/first_text_color"
@@ -378,13 +382,13 @@
                 <Button
                     android:visibility="gone"
                     android:text="@string/around"
-                    android:layout_weight="1"
+
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
                 <Button
+                    android:background="@drawable/icon_collect"
                     android:id="@+id/btn_collect"
-                    android:text="@string/shouchang"
-                    android:layout_weight="1"
+
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 
@@ -451,12 +455,10 @@
 
     <FrameLayout
         android:id="@+id/ll_show_fragment"
-        android:layout_width="900px"
-        android:layout_marginLeft="90px"
+        android:layout_width="match_parent"
 
-        android:layout_marginTop="5px"
 
-        android:layout_height="1016px"></FrameLayout>
+        android:layout_height="match_parent"></FrameLayout>
 
 
 </RelativeLayout>

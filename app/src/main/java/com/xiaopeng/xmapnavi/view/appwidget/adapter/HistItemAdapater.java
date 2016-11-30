@@ -69,7 +69,7 @@ public class HistItemAdapater extends ArrayAdapter {
                     view = LayoutInflater.from(getContext()).inflate(R.layout.layout_fix_list_item, null);
                     itemHolder.tvShowName = (TextView) view.findViewById(R.id.pre_list_name);
                     itemHolder.tvShowMsg = (TextView) view.findViewById(R.id.pre_list_posi);
-                    itemHolder.tvDis = (TextView) view.findViewById(R.id.pre_list_dis);
+//                    itemHolder.tvDis = (TextView) view.findViewById(R.id.pre_list_dis);
                     itemHolder.llTouchNavi = (LinearLayout) view.findViewById(R.id.touch_to_navi);
                 } else {
                     view = LayoutInflater.from(getContext()).inflate(R.layout.layout_fix_list_item_1, null);
@@ -87,7 +87,7 @@ public class HistItemAdapater extends ArrayAdapter {
                 dis = dis / 1000f;
                 DecimalFormat df = new DecimalFormat("0.0");
                 String result = df.format(dis);
-                itemHolder.tvDis.setText(result + "KM");
+//                itemHolder.tvDis.setText(result + "KM");
                 itemHolder.llTouchNavi.setOnClickListener(new lvButtonListener(position));
 
             } else {
@@ -123,7 +123,7 @@ public class HistItemAdapater extends ArrayAdapter {
     class ItemHolder{
         TextView tvShowName;
         TextView tvShowMsg;
-        TextView tvDis;
+//        TextView tvDis;
         LinearLayout llTouchNavi;
     }
 }

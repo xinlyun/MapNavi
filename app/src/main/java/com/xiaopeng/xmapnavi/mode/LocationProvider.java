@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 
 import com.amap.api.maps.offlinemap.OfflineMapManager;
+import com.amap.api.navi.enums.BroadcastMode;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import android.util.SparseArray;
 import android.widget.Toast;
@@ -107,7 +108,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private static final int QUEST_PAGE_SIZE = 10;
     private static final int EMULATOR_NAVISPEED = 60;
     //---------------------------//
-
+    private int mBroadCastMode = BroadcastMode.CONCISE;
+    private List<NaviLatLng> saveEndList = new ArrayList<>();
     public static void init(Context context) {
         mContext = context;
         mLp      = new LocationProvider(context);
@@ -226,14 +228,18 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
             e.printStackTrace();
         }
         if (strategyFlag >= 0) {
+
             aMapNavi.calculateDriveRoute(startList, endList, wayList, strategyFlag);
             LogUtils.d(TAG,"策略:" + strategyFlag);
         }
+        saveEndList.clear();
+        saveEndList.addAll(endList);
     }
 
     @Override
     public boolean tryCalueRunWay(List<NaviLatLng> endList) {
         if (mAmapLocation==null)return false;
+
         List<NaviLatLng> startList = new ArrayList<>();
         startList.add(new NaviLatLng(mAmapLocation.getLatitude(),mAmapLocation.getLongitude()));
         List<NaviLatLng> wayList = new ArrayList<>();
@@ -247,6 +253,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
             aMapNavi.calculateDriveRoute(startList, endList, wayList, strategyFlag);
             LogUtils.d(TAG,"策略:" + strategyFlag);
         }
+        saveEndList.clear();
+        saveEndList.addAll(endList);
         return true;
     }
 
@@ -706,13 +714,23 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     }
 
     @Override
-    public void reCalue() {
+    public void reCalueInNavi() {
         try {
             aMapNavi.reCalculateRoute(aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, true));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void reCalue() {
+        //TODO
+        LogUtils.d(TAG,"reCalue");
+        if (saveEndList.size()>0 ){
+            tryCalueRunWay(new ArrayList<NaviLatLng>(saveEndList));
+        }
+    }
+
 
     @Override
     public int[] getPathsInts() {
@@ -737,6 +755,32 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public String getSearchStr() {
         return saveSearchStr;
+    }
+
+    @Override
+    public int getBroadCastMode() {
+        return mBroadCastMode;
+    }
+
+    @Override
+    public void setBroadCastMode(int mode) {
+        mBroadCastMode = mode;
+        aMapNavi.setBroadcastMode(mode);
+    }
+
+    @Override
+    public boolean getNaviLikeStyle(int num) {
+        switch (num){
+            case 0:
+                return congestion;
+            case 1:
+                return cost;
+            case 2:
+                return hightspeed;
+            case 3:
+                return avoidhightspeed;
+        }
+        return false;
     }
 
 

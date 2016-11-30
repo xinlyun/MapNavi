@@ -23,6 +23,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.maps.AMap;
@@ -118,7 +119,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
     private ProgressDialog mProgDialog;
     private IHistoryDateHelper dateHelper;
     private LinearLayout mLlExit;
-    private EditText mEdtShowSearch;
+    private TextView mEdtShowSearch;
     public void setMapView(MapView mapView){
         mAmapView = mapView;
         mAMap = mAmapView.getMap();
@@ -153,7 +154,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
 
     private void initView(){
         mLlExit         = (LinearLayout) findViewById(R.id.ll_exit);
-        mEdtShowSearch  = (EditText) findViewById(R.id.edt_show_search);
+        mEdtShowSearch  = (TextView) findViewById(R.id.edt_show_search);
         mBtPull         = (Button) findViewById(R.id.btn_pull);
         mLlByPull       = (LinearLayout) findViewById(R.id.ll_search_layout);
         mHistoryLv      = (ListView) findViewById(R.id.prepare_listview);
@@ -176,7 +177,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
 
         mBtPull .setOnTouchListener(this);
         mLlExit         .setOnClickListener(this);
-
+        findViewById(R.id.btn_start_navi).setOnClickListener(this);
     }
     /**
      * 初始化AMap对象
@@ -303,6 +304,23 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
             case R.id.ll_exit:
                 getActivity().finish();
                 break;
+
+            case R.id.btn_start_navi:
+                startCalueNavi();
+                break;
+        }
+    }
+
+    private void startCalueNavi(){
+        //TODO
+        if (mAdapter==null)return;
+        int index = mAdapter.getIndex();
+        if (index!=-1) {
+            PoiItem item = poiItems.get(index);
+            dateHelper.savePoiItem(item);
+//            Marker marker = poiOverlay.getMarker(posi);
+//            LatLng latLng = marker.getPosition();
+            requestToNavi(lp,item.getLatLonPoint());
         }
     }
 

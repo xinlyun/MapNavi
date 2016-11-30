@@ -74,4 +74,6 @@
     <color name="text_blue">#4f9bfe</color>
 
     <color name="line_red">#ff2222</color>
+    <color name="grey_bg_color">#f7f7f7</color>
+    <color name="gray_text_color">#a3a3a3</color>
 </resources>

@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="478px"
-    android:layout_height="106px"
-    android:background="@drawable/shadowss"
-    android:paddingBottom="14px"
+    android:layout_width="wrap_content"
+    android:layout_height="104px"
+    android:background="@drawable/img_markinfo_0"
+    android:paddingBottom="16px"
     android:paddingTop="4px"
     android:paddingLeft="9px"
     android:paddingRight="9px"
     >
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="106px" />
+        android:layout_height="80px" />
     <LinearLayout
 
         android:orientation="vertical"
         android:background="@drawable/white_backgrouad"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="88px"
         >
         <LinearLayout
             android:orientation="horizontal"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent">
             <Button
                 android:textColor="@color/white"
@@ -32,20 +32,22 @@
                 android:layout_width="88px"
                 android:layout_height="match_parent" />
             <TextView
+                android:layout_marginLeft="28px"
+                android:layout_marginRight="28px"
                 android:id="@+id/tx_tip_show"
                 android:textSize="24px"
                 android:textColor="@color/first_text_color"
                 android:gravity="center"
                 android:text="@string/loading_hard"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
 
         </LinearLayout>
-        <TextView
-            android:textSize="30px"
-            android:text="    "
-            android:layout_width="478px"
-            android:layout_height="match_parent" />
+        <!--<TextView-->
+            <!--android:textSize="30px"-->
+            <!--android:text="    "-->
+            <!--android:layout_width="478px"-->
+            <!--android:layout_height="match_parent" />-->
     </LinearLayout>
-</FrameLayout>
+</RelativeLayout>
 

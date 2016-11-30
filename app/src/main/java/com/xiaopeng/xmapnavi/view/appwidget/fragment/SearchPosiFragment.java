@@ -99,11 +99,11 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
     }
 
     private void initView(){
-        ((TextView)findViewById(R.id.title_title)).setText(R.string.search);
+//        ((TextView)findViewById(R.id.title_title)).setText(R.string.search);
         mLvShowMsg = (DelSlideListView) findViewById(R.id.lv_show_tip_his);
         mLvShowMsg.setDeleteListioner(this);
-        findViewById(R.id.title_return).setOnClickListener(this);
-        findViewById(R.id.title_title).setOnClickListener(this);
+        findViewById(R.id.btn_return).setOnClickListener(this);
+//        findViewById(R.id.title_title).setOnClickListener(this);
         findViewById(R.id.pre_beginnavi).setOnClickListener(this);
         findViewById(R.id.btn_go_collect).setOnClickListener(this);
         mEtvSearch = (EditText) findViewById(R.id.prepare_edittext);
@@ -158,9 +158,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
     @Override
     public void onClick(View view) {
         switch (view.getId()){
-            case R.id.title_title:
-                //down//
-            case R.id.title_return:
+            case R.id.btn_return:
                 ((BaseFuncActivityInteface)getActivity()).exitFragment();
 //                getFragmentManager().popBackStack();
                 break;

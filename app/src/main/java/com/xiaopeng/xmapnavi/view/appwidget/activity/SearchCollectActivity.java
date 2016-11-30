@@ -102,7 +102,6 @@ public class SearchCollectActivity extends Activity implements View.OnClickListe
         mLvShowCollect          = (ListView) findViewById(R.id.lv_show_tip_his);
         mLvShowResult           = (ListView) findViewById(R.id.lv_show_result);
 
-        ((TextView)findViewById(R.id.title_title)).setText(R.string.search);
         findViewById(R.id.btn_sure).setOnClickListener(this);
         findViewById(R.id.btn_exit).setOnClickListener(this);
         findViewById(R.id.title_title_2).setOnClickListener(this);

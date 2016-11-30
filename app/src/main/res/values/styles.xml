@@ -46,4 +46,43 @@
         <item name="android:windowBackground">@color/transparent</item><!--背景透明-->
         <item name="android:backgroundDimEnabled">false</item><!--模糊-->
     </style>
+
+    <style name="base_text_style_24">
+        <item name="android:textSize">24px</item>
+    </style>
+
+    <style name="base_text_style_24.black" parent="base_text_style_24">
+        <item name="android:textColor">@color/first_text_color</item>
+    </style>
+
+    <style name="base_text_style_24.white" parent="base_text_style_24">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="base_text_style_24.blue" parent="base_text_style_24">
+        <item name="android:textColor">@color/text_blue</item>
+    </style>
+
+
+    <style name="base_text_style_32">
+        <item name="android:textSize">32px</item>
+    </style>
+
+    <style name="base_text_style_32.black" parent="base_text_style_32">
+        <item name="android:textColor">@color/first_text_color</item>
+    </style>
+
+    <style name="base_text_style_32.white" parent="base_text_style_32">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="base_text_style_32.blue" parent="base_text_style_32">
+        <item name="android:textColor">@color/text_blue</item>
+    </style>
+
+
+    <style name="CustomCheckboxTheme" parent="@android:style/Widget.CompoundButton.CheckBox">
+        <item name="android:button">@drawable/checkbox_style_btn</item>
+    </style>
+
 </resources>

@@ -292,7 +292,7 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener,Ba
 //            @Override
 //            public void run() {
 //                if (fromPoint!=null && toPoint!=null){
-//                    LogUtils.d(TAG,"reCalue navi");
+//                    LogUtils.d(TAG,"reCalueInNavi navi");
 //                    startList.clear();
 //                    startList.add(new NaviLatLng(fromPoint.getLatitude(),fromPoint.getLongitude()));
 //                    endList.clear();
@@ -308,6 +308,7 @@ public class ShowPosiActivity extends Activity implements XpNaviCalueListener,Ba
         bundle.putDouble("lon",toPoint.getLongitude());
         intent.putExtras(bundle);
         startActivity(intent);
+        finish();
     }
 
     @Override

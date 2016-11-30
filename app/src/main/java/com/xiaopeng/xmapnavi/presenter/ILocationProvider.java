@@ -62,10 +62,16 @@ public interface ILocationProvider {
     void startRouteNavi();
     void stopRouteNavi();
     void setNaviStyle(boolean congestion, boolean avHighSpeed, boolean avCost, boolean highSpeed);
+    void reCalueInNavi();
     void reCalue();
     int[] getPathsInts();
     NaviLatLng getNaviEndPoi();
     OfflineMapManager getOfflineMapManager();
 
     String getSearchStr();
+
+    int getBroadCastMode();
+    void setBroadCastMode(int mode);
+
+    boolean getNaviLikeStyle(int num);
 }

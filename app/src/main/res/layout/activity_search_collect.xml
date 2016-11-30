@@ -28,6 +28,8 @@
 
             <!--<include layout="@layout/title_v2"/>-->
             <LinearLayout
+                android:layout_marginLeft="2px"
+                android:layout_marginRight="2px"
                 android:background="@drawable/bg_activity_prepare_input"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
@@ -35,29 +37,34 @@
                 android:layout_height="72px">
                 <ImageView
                     android:id="@+id/btn_exit"
-                    android:src="@drawable/icon_title_bg"
+                    android:src="@drawable/icon_return"
                     android:layout_width="88px"
                     android:layout_height="match_parent" />
                 <LinearLayout
                     android:background="@drawable/white_backgrouad"
                     android:layout_marginLeft="10px"
+                    android:layout_marginRight="20px"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="56px">
                     <ImageView
                         android:src="@drawable/icon_search_01"
+
                         android:layout_width="56px"
                         android:layout_height="56px" />
                     <EditText
+                        android:layout_marginTop="3px"
+                        android:layout_marginBottom="3px"
                         android:id="@+id/prepare_edittext"
                         android:background="@color/white"
                         android:gravity="left|center_vertical"
                         android:textSize="24px"
                         android:textColorHint="@color/a3a3a3"
                         android:hint="@string/input_poin"
-                        android:layout_width="608px"
+                        android:layout_width="588px"
                         android:layout_height="match_parent" />
                     <Button
+
                         android:id="@+id/pre_beginnavi"
                         android:textSize="24px"
                         android:gravity="center"

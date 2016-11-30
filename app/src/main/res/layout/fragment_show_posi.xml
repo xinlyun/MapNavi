@@ -7,130 +7,156 @@
 
     <FrameLayout
         android:background="@drawable/shadowss"
-        android:layout_marginTop="10px"
-        android:layout_marginLeft="100px"
-        android:layout_marginRight="100px"
+        android:layout_marginTop="8px"
+        android:layout_marginLeft="90px"
+        android:paddingLeft="9px"
+        android:paddingRight="9px"
         android:paddingTop="4px"
         android:paddingBottom="14px"
-        android:layout_width="match_parent"
-        android:layout_height="118px">
+        android:layout_width="900px"
+        android:layout_height="92px">
         <LinearLayout
             android:id="@+id/ll_exit"
-            android:background="@color/gray_lite"
+            android:gravity="center_vertical"
+            android:background="@color/grey_bg_color"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <ImageView
-                android:layout_marginTop="34px"
-                android:layout_marginLeft="35px"
-                android:layout_width="31px"
-                android:layout_height="31px"
-                android:src="@drawable/icon_title_bg"/>
+                android:layout_width="88px"
+                android:layout_height="72px"
+                android:src="@drawable/icon_return"/>
             <LinearLayout
-                android:layout_marginTop="10px"
-                android:layout_marginBottom="10px"
+                
                 android:background="@drawable/white_backgrouad"
-                android:layout_marginLeft="35px"
-                android:layout_width="550px"
+                android:layout_marginRight="8px"
+                android:layout_width="match_parent"
                 android:orientation="horizontal"
-                android:layout_height="match_parent">
-                <EditText
-                    android:textSize="38px"
+                android:layout_height="56px">
+                <TextView
+                    android:gravity="center_vertical"
+                    android:textSize="30px"
                     android:background="@color/transparent"
                     android:id="@+id/edt_show_search"
-                    android:layout_width="470px"
+                    android:layout_width="600px"
                     android:layout_height="match_parent" />
                 <TextView
                     android:textSize="38px"
                     android:gravity="center"
                     android:text="X"
+                    android:layout_width="72px"
+                    android:layout_height="56px" />
+                <Button
+                    android:background="@color/blue"
+                    android:textSize="24px"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:text="@string/search"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
             </LinearLayout>
-            <Button
-                android:background="@color/blue"
-                android:textSize="35px"
-                android:gravity="center"
-                android:textColor="@color/white"
-                android:text="@string/search"
-                android:layout_marginTop="10px"
-                android:layout_marginBottom="10px"
-                android:layout_marginRight="10px"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+            
         </LinearLayout>
     </FrameLayout>
-    <LinearLayout
+    <FrameLayout
+        android:background="@drawable/shadowss"
         android:paddingTop="4px"
         android:paddingBottom="0px"
-        android:background="@drawable/shadowss"
-        android:layerType="hardware"
+        android:paddingLeft="9px"
+        android:paddingRight="9px"
+        android:layout_marginLeft="3px"
         android:layout_alignParentBottom="true"
-        android:id="@+id/ll_search_layout"
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="600px">
-        <!--<LinearLayout-->
-        <!--android:id="@+id/prepare_edit_bar"-->
-        <!--android:orientation="horizontal"-->
-        <!--android:background="@drawable/bg_activity_prepare_input"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="186px">-->
-        <!--<RelativeLayout-->
-        <!--android:layout_gravity="center_vertical"-->
-        <!--android:layout_marginLeft="31px"-->
-        <!--android:focusable="true"-->
-        <!--android:focusableInTouchMode="true"-->
-        <!--android:background="@drawable/bg_prepare_input_edittext"-->
-        <!--android:layout_width="785px"-->
-        <!--android:layout_height="116px">-->
-        <!--<EditText-->
-        <!--android:background="@null"-->
-        <!--android:id="@+id/prepare_edittext"-->
-        <!--android:textSize="45px"-->
-        <!--android:layout_marginLeft="121px"-->
-        <!--android:layout_marginRight="180px"-->
-        <!--android:textColor="@color/text_black"-->
-        <!--android:hint="搜索目的地"-->
-        <!--android:textColorHint="@color/Grey"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent" />-->
-        <!--<ImageView-->
-        <!--android:id="@+id/prepare_ttslistener"-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--android:layout_width="180px"-->
-        <!--android:layout_height="match_parent" />-->
-        <!--</RelativeLayout>-->
-        <!--<Button-->
-        <!--android:id="@+id/pre_beginnavi"-->
-        <!--android:text="搜索"-->
-        <!--android:textSize="50px"-->
-        <!--android:textColor="@color/Grey"-->
-        <!--android:background="@drawable/prepare_seach_btn_false"-->
-        <!--android:layout_gravity="center_vertical"-->
-        <!--android:layout_marginLeft="37px"-->
-        <!--android:layout_marginRight="37px"-->
-        <!--android:layout_width="194px"-->
-        <!--android:layout_height="116px" />-->
-
-        <!--</LinearLayout>-->
-
-
-        <Button
-            android:visibility="gone"
-            android:id="@+id/btn_pull"
-            android:background="@drawable/bg_navi_title"
-            android:layout_width="match_parent"
-            android:layout_height="1px" />
-
-        <ListView
-
+        android:layout_width="1074px"
+        android:layout_height="514px">
+        <LinearLayout
             android:background="@drawable/white_backgrouad"
-            android:id="@+id/prepare_listview"
+            android:id="@+id/ll_search_layout"
+            android:padding="1px"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:dividerHeight="1px"
-            android:divider="#e6e6e6"
-            android:layout_height="fill_parent"></ListView>
-    </LinearLayout>
+            android:layout_height="match_parent">
+            <!--<LinearLayout-->
+            <!--android:id="@+id/prepare_edit_bar"-->
+            <!--android:orientation="horizontal"-->
+            <!--android:background="@drawable/bg_activity_prepare_input"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="186px">-->
+            <!--<RelativeLayout-->
+            <!--android:layout_gravity="center_vertical"-->
+            <!--android:layout_marginLeft="31px"-->
+            <!--android:focusable="true"-->
+            <!--android:focusableInTouchMode="true"-->
+            <!--android:background="@drawable/bg_prepare_input_edittext"-->
+            <!--android:layout_width="785px"-->
+            <!--android:layout_height="116px">-->
+            <!--<EditText-->
+            <!--android:background="@null"-->
+            <!--android:id="@+id/prepare_edittext"-->
+            <!--android:textSize="45px"-->
+            <!--android:layout_marginLeft="121px"-->
+            <!--android:layout_marginRight="180px"-->
+            <!--android:textColor="@color/text_black"-->
+            <!--android:hint="搜索目的地"-->
+            <!--android:textColorHint="@color/Grey"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent" />-->
+            <!--<ImageView-->
+            <!--android:id="@+id/prepare_ttslistener"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:layout_width="180px"-->
+            <!--android:layout_height="match_parent" />-->
+            <!--</RelativeLayout>-->
+            <!--<Button-->
+            <!--android:id="@+id/pre_beginnavi"-->
+            <!--android:text="搜索"-->
+            <!--android:textSize="50px"-->
+            <!--android:textColor="@color/Grey"-->
+            <!--android:background="@drawable/prepare_seach_btn_false"-->
+            <!--android:layout_gravity="center_vertical"-->
+            <!--android:layout_marginLeft="37px"-->
+            <!--android:layout_marginRight="37px"-->
+            <!--android:layout_width="194px"-->
+            <!--android:layout_height="116px" />-->
+
+            <!--</LinearLayout>-->
+
+
+            <Button
+                android:visibility="gone"
+                android:id="@+id/btn_pull"
+                android:background="@drawable/bg_navi_title"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
+
+            <ListView
+
+                android:background="@drawable/white_backgrouad"
+                android:id="@+id/prepare_listview"
+                android:layout_width="match_parent"
+                android:dividerHeight="1px"
+                android:divider="@color/gray_btn_bg_pressed_color"
+                android:layout_height="403px"></ListView>
+            <ImageView
+                android:background="@color/gray_btn_bg_pressed_color"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
+            <LinearLayout
+
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <Button
+                    android:id="@+id/btn_start_navi"
+                    android:gravity="center"
+                    android:background="@color/text_blue"
+                    android:layout_width="420px"
+                    android:textSize="30px"
+                    android:textColor="@color/white"
+                    android:text="@string/calue_navi"
+                    android:layout_height="68px" />
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+
 
 </RelativeLayout>

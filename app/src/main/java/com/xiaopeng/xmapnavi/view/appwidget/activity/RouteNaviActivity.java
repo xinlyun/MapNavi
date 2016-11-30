@@ -9,11 +9,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.view.Window;
-import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdate;
@@ -23,26 +22,15 @@ import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.LatLngBounds;
 import com.amap.api.navi.AMapNavi;
-import com.amap.api.navi.AMapNaviListener;
 import com.amap.api.navi.AMapNaviView;
 import com.amap.api.navi.AMapNaviViewListener;
 import com.amap.api.navi.AMapNaviViewOptions;
-import com.amap.api.navi.model.AMapLaneInfo;
-import com.amap.api.navi.model.AMapNaviCross;
-import com.amap.api.navi.model.AMapNaviInfo;
-import com.amap.api.navi.model.AMapNaviLocation;
 import com.amap.api.navi.model.AMapNaviPath;
-import com.amap.api.navi.model.AMapNaviTrafficFacilityInfo;
-import com.amap.api.navi.model.AimLessModeCongestionInfo;
-import com.amap.api.navi.model.AimLessModeStat;
 import com.amap.api.navi.model.NaviInfo;
 import com.amap.api.navi.model.NaviLatLng;
 import com.amap.api.navi.view.NextTurnTipView;
 import com.amap.api.navi.view.RouteOverLay;
 import com.amap.api.navi.view.TrafficBarView;
-import com.autonavi.tbt.NaviStaticInfo;
-import com.autonavi.tbt.TrafficFacilityInfo;
-import com.xiaopeng.amaplib.util.TTSController;
 import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import com.xiaopeng.xmapnavi.R;
@@ -66,11 +54,12 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	private ILocationProvider mLocationPro;
 	private Bundle saveBundle;
 	NextTurnTipView mNextView;
-	private TextView mTxLenght,mTxFrom,mTxTo,mTxTimeNeed,mTxLenghtNeed;
+	private TextView mTxLenght,mTxTo,mTxTimeNeed,mTxLenghtNeed;//mTxFrom
 	private CircleImageView mCivShow;
 	private RelativeLayout mUnLockView;
 	private FrameLayout mTmapLayout;
-	private boolean isTraff = false;
+	private boolean isTraff = true;
+	private ImageView mIvLkIcon;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
@@ -128,14 +117,14 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 
 	private void initView(){
 		mTxLenght 		= (TextView) findViewById(R.id.tx_length);
-		mTxFrom 		= (TextView) findViewById(R.id.tx_from_road);
+//		mTxFrom 		= (TextView) findViewById(R.id.tx_from_road);
 		mTxTo			= (TextView) findViewById(R.id.tx_to_road);
 		mTxTimeNeed		= (TextView) findViewById(R.id.tx_time_need);
 		mTxLenghtNeed	= (TextView) findViewById(R.id.tx_length_need);
 		mCivShow		= (CircleImageView) findViewById(R.id.civ_show_all);
 		mUnLockView		= (RelativeLayout) findViewById(R.id.view_unlock);
 		mTmapLayout		= (FrameLayout) findViewById(R.id.mapview_frlayout);
-
+		mIvLkIcon 		= (ImageView) findViewById(R.id.iv_lukuang_icon);
 		findViewById(R.id.btn_exit).setOnClickListener(this);
 		findViewById(R.id.btn_rader_nave).setOnClickListener(this);
 		findViewById(R.id.btn_recalue).setOnClickListener(this);
@@ -144,10 +133,12 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		findViewById(R.id.btn_zoom_jian).setOnClickListener(this);
 		findViewById(R.id.btn_setting).setOnClickListener(this);
 		findViewById(R.id.btn_goto_again).setOnClickListener(this);
+		findViewById(R.id.btn_lukuang).setOnClickListener(this);
 	}
 	private void initMap(){
 		AMapNaviViewOptions viewOptions = mAMapNaviView.getViewOptions();
 		viewOptions.setLayoutVisible(false);
+		viewOptions.setTrafficBarEnabled(false);
 		mAMapNaviView.setViewOptions(viewOptions);
 		mNextView = (NextTurnTipView) findViewById(R.id.nttv_navi);
 		mAMapNaviView.setLazyNextTurnTipView(mNextView);
@@ -246,7 +237,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		strRoadNew.append(getString(R.string.from));
 		strRoadNew.append(naviinfo.getCurrentRoadName());
 		strRoadNew.append(getString(R.string.into));
-		mTxFrom.setText(strRoadNew);
+//		mTxFrom.setText(strRoadNew);
 		mTxTo.setText(naviinfo.getNextRoadName());
 
 
@@ -301,9 +292,11 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		if (isLock){
 			mUnLockView.setVisibility(View.GONE);
 			mTmapLayout.setVisibility(View.VISIBLE);
+			findViewById(R.id.tbv_show).setVisibility(View.VISIBLE);
 		}else {
 			mUnLockView.setVisibility(View.VISIBLE);
 			mTmapLayout.setVisibility(View.GONE);
+			findViewById(R.id.tbv_show).setVisibility(View.GONE);
 		}
 	}
 
@@ -330,7 +323,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 
 			case R.id.btn_recalue:
 				//重新规划路径
-				mLocationPro.reCalue();
+				mLocationPro.reCalueInNavi();
 				break;
 
 			case R.id.btn_traffi_state:
@@ -360,6 +353,10 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			case R.id.btn_goto_again:
 				//继续导航
 				mAMapNaviView.recoverLockMode();
+				break;
+
+			case R.id.btn_lukuang:
+				changeTriffical();
 				break;
 
 			default:
@@ -459,8 +456,10 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			isTraff = !isTraff;
 			mNaviAmap.setTrafficEnabled(isTraff);
 			if (isTraff){
+				mIvLkIcon.setImageResource(R.drawable.icon_lukuang_01);
 //				mImgBtnLukuang.setImageResource(R.drawable.lukuang_00);
 			}else {
+				mIvLkIcon.setImageResource(R.drawable.icon_lukuang_02);
 //				mImgBtnLukuang.setImageResource(R.drawable.lukuang_01);
 			}
 

@@ -1,4 +1,5 @@
 <resources>
+    <string name="sure">确认</string>
     <string name="app_name">Xp_MapNavi</string>
     <string name="perease_input">   请输入目的地</string>
     <string name="searching">正在搜索..:</string>
@@ -50,4 +51,5 @@
     <string name="watch_follow">车首上</string>
     <string name="watch_north">北上</string>
     <string name="input_poin">请输入目的地</string>
+    <string name="radio_navi">轻导航</string>
 </resources>

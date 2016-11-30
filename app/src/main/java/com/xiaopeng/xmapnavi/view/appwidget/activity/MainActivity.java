@@ -189,6 +189,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     private ImageView mIvShowTraffic;
     private ImageView mIvSeeWatch;
     private TextView mTxSeeWatch;
+    private Marker mLocationMarker;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
@@ -253,6 +254,8 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                 getResources().getString(R.string.watch_follow),
                 getResources().getString(R.string.watch_3d)
         };
+
+
     }
 
 
@@ -286,8 +289,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     private void init() {
         if (aMap == null) {
             aMap = mapView.getMap();
-            aMap.setMapType(AMap.MAP_TYPE_NAVI);
-            // 初始化 显示我的位置的Marker
+//            aMap.setMapType(AMap.MAP_TYPE_NAVI);
             aMap.setTrafficEnabled(isTraff);
             aMap.setInfoWindowAdapter(this);
             myLocationMarker = aMap.addMarker(new MarkerOptions()
@@ -523,6 +525,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         if (mListener != null){
             mListener.onLocationChanged(aMapLocation);
         }
+
     }
 
     @Override
@@ -754,6 +757,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
     public void haveCalueNaviSucceful(int[] ints,double posLat,double posLon){
         LogUtils.d(TAG,"haveCalueNaviSucceful:posLat:"+posLat+"  posLon:"+posLon);
+        mProgDialog.dismiss();
         Intent intent = new Intent(this, ShowPosiActivity.class);
         Bundle bundle = new Bundle();
         bundle.putIntArray(NAVI_MSG,ints);
@@ -949,7 +953,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
     @Override
     public void onCalculateRouteSuccess() {
-
+        mProgDialog.dismiss();
     }
 
     private void changeTriffical(){

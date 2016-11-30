@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@+id/layout_outside"
+    android:layout_height="match_parent">
+    <FrameLayout
+        android:id="@+id/layout_inside"
+        android:paddingLeft="9px"
+        android:paddingRight="9px"
+        android:paddingTop="4px"
+        android:paddingBottom="14px"
+        android:layout_marginTop="8px"
+        android:layout_marginLeft="91px"
+        android:background="@drawable/shadowss"
+        android:layout_width="900px"
+        android:layout_height="310px">
+        <LinearLayout
+            android:padding="1px"
+            android:background="@drawable/white_backgrouad"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:background="#10000000"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="72px">
+                <Button
+                    android:id="@+id/btn_return"
+                    android:background="@drawable/icon_return"
+                    android:layout_width="88px"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:textSize="30px"
+                    android:textColor="@color/first_text_color"
+                    android:text="@string/pianhao"
+                    android:gravity="center"
+                    android:layout_marginRight="88px"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+            <ImageView
+                android:background="@color/gray_btn_bg_pressed_color"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
+            <LinearLayout
+                android:layout_marginTop="40px"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="40px">
+                <TextView
+                    android:text="路线偏好:"
+                    android:gravity="center"
+                    style="@style/base_text_style_24.black"
+                    android:layout_marginLeft="20px"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <ImageView
+                    android:layout_marginLeft="20px"
+                    android:background="@color/gray_btn_bg_pressed_color"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent" />
+
+                <ImageView
+                    android:id="@+id/iv_icon_0"
+                    android:src="@drawable/icon_like_01"
+                    android:layout_width="56px"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:id="@+id/btn_select_0"
+                    android:gravity="center"
+                    android:text="@string/congestion"
+                    style="@style/base_text_style_24.black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <ImageView
+                    android:layout_marginLeft="20px"
+                    android:background="@color/gray_btn_bg_pressed_color"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent" />
+                <ImageView
+                    android:id="@+id/iv_icon_1"
+                    android:src="@drawable/icon_like_01"
+                    android:layout_width="56px"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:id="@+id/btn_select_1"
+                    android:gravity="center"
+                    android:text="@string/cost"
+                    style="@style/base_text_style_24.black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <ImageView
+                    android:layout_marginLeft="20px"
+                    android:background="@color/gray_btn_bg_pressed_color"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent" />
+                <ImageView
+                    android:id="@+id/iv_icon_2"
+                    android:src="@drawable/icon_like_01"
+                    android:layout_width="56px"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:id="@+id/btn_select_2"
+                    android:gravity="center"
+                    android:text="@string/hightspeed"
+                    style="@style/base_text_style_24.black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <ImageView
+                    android:layout_marginLeft="20px"
+                    android:background="@color/gray_btn_bg_pressed_color"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent" />
+                <ImageView
+                    android:id="@+id/iv_icon_3"
+                    android:src="@drawable/icon_like_01"
+                    android:layout_width="56px"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:id="@+id/btn_select_3"
+                    android:gravity="center"
+                    android:text="@string/avoidhightspeed"
+                    style="@style/base_text_style_24.black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+            <Button
+                android:id="@+id/btn_sure"
+                android:gravity="center"
+                android:textSize="30px"
+                android:textColor="@color/white"
+                android:text="@string/sure"
+                android:background="@color/text_bluse"
+                android:layout_marginTop="50px"
+                android:layout_marginBottom="20px"
+                android:layout_marginLeft="230px"
+                android:layout_marginRight="230px"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+
+    </FrameLayout>
+</RelativeLayout>

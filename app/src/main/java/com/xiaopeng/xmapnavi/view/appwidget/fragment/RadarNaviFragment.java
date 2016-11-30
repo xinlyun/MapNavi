@@ -262,9 +262,9 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     }
 
     private void reCalue(){
-        LogUtils.d(TAG,"reCalue: fromPoint:"+fromPoint
+        LogUtils.d(TAG,"reCalueInNavi: fromPoint:"+fromPoint
         );
-        LogUtils.d(TAG,"reCalue: toPoint:"+toPoint);
+        LogUtils.d(TAG,"reCalueInNavi: toPoint:"+toPoint);
 //        List<NaviLatLng> startPoi = new ArrayList<>();
 //        List<NaviLatLng> wayPoi = new ArrayList<>();
         List<NaviLatLng> endPoi = new ArrayList<>();

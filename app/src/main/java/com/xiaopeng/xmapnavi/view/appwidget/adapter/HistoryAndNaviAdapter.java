@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.amap.api.maps.AMapUtils;
@@ -50,6 +51,9 @@ public class HistoryAndNaviAdapter extends ArrayAdapter {
         style = 1;
         this.index = -1;
     }
+    public int getIndex(){
+        return index;
+    }
 
     public void setLocalPosi(LatLng localPosi){
         this.localPosi = localPosi;
@@ -86,8 +90,8 @@ public class HistoryAndNaviAdapter extends ArrayAdapter {
             PoiItem poiItem = poiItemList.get(position);
             touchPoi = position;
             if (convertView == null) {
-                view = LayoutInflater.from(getContext()).inflate(R.layout.layout_fix_list_item,null);
-                itemHolder.naviBtn = (LinearLayout) view .findViewById(R.id.touch_to_navi);
+                view = LayoutInflater.from(getContext()).inflate(R.layout.layout_fix_list_new,null);
+                itemHolder.naviBtn = (ImageView) view .findViewById(R.id.touch_to_navi);
                 itemHolder.naviBtn.setTag(position);
 
                 itemHolder.naviName = (TextView) view.findViewById(R.id.pre_list_name);
@@ -98,12 +102,12 @@ public class HistoryAndNaviAdapter extends ArrayAdapter {
                 view = convertView;
                 itemHolder = (ItemHolder) view.getTag();
             }
-            itemHolder.naviName.setText(poiItem.toString());
+            itemHolder.naviName.setText(""+(position+1)+"."+poiItem.toString());
             itemHolder.naviPosi.setText(poiItem.getCityName() + "  " + poiItem.getSnippet());
             itemHolder.naviBtn.setOnClickListener(new lvButtonListener(position));
             if (position == index){
 //                android:background="@color/trans_white_lrc"
-                view.findViewById(R.id.back_ll).setBackgroundColor(getContext().getResources().getColor(R.color.gray_lite));
+                view.findViewById(R.id.back_ll).setBackgroundColor(getContext().getResources().getColor(R.color.grey_bg_color));
             }else {
                 view.findViewById(R.id.back_ll).setBackground(null);
             }
@@ -111,7 +115,7 @@ public class HistoryAndNaviAdapter extends ArrayAdapter {
             dis = dis/1000f;
             DecimalFormat df = new DecimalFormat("0.0");
             String result = df.format(dis);
-            itemHolder.naviDis.setText(result+"KM");
+            itemHolder.naviDis.setText(result+"公里");
         }
 
         return view;
@@ -119,7 +123,7 @@ public class HistoryAndNaviAdapter extends ArrayAdapter {
 
     class ItemHolder{
         TextView naviName,naviPosi,naviDis;
-        LinearLayout naviBtn;
+        ImageView naviBtn;
 //        ImageView imageView;
     }
 

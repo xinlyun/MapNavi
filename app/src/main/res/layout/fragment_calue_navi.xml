@@ -14,98 +14,127 @@
         android:layout_width="match_parent"
         android:layout_height="305px">
         <!--<include layout="@layout/layout_title_v1"/>-->
-    <LinearLayout
-
-        android:background="@drawable/white_backgrouad"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
-
         <LinearLayout
-            android:orientation="horizontal"
+
+            android:background="@drawable/white_backgrouad"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="150px">
-            <Button
-                android:id="@+id/btn_exit"
-                android:text="x"
-                android:layout_width="88px"
-                android:layout_height="88px" />
-            <GridView
-                android:background="@color/trans_half_white"
-                android:id="@+id/gv_show_an"
-
-                android:numColumns="auto_fit"
-                android:columnWidth="292px"
-                android:layout_width="888px"
-                android:layout_height="match_parent"></GridView>
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="72px">
+            android:layout_height="match_parent"
+            >
 
             <LinearLayout
-
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <!--<LinearLayout-->
-                <!--android:orientation="horizontal"-->
-                <!--android:id="@+id/linl_show_an"-->
-                <!--android:layout_weight="1"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent">-->
-
-                <!--</LinearLayout>-->
-
-                <TextView
-                    android:textColor="@color/text_blue"
-                    android:layout_marginLeft="86px"
-                    android:textSize="22px"
-                    android:gravity="center_vertical|left"
-                    android:id="@+id/tv_show_msg"
-                    android:layout_weight="2"
-                    android:layout_width="match_parent"
+                android:layout_height="156px">
+                <Button
+                    android:id="@+id/btn_exit"
+                    android:background="@drawable/icon_return"
+                    android:layout_width="88px"
                     android:layout_height="72px" />
+                <GridView
+                    android:background="@color/trans_half_white"
+                    android:id="@+id/gv_show_an"
 
+                    android:numColumns="auto_fit"
+                    android:columnWidth="292px"
+                    android:layout_width="888px"
+                    android:layout_height="match_parent"></GridView>
             </LinearLayout>
 
 
-        </LinearLayout>
-        <ImageView
-            android:background="@color/gray_btn_bg_pressed_color"
-            android:layout_width="match_parent"
-            android:layout_height="1px" />
-        <LinearLayout
-
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <TextView
-                android:gravity="center"
-                android:textColor="@color/text_blue"
-                android:id="@+id/btn_start_navi"
-                android:text="导航"
-                android:layout_weight="1"
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="72px">
+
+                <LinearLayout
+
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <!--<LinearLayout-->
+                    <!--android:orientation="horizontal"-->
+                    <!--android:id="@+id/linl_show_an"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="match_parent">-->
+
+                    <!--</LinearLayout>-->
+
+                    <TextView
+                        android:textColor="@color/text_blue"
+                        android:layout_marginLeft="86px"
+                        android:textSize="22px"
+                        android:gravity="center_vertical|left"
+                        android:id="@+id/tv_show_msg"
+                        android:layout_weight="2"
+                        android:layout_width="match_parent"
+                        android:layout_height="70px" />
+
+                </LinearLayout>
+
+
+            </LinearLayout>
             <ImageView
                 android:background="@color/gray_btn_bg_pressed_color"
-                android:layout_width="1px"
-                android:layout_height="match_parent" />
-            <TextView
-                android:gravity="center"
-                android:id="@+id/btn_start_route_navi"
-                android:text="轻导航"
-                android:layout_weight="1"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="1px" />
+            <LinearLayout
 
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="80px">
+                <LinearLayout
+                    android:id="@+id/btn_start_navi"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:src="@drawable/icon_navi_blue"
+                        android:layout_marginLeft="158px"
+                        android:layout_width="72px"
+                        android:layout_height="72px" />
+                    <TextView
+                        android:gravity="left|center_vertical"
+                        android:textColor="@color/text_blue"
+                        android:textSize="30px"
+
+                        android:text="导航"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_marginTop="20px"
+                    android:layout_marginBottom="20px"
+                    android:background="@color/gray_btn_bg_pressed_color"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent" />
+                <LinearLayout
+                    android:id="@+id/btn_start_route_navi"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <ImageView
+                        android:src="@drawable/icon_navi_black"
+                        android:layout_marginLeft="158px"
+                        android:layout_width="72px"
+                        android:layout_height="72px" />
+                    <TextView
+                        android:gravity="left|center_vertical"
+                        android:textSize="30px"
+                        android:textColor="@color/first_text_color"
+                        android:text="轻导航"
+                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+
+
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
     </FrameLayout>
     <FrameLayout
 
@@ -127,9 +156,9 @@
             android:orientation="vertical"
             >
             <Button
-                android:background="@drawable/transparent"
+                android:background="@drawable/icon_zoom_plus"
                 android:id="@+id/btn_zoom_plus"
-                android:text="+"
+
                 android:textSize="45px"
                 android:textColor="@color/black"
                 android:layout_width="94px"
@@ -141,10 +170,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px" />
             <Button
-                android:textColor="@color/black"
-                android:text="--"
+
                 android:textSize="45px"
-                android:background="@drawable/transparent"
+                android:background="@drawable/icon_zoom_small"
                 android:id="@+id/btn_zoom_jian"
                 android:layout_width="94px"
                 android:layout_height="94px" />
@@ -169,29 +197,27 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <TextView
+            <LinearLayout
                 android:id="@+id/btn_pianhao"
-                android:background="@drawable/text_trans_bg"
-                android:textSize="22px"
-                android:gravity="center"
-                android:textColor="@color/first_text_color"
-                android:text="@string/pianhao"
+                android:background="@drawable/transparent"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="107px" />
-            <ImageView
-                android:background="@color/gray_btn_bg_color"
-                android:layout_marginLeft="12px"
-                android:layout_marginRight="12px"
-                android:layout_width="match_parent"
-                android:layout_height="1px" />
-            <TextView
-                android:background="@drawable/text_trans_bg"
-                android:textSize="22px"
-                android:gravity="center"
-                android:textColor="@color/first_text_color"
-                android:text="@string/way_poi"
-                android:layout_width="match_parent"
-                android:layout_height="107px" />
+                android:layout_height="106px">
+                <ImageView
+                    android:src="@drawable/icon_like"
+                    android:layout_width="match_parent"
+                    android:layout_height="72px" />
+                <TextView
+
+                    android:background="@drawable/text_trans_bg"
+                    android:textSize="22px"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/first_text_color"
+                    android:text="@string/pianhao"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+
             <ImageView
                 android:background="@color/gray_btn_bg_color"
                 android:layout_marginLeft="12px"
@@ -199,9 +225,50 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px" />
             <LinearLayout
+
+                android:background="@drawable/transparent"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="106px">
+                <ImageView
+                    android:src="@drawable/icon_way_poi_small"
+                    android:layout_width="match_parent"
+                    android:layout_height="72px" />
+                <TextView
+                    android:background="@drawable/text_trans_bg"
+                    android:textSize="22px"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/first_text_color"
+                    android:text="@string/way_poi"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+
+            <ImageView
+                android:background="@color/gray_btn_bg_color"
+                android:layout_marginLeft="12px"
+                android:layout_marginRight="12px"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
+            <LinearLayout
+                android:id="@+id/btn_lukuang"
+                android:background="@drawable/transparent"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-
+                <ImageView
+                    android:id="@+id/iv_lukuang_icon"
+                    android:src="@drawable/icon_lukuang_01"
+                    android:layout_width="match_parent"
+                    android:layout_height="72px" />
+                <TextView
+                    android:background="@drawable/text_trans_bg"
+                    android:textSize="22px"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/first_text_color"
+                    android:text="@string/lukuagg"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
             </LinearLayout>
 
         </LinearLayout>
