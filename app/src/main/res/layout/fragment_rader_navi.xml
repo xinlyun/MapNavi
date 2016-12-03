@@ -22,45 +22,69 @@
             android:layout_marginRight="10px"
             android:layout_width="match_parent"
             android:layout_height="126px">
-            <LinearLayout
-                android:background="@color/black_p50"
-                android:orientation="horizontal"
+            <RelativeLayout
+                android:padding="1px"
+                android:background="@drawable/black_50_bg"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                >
+                android:layout_height="match_parent">
+                <LinearLayout
 
-                <TextView
-                    android:gravity="center"
-                    android:id="@+id/btn_exit"
-                    android:textColor="@color/white"
-                    android:text="X"
-                    android:textSize="50px"
-                    android:layout_width="100px"
-                    android:layout_height="match_parent" />
-                <ImageView
-                    android:layout_marginTop="20px"
-                    android:layout_marginBottom="20px"
-                    android:background="@color/gray_btn_bg_pressed_color"
-                    android:layout_width="1px"
-                    android:layout_height="match_parent" />
-                <TextView
-                    android:textColor="@color/white"
-                    android:textSize="45px"
-                    android:text=""
-                    android:id="@+id/tv_show_msg"
-                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    >
 
-                    android:layout_width="772px"
-                    android:layout_height="match_parent" />
-                <Button
-                    android:background="@color/black"
-                    android:id="@+id/btn_start_navi"
-                    android:textColor="@color/white"
-                    android:text="导航"
-                    android:textSize="45px"
+                    <ImageView
+                        android:gravity="center"
+                        android:id="@+id/btn_exit"
+                        android:src="@drawable/icon_x"
+                        android:textSize="35px"
+                        android:layout_width="88px"
+                        android:layout_height="match_parent" />
+                    <ImageView
+                        android:layout_marginTop="20px"
+                        android:layout_marginBottom="20px"
+                        android:background="@color/gray_btn_bg_pressed_color"
+                        android:layout_width="1px"
+                        android:layout_height="match_parent" />
+                    <TextView
+                        android:singleLine="true"
+                        android:textColor="@color/white"
+                        android:textSize="28px"
+                        android:text=""
+                        android:id="@+id/tv_show_msg"
+                        android:gravity="center"
+
+                        android:layout_width="772px"
+                        android:layout_height="match_parent" />
+
+                </LinearLayout>
+                <RelativeLayout
+                    android:background="#242424"
+                    android:layout_alignParentRight="true"
                     android:layout_width="168px"
-                    android:layout_height="match_parent" />
-            </LinearLayout>
+                    android:id="@+id/btn_start_navi"
+                    android:gravity="center_horizontal"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:background="@drawable/icon_return_navi"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                    <TextView
+                        android:layout_marginBottom="12px"
+                        android:layout_alignParentBottom="true"
+                        android:textColor="@color/white"
+                        android:text="@string/navi"
+                        android:gravity="center"
+                        android:textSize="24px"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </RelativeLayout>
+
+            </RelativeLayout>
+
         </FrameLayout>
 
 
@@ -76,12 +100,51 @@
         android:background="@drawable/shadowss"
         android:layout_width="106px"
         android:layout_height="106px">
-        <Button
+        <ImageView
             android:id="@+id/btn_see_all"
-            android:text="全览"
+            android:background="@drawable/white_backgrouad"
+            android:src="@drawable/icon_locationing"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </FrameLayout>
+
+    <FrameLayout
+        android:background="@drawable/shadowss"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/second_bottom"
+        android:layout_marginRight="2px"
+        android:layout_width="108px"
+        android:paddingTop="4px"
+        android:paddingLeft="9px"
+        android:paddingRight="9px"
+        android:paddingBottom="14px"
+        android:layout_height="126px">
+        <LinearLayout
+            android:id="@+id/btn_lukuang"
+            android:padding="1px"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:background="@drawable/white_backgrouad"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/iv_lukuang"
+                android:src="@drawable/icon_lukuang_01"
+                android:layout_width="match_parent"
+                android:layout_height="72px" />
+            <TextView
+                android:background="@drawable/text_trans_bg"
+                android:textSize="22px"
+                android:gravity="center"
+                android:textColor="@color/first_text_color"
+                android:text="@string/lukuagg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+
+    </FrameLayout>
+
     <FrameLayout
         android:background="@drawable/shadowss"
         android:layout_alignParentBottom="true"
@@ -98,30 +161,31 @@
             android:background="@drawable/white_backgrouad"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:padding="1px"
             android:orientation="vertical"
             >
-            <Button
+            <ImageView
                 android:background="@drawable/transparent"
                 android:id="@+id/btn_zoom_plus"
-                android:text="+"
-                android:textSize="45px"
+                android:src="@drawable/icon_zoom_plus"
+
                 android:textColor="@color/black"
-                android:layout_width="94px"
-                android:layout_height="94px" />
+                android:layout_width="88px"
+                android:layout_height="88px" />
             <ImageView
                 android:background="@color/gray_btn_bg_color"
                 android:layout_marginLeft="12px"
                 android:layout_marginRight="12px"
                 android:layout_width="match_parent"
                 android:layout_height="1px" />
-            <Button
+            <ImageView
                 android:textColor="@color/black"
-                android:text="--"
-                android:textSize="45px"
+
                 android:background="@drawable/transparent"
+                android:src="@drawable/icon_zoom_small"
                 android:id="@+id/btn_zoom_jian"
-                android:layout_width="94px"
-                android:layout_height="94px" />
+                android:layout_width="88px"
+                android:layout_height="88px" />
         </LinearLayout>
     </FrameLayout>
 </RelativeLayout>

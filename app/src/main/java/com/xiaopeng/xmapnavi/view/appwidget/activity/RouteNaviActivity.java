@@ -38,6 +38,7 @@ import com.xiaopeng.xmapnavi.mode.LocationProvider;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviInfoListener;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.CircleImageView;
+import com.xiaopeng.xmapnavi.view.appwidget.selfview.RouteNaviSettingDialog;
 
 
 public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
@@ -60,9 +61,11 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	private FrameLayout mTmapLayout;
 	private boolean isTraff = true;
 	private ImageView mIvLkIcon;
+	private RouteNaviSettingDialog mSettingDialog;
+	private TextView mDanwei;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
+		BugHunter.countTimeStart(BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
 		super.onCreate(savedInstanceState);
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -78,8 +81,6 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		mAMapNaviView.postDelayed(new Runnable() {
 			@Override
 			public void run() {
-
-
 				mTmap		= (TextureMapView) findViewById(R.id.navi_map_view);
 				mTmap		.onCreate(saveBundle);
 				mAmap = mTmap.getMap();
@@ -90,6 +91,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 
 		mAMapNaviView.onCreate(saveBundle);
 		mAMapNaviView.setAMapNaviViewListener(RouteNaviActivity.this);
+
 
 		mNaviAmap = mAMapNaviView.getMap();
 		mNaviAmap.setTrafficEnabled(isTraff);
@@ -125,6 +127,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		mUnLockView		= (RelativeLayout) findViewById(R.id.view_unlock);
 		mTmapLayout		= (FrameLayout) findViewById(R.id.mapview_frlayout);
 		mIvLkIcon 		= (ImageView) findViewById(R.id.iv_lukuang_icon);
+		mDanwei			= (TextView) findViewById(R.id.tx_danwei);
 		findViewById(R.id.btn_exit).setOnClickListener(this);
 		findViewById(R.id.btn_rader_nave).setOnClickListener(this);
 		findViewById(R.id.btn_recalue).setOnClickListener(this);
@@ -134,6 +137,8 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		findViewById(R.id.btn_setting).setOnClickListener(this);
 		findViewById(R.id.btn_goto_again).setOnClickListener(this);
 		findViewById(R.id.btn_lukuang).setOnClickListener(this);
+		mSettingDialog 	= new RouteNaviSettingDialog(this);
+
 	}
 	private void initMap(){
 		AMapNaviViewOptions viewOptions = mAMapNaviView.getViewOptions();
@@ -154,7 +159,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		if (mTmap!=null) {
 			mTmap.onResume();
 		}
-		BugHunter.statisticsEnd(getApplication(),BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
+		BugHunter.countTimeEnd(getApplication(),BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
 	}
 
 	@Override
@@ -224,12 +229,14 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		if (length>1000){
 			StringBuffer stringBuffer = new StringBuffer();
 			stringBuffer.append(length/1000);
-			stringBuffer.append(getString(R.string.killmile_more));
+			mDanwei.setText(R.string.killmile_more);
+//			stringBuffer.append(getString());
 			mTxLenght.setText(stringBuffer);
 		}else {
 			StringBuffer stringBuffer = new StringBuffer();
 			stringBuffer.append(length);
-			stringBuffer.append(getString(R.string.mile_more));
+//			stringBuffer.append(getString(R.string.mile_more));
+			mDanwei.setText(R.string.mile_more);
 			mTxLenght.setText(stringBuffer);
 		}
 
@@ -346,8 +353,8 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 				break;
 
 			case R.id.btn_setting:
-				//TODO
 				//打开设置
+				mSettingDialog.show();
 				break;
 
 			case R.id.btn_goto_again:
@@ -476,4 +483,11 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		startActivity(intent);
 		this.finish();
 	}
+
+	private AMap.OnMapLoadedListener mLoadedListener = new AMap.OnMapLoadedListener() {
+		@Override
+		public void onMapLoaded() {
+//			mAMapNaviView.recoverLockMode();
+		}
+	};
 }

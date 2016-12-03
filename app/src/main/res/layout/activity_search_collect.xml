@@ -24,6 +24,7 @@
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:orientation="vertical" android:layout_width="match_parent"
             android:background="@drawable/white_backgrouad"
+            android:padding="1px"
             android:layout_height="match_parent">
 
             <!--<include layout="@layout/title_v2"/>-->
@@ -53,6 +54,8 @@
                         android:layout_width="56px"
                         android:layout_height="56px" />
                     <EditText
+                        android:textColor="@color/first_text_color"
+                        android:textCursorDrawable="@null"
                         android:layout_marginTop="3px"
                         android:layout_marginBottom="3px"
                         android:id="@+id/prepare_edittext"
@@ -122,6 +125,7 @@
             <!--</LinearLayout>-->
             <ListView
                 android:id="@+id/lv_show_tip_his"
+                android:divider="@null"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -132,72 +136,63 @@
 
     </FrameLayout>
     <FrameLayout
+        android:visibility="gone"
+        android:id="@+id/second_framelayout"
         android:background="@drawable/shadowss"
         android:paddingLeft="9px"
         android:paddingRight="9px"
         android:paddingBottom="14px"
         android:paddingTop="4px"
-        android:id="@+id/second_framelayout"
-        android:visibility="gone"
-        android:layout_marginTop="100px"
-        android:layout_marginBottom="400px"
-        android:layout_marginLeft="80px"
-        android:layout_marginRight="80px"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_marginTop="8px"
+        android:layout_marginLeft="92px"
+        android:layout_width="896px"
+        android:layout_height="1014px">
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
-            android:background="@color/white"
+            android:padding="1px"
+            android:background="@drawable/white_backgrouad"
             android:layout_height="match_parent">
-
             <LinearLayout
-                android:orientation="horizontal" android:layout_width="match_parent"
-                android:background="@drawable/bg_navi_title_search"
-                android:layout_height="98px">
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:background="@color/grey_bg_color"
+                android:id="@+id/btn_return"
+                android:layout_height="72px">
                 <ImageView
-                    android:layout_marginLeft="20px"
-                    android:src="@drawable/icon_title_bg"
-                    android:layout_gravity="center_vertical"
-                    android:layout_width="32px"
-                    android:layout_height="32px" />
+
+                    android:src="@drawable/icon_return"
+                    android:layout_width="88px"
+                    android:layout_height="72px" />
                 <TextView
-                    android:text="@string/search_keyword"
-                    android:gravity="center_vertical|left"
-                    android:textColor="#ffffff"
-                    android:id="@+id/title_title_2"
-                    android:textSize="40px"
-                    android:layout_marginLeft="20px"
-                    android:layout_width="570px"
-                    android:layout_height="fill_parent" />
-                <Button
-
-                    android:textColor="#ffffff"
-                    android:textSize="55px"
-                    android:visibility="gone"
-                    android:layout_marginRight="45px"
-                    android:background="@drawable/bg_pre_local"
-                    android:layout_width="223px"
-                    android:layout_gravity="center_vertical"
+                    android:textSize="30px"
+                    android:textColor="@color/first_text_color"
                     android:gravity="center"
-                    android:layout_height="107px" />
+                    android:text="@string/search_result"
+                    android:layout_width="704px"
+                    android:layout_height="56px" />
             </LinearLayout>
-
+            <ImageView
+                android:layout_marginTop="72px"
+                android:background="@color/gray_btn_bg_pressed_color"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
             <ListView
-                android:layout_marginTop="98px"
+                android:layout_marginTop="73px"
                 android:id="@+id/lv_show_result"
                 android:layout_width="match_parent"
-                android:layout_marginBottom="120px"
+
                 android:layout_height="match_parent">
 
             </ListView>
-            <Button
-                android:id="@+id/btn_sure"
-                android:gravity="center"
-                android:textSize="40px"
-                android:text="@string/add_message"
-                android:layout_alignParentBottom="true"
-                android:layout_width="match_parent"
-                android:layout_height="120px" />
+            <!--<Button-->
+                <!--android:id="@+id/btn_sure"-->
+                <!--android:gravity="center"-->
+                <!--android:textSize="40px"-->
+                <!--android:text="@string/add_message"-->
+                <!--android:layout_alignParentBottom="true"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="120px" />-->
 
 
         </RelativeLayout>

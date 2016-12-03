@@ -88,6 +88,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
                 <LinearLayout
+                    android:id="@+id/btn_setting"
                     android:background="@drawable/text_trans_bg"
                     android:orientation="vertical"
                     android:layout_width="match_parent"
@@ -314,11 +315,11 @@
             android:paddingLeft="9px"
             android:paddingRight="9px"
             android:paddingTop="4px"
-            android:paddingBottom="13px"
-            android:layout_marginTop="7px"
-            android:layout_marginLeft="90px"
-            android:layout_width="900px"
-            android:layout_height="92px">
+            android:paddingBottom="11px"
+            android:layout_marginTop="8px"
+            android:layout_marginLeft="93px"
+            android:layout_width="894px"
+            android:layout_height="90px">
             <LinearLayout
                 android:id="@+id/civ_all_big"
                 android:background="@drawable/white_backgrouad"
@@ -349,8 +350,8 @@
             android:layout_height="94px"
 
              />
-    </RelativeLayout>
 
+    </RelativeLayout>
     <FrameLayout
         android:visibility="gone"
         android:id="@+id/layout_down"
@@ -386,7 +387,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
                 <Button
-                    android:background="@drawable/icon_collect"
+                    android:background="@drawable/icon_collect_2"
                     android:id="@+id/btn_collect"
 
                     android:layout_width="match_parent"
@@ -452,6 +453,8 @@
                 android:layout_height="88px" />
         </LinearLayout>
     </FrameLayout>
+
+
 
     <FrameLayout
         android:id="@+id/ll_show_fragment"

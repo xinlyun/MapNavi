@@ -23,9 +23,10 @@
             android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="match_parent">
-            <Button
+            <ImageView
+                android:id="@+id/btn_little_begin_navi"
                 android:textColor="@color/white"
-                android:text="@string/navi"
+                android:src="@drawable/icon_navi_begin"
                 android:textSize="25px"
                 android:background="@color/blue"
 

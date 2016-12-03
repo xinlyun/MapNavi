@@ -72,4 +72,6 @@ public class OfflinePagerAdapter extends PagerAdapter {
 	public void startUpdate(View arg0) {
 	}
 
+
+
 }

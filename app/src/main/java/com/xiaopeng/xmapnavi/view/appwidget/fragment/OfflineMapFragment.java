@@ -33,7 +33,10 @@ import com.xiaopeng.amaplib.amap.offlinemap.ToastUtil;
 import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
+import com.xiaopeng.xmapnavi.view.appwidget.activity.BaseFuncActivityInteface;
+import com.xiaopeng.xmapnavi.view.appwidget.adapter.MofflineListAdapter;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,8 +52,8 @@ public class OfflineMapFragment extends Fragment implements
     // private HashMap<Object, List<OfflineMapCity>> cityMap = new
     // HashMap<Object, List<OfflineMapCity>>();// 保存二级目录的市
 
-    private TextView mDownloadText;
-    private TextView mDownloadedText;
+//    private TextView mDownloadText;
+//    private TextView mDownloadedText;
     private ImageView mBackImage;
 
     // view pager 两个list以及他们的adapter
@@ -58,7 +61,7 @@ public class OfflineMapFragment extends Fragment implements
     private ExpandableListView mAllOfflineMapList;
     private ListView mDownLoadedList;
 
-    private OfflineListAdapter adapter;
+    private MofflineListAdapter adapter;
     private OfflineDownloadedAdapter mDownloadedAdapter;
     private PagerAdapter mPageAdapter;
 
@@ -78,6 +81,8 @@ public class OfflineMapFragment extends Fragment implements
     private final static int DISMISS_INIT_DIALOG = 2;
     private final static int SHOW_INIT_DIALOG = 3;
 
+    private boolean isLoading = false;
+
     private Handler handler = new Handler() {
 
         @Override
@@ -86,13 +91,15 @@ public class OfflineMapFragment extends Fragment implements
             super.handleMessage(msg);
             switch (msg.what) {
                 case UPDATE_LIST:
-                    if (mContentViewPage.getCurrentItem() == 0) {
-                        ((BaseExpandableListAdapter) adapter)
-                                .notifyDataSetChanged();
-                    } else {
-                        mDownloadedAdapter.notifyDataChange();
+                    if (isLoading) {
+                        if (mContentViewPage.getCurrentItem() == 0) {
+                            ((BaseExpandableListAdapter) adapter)
+                                    .notifyDataSetChanged();
+                        } else {
+                            mDownloadedAdapter.notifyDataChange();
+                        }
+                        handler.sendEmptyMessageDelayed(UPDATE_LIST,1000);
                     }
-
                     break;
                 case SHOW_MSG:
 //				Toast.makeText(OfflineMapActivity.this, (String) msg.obj,
@@ -119,7 +126,7 @@ public class OfflineMapFragment extends Fragment implements
     };
 
     public void onCreate(Bundle savedInstanceState) {
-        BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
+        BugHunter.countTimeStart(BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
         super.onCreate(savedInstanceState);
 		/*
 		 * 设置离线地图存储目录，在下载离线地图或初始化地图设置; 使用过程中可自行设置, 若自行设置了离线地图存储的路径，
@@ -154,7 +161,9 @@ public class OfflineMapFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-        BugHunter.statisticsEnd(getActivity().getApplication(),BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
+        BugHunter.countTimeEnd(getActivity().getApplication(),BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
+        isLoading = true;
+        handler.sendEmptyMessageDelayed(UPDATE_LIST,1000);
     }
 
     /**
@@ -163,7 +172,7 @@ public class OfflineMapFragment extends Fragment implements
     @Override
     public void onPause() {
         super.onPause();
-
+        isLoading = false;
     }
 
     /**
@@ -218,12 +227,11 @@ public class OfflineMapFragment extends Fragment implements
         initAllCityList();
         initDownloadedList();
 
-        // 顶部
-        mDownloadText = (TextView) findViewById(R.id.download_list_text);
-        mDownloadedText = (TextView) findViewById(R.id.downloaded_list_text);
-
-        mDownloadText.setOnClickListener(this);
-        mDownloadedText.setOnClickListener(this);
+//        mDownloadText = (TextView) findViewById(R.id.download_list_text);
+//        mDownloadedText = (TextView) findViewById(R.id.downloaded_list_text);
+//
+//        mDownloadText.setOnClickListener(this);
+//        mDownloadedText.setOnClickListener(this);
         mBackImage = (ImageView) findViewById(R.id.back_image_view);
         mBackImage.setOnClickListener(this);
 
@@ -255,7 +263,7 @@ public class OfflineMapFragment extends Fragment implements
 
         // adapter = new OfflineListAdapter(provinceList, cityMap, amapManager,
         // OfflineMapActivity.this);
-        adapter = new OfflineListAdapter(provinceList, amapManager,
+        adapter = new MofflineListAdapter(provinceList, amapManager,
                getActivity());
         // 为列表绑定数据源
         mAllOfflineMapList.setAdapter(adapter);
@@ -473,7 +481,7 @@ public class OfflineMapFragment extends Fragment implements
                 break;
         }
 
-        // changeOfflineMapTitle(status, downName);
+//         changeOfflineMapTitle(status, downName);
         handler.sendEmptyMessage(UPDATE_LIST);
 
     }
@@ -504,44 +512,12 @@ public class OfflineMapFragment extends Fragment implements
 
     @Override
     public void onClick(View v) {
-        if (v.equals(mDownloadText)) {
-            int paddingHorizontal = mDownloadText.getPaddingLeft();
-            int paddingVertical = mDownloadText.getPaddingTop();
-            mContentViewPage.setCurrentItem(0);
 
-            mDownloadText
-                    .setBackgroundResource(R.drawable.offlinearrow_tab1_pressed);
 
-            mDownloadedText
-                    .setBackgroundResource(R.drawable.offlinearrow_tab2_normal);
-
-            mDownloadedText.setPadding(paddingHorizontal, paddingVertical,
-                    paddingHorizontal, paddingVertical);
-
-            mDownloadText.setPadding(paddingHorizontal, paddingVertical,
-                    paddingHorizontal, paddingVertical);
-
-            mDownloadedAdapter.notifyDataChange();
-
-        } else if (v.equals(mDownloadedText)) {
-            int paddingHorizontal = mDownloadedText.getPaddingLeft();
-            int paddingVertical = mDownloadedText.getPaddingTop();
-            mContentViewPage.setCurrentItem(1);
-
-            mDownloadText
-                    .setBackgroundResource(R.drawable.offlinearrow_tab1_normal);
-            mDownloadedText
-                    .setBackgroundResource(R.drawable.offlinearrow_tab2_pressed);
-            mDownloadedText.setPadding(paddingHorizontal, paddingVertical,
-                    paddingHorizontal, paddingVertical);
-            mDownloadText.setPadding(paddingHorizontal, paddingVertical,
-                    paddingHorizontal, paddingVertical);
-
-            mDownloadedAdapter.notifyDataChange();
-
-        } else if (v.equals(mBackImage)) {
+        if (v.equals(mBackImage)) {
             // 返回
 //            finish();
+            ((BaseFuncActivityInteface)getActivity()).exitFragment();
         }
 
     }
@@ -558,31 +534,25 @@ public class OfflineMapFragment extends Fragment implements
 
     @Override
     public void onPageSelected(int arg0) {
-        int paddingHorizontal = mDownloadedText.getPaddingLeft();
-        int paddingVertical = mDownloadedText.getPaddingTop();
 
-        switch (arg0) {
-            case 0:
-                mDownloadText
-                        .setBackgroundResource(R.drawable.offlinearrow_tab1_pressed);
-                mDownloadedText
-                        .setBackgroundResource(R.drawable.offlinearrow_tab2_normal);
-                // mPageAdapter.notifyDataSetChanged();
-                break;
-            case 1:
-                mDownloadText
-                        .setBackgroundResource(R.drawable.offlinearrow_tab1_normal);
 
-                mDownloadedText
-                        .setBackgroundResource(R.drawable.offlinearrow_tab2_pressed);
-                // mDownloadedAdapter.notifyDataChange();
-                break;
+
+
+
+
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        try {
+            Field childFragmentManager = Fragment.class.getDeclaredField("mChildFragmentManager");
+            childFragmentManager.setAccessible(true);
+            childFragmentManager.set(this, null);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
-        handler.sendEmptyMessage(UPDATE_LIST);
-        mDownloadedText.setPadding(paddingHorizontal, paddingVertical,
-                paddingHorizontal, paddingVertical);
-        mDownloadText.setPadding(paddingHorizontal, paddingVertical,
-                paddingHorizontal, paddingVertical);
-
     }
 }

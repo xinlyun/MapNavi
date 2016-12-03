@@ -50,10 +50,10 @@
                 android:id="@+id/btn_exit"
                 android:gravity="center"
                 android:textSize="45px"
-                android:text="x"
+                android:background="@drawable/icon_x"
                 android:textColor="@color/white"
                 android:layout_width="88px"
-                android:layout_height="88px" />
+                android:layout_height="108px" />
             <com.amap.api.navi.view.NextTurnTipView
                 android:id="@+id/nttv_navi"
                 android:layout_width="match_parent"
@@ -70,10 +70,19 @@
                 <TextView
                     android:layout_marginLeft="24px"
                     android:gravity="center_vertical|bottom"
-                    android:text="260米后"
+                    android:text="260"
                     android:id="@+id/tx_length"
                     android:textSize="33px"
                     android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:id="@+id/tx_danwei"
+                    android:textSize="24px"
+                    android:textColor="@color/white"
+                    android:layout_marginLeft="5px"
+                    android:text="米后"
+                    android:gravity="left|bottom"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent" />
                 <TextView
@@ -86,7 +95,7 @@
                     android:layout_height="match_parent" />
             </LinearLayout>
             <TextView
-                android:layout_marginTop="12px"
+                android:layout_marginTop="6px"
                 android:id="@+id/tx_to_road"
                 android:textSize="24px"
                 android:textColor="@color/white"
@@ -96,7 +105,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
             <LinearLayout
-                android:layout_marginTop="18px"
+                android:layout_marginTop="6px"
                 android:orientation="horizontal"
                 android:background="@color/text_black"
                 android:layout_width="match_parent"
@@ -147,12 +156,13 @@
         android:layout_marginRight="20px"
         android:layout_marginTop="20px"
         android:layout_width="45px"
-        android:layout_height="700px" />
+        android:layout_height="500px" />
 
 
     <RelativeLayout
+
         android:id="@+id/view_unlock"
-        android:visibility="visible"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <FrameLayout
@@ -191,15 +201,15 @@
                 <LinearLayout
                     android:id="@+id/btn_setting"
                     android:orientation="vertical"
-                    android:layout_width="88px"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent">
                     <ImageView
                         android:src="@drawable/icon_setting"
-                        android:layout_width="100px"
+                        android:layout_width="88px"
                         android:layout_height="70px" />
                     <TextView
-                        android:gravity="center"
-                        android:textSize="28px"
+                        android:gravity="center_horizontal|top"
+                        android:textSize="24px"
                         android:text="@string/setting"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />

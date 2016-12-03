@@ -21,6 +21,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -71,7 +73,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     private LatLonPoint fromPoint,toPoint;
     int routeID =1 ;
     private int zindex = 1;
-
+    private ImageView mIvLukuang;
     private long timeSave;
     private LatLng poiSave;
 
@@ -106,13 +108,13 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
      */
     private SparseArray<RouteOverLay> routeOverlays = new SparseArray<RouteOverLay>();
 
-    private Button mBtnStart;
     private TextView mTvShowMsg;
     private Marker mLocationMarker;
     private boolean isFirst = true;
+    private boolean isTriffice = true;
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
+        BugHunter.countTimeStart(BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
         super.onCreate(savedInstanceState);
         mLocationPro = LocationProvider.getInstence(getActivity());
 
@@ -143,7 +145,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     public void onResume() {
         super.onResume();
         mMapView.onResume();
-        BugHunter.statisticsEnd(getActivity().getApplication(),BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
+        BugHunter.countTimeEnd(getActivity().getApplication(),BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
     }
 
     @Nullable
@@ -157,19 +159,23 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     }
 
     void initView(){
-        mBtnStart = (Button) findViewById(R.id.btn_start_navi);
         mTvShowMsg = (TextView) findViewById(R.id.tv_show_msg);
         mMapFloatView = (MapFloatView) findViewById(R.id.mfv_show);
         mMapFloatView.initAmap(mAmap);
+        mIvLukuang      = (ImageView) findViewById(R.id.iv_lukuang);
         findViewById(R.id.btn_see_all).setOnClickListener(this);
         findViewById(R.id.btn_exit).setOnClickListener(this);
-        mBtnStart.setOnClickListener(this);
+        findViewById(R.id.btn_lukuang).setOnClickListener(this);
+        findViewById(R.id.btn_start_navi).setOnClickListener(this);
         MarkerOptions options  = new MarkerOptions();
 
         options.icon(BitmapDescriptorFactory.fromResource(com.xiaopeng.amaplib.R.drawable.navi_map_gps_locked));
 
         mLocationMarker = mAmap.addMarker(options);
         mLocationMarker.setAnchor(0.5f,0.5f);
+
+        findViewById(R.id.btn_zoom_plus).setOnClickListener(this);
+        findViewById(R.id.btn_zoom_jian).setOnClickListener(this);
 
     }
 
@@ -206,6 +212,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
             reCalue();
             isFirst = false;
         }
+        mAmap.setTrafficEnabled(isTriffice);
     }
 
     @Override
@@ -621,6 +628,30 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
                 getActivity().finish();
                 break;
 
+            case R.id.btn_zoom_plus:
+                if (mAmap!=null){
+                    mAmap.animateCamera(CameraUpdateFactory.zoomIn());
+                }
+                break;
+
+            case R.id.btn_zoom_jian:
+                if (mAmap!=null){
+                    mAmap.animateCamera(CameraUpdateFactory.zoomOut());
+                }
+                break;
+
+            case R.id.btn_lukuang:
+                isTriffice = !isTriffice;
+                if (mAmap!=null){
+                    mAmap.setTrafficEnabled(isTriffice);
+                    if (isTriffice){
+                        mIvLukuang.setImageResource(R.drawable.icon_lukuang_01);
+                    }else {
+                        mIvLukuang.setImageResource(R.drawable.icon_lukuang_02);
+                    }
+                }
+                break;
+
             default:
                 break;
 
@@ -628,6 +659,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     }
 
     private void startNavi(){
+        LogUtils.d(TAG,"startNavi");
         Intent intent = new Intent(getActivity(), RouteNaviActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         getActivity().startActivity(intent);

@@ -456,12 +456,12 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public void onNaviInfoUpdated(AMapNaviInfo aMapNaviInfo) {
-        LogUtils.d(NAVI_TAG,"onNaviInfoUpdated");
+//        LogUtils.d(NAVI_TAG,"onNaviInfoUpdated");
     }
 
     @Override
     public void onNaviInfoUpdate(NaviInfo naviInfo) {
-        LogUtils.d(NAVI_TAG,"onNaviInfoUpdate");
+//        LogUtils.d(NAVI_TAG,"onNaviInfoUpdate");
         for (XpNaviInfoListener naviInfoListener:mNaviInfoListners){
             naviInfoListener.onNaviInfoUpdate(naviInfo);
         }
@@ -781,6 +781,13 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
                 return avoidhightspeed;
         }
         return false;
+    }
+
+    @Override
+    public void reCallLocation() {
+        for (XpLocationListener listener:mListeners){
+            listener.onLocationChanged(mAmapLocation);
+        }
     }
 
 

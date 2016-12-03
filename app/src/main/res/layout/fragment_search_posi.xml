@@ -2,6 +2,7 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@drawable/shadowss"
+
     android:paddingLeft="9px"
     android:paddingRight="9px"
     android:paddingTop="4px"
@@ -41,7 +42,7 @@
                     android:layout_width="56px"
                     android:layout_height="56px" />
                 <EditText
-
+                    android:textCursorDrawable="@null"
                     android:background="@null"
                     android:id="@+id/prepare_edittext"
                     android:textSize="24px"
@@ -53,6 +54,7 @@
                     android:layout_width="609px"
                     android:layout_height="match_parent" />
                 <Button
+                    android:id="@+id/btn_search"
                     android:textColor="@color/white"
                     android:textSize="24px"
                     android:text="@string/search"
@@ -74,6 +76,10 @@
                 android:layout_height="116px" />
 
         </LinearLayout>
+        <ImageView
+            android:background="@color/gray_btn_bg_pressed_color"
+            android:layout_width="match_parent"
+            android:layout_height="1px" />
         <LinearLayout
             android:orientation="horizontal"
 

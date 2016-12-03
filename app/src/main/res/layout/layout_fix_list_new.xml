@@ -48,9 +48,11 @@
             <ImageView
                 android:id="@+id/touch_to_navi"
                 android:layout_alignParentRight="true"
-                android:src="@drawable/icon_collect"
-                android:layout_width="88px"
-                android:layout_height="match_parent" />
+                android:src="@drawable/icon_collect_2"
+                android:layout_marginLeft="8px"
+                android:layout_marginTop="18px"
+                android:layout_width="72px"
+                android:layout_height="72px" />
             <TextView
                 android:id="@+id/pre_list_dis"
                 android:layout_marginRight="88px"

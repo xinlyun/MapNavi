@@ -78,6 +78,21 @@ public class LocationSaver extends Model {
         return locationSaver;
     }
 
+    /**
+     * 第一次开启可能无法快速定位，以次数据为定位第一次数据
+     */
+    public static void saverFirst(){
+        LocationSaver locationSaver = new LocationSaver();
+        locationSaver.id = 0;
+        locationSaver.lat = 23.1535488735f;
+        locationSaver.lon = 113.4962516729f;
+        locationSaver.city = "广州";
+        locationSaver.cityCode = "0755";
+        locationSaver.bearing = 0;
+        locationSaver.address = "小鹏汽车公司";
+        locationSaver.save();
+    }
+
 
 
 }

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="716px"
+    android:layout_height="72px"
+    android:minHeight="72px"
+
+    android:gravity="center_vertical"
+    android:background="@color/grey_bg_color"
+    >
+
+    <TextView
+        style="@style/base_text_style_24.black"
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+
+
+        android:layout_marginTop="24px"
+        android:layout_marginLeft="36px"
+        android:text="北京"
+        android:textColor="@color/taobao_black"
+        />
+
+    <TextView
+        android:layout_marginTop="24px"
+        android:id="@+id/name_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="30px"
+        android:layout_toRightOf="@id/name"
+        android:text="总大小"
+
+        android:textColor="@color/a3a3a3"
+        android:textSize="20px" />
+
+    <LinearLayout
+        android:layout_width="282px"
+
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+
+        android:layout_marginRight="15dp"
+        android:gravity="center_vertical" >
+
+        <TextView
+
+            android:id="@+id/download_progress_status"
+            android:layout_width="100px"
+            android:layout_height="match_parent"
+            android:layout_marginRight="7dp"
+            android:gravity="center_vertical|left"
+            android:textColor="@color/gary"
+            android:textSize="20px" />
+        <TextView
+            android:textSize="24px"
+            android:id="@+id/tx_down_state"
+            android:gravity="center_vertical|left"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/download_status_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:padding="5dp"
+            android:src="@drawable/offlinearrow_download" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/view1"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dip"
+        android:layout_alignParentBottom="true"
+        android:background="@color/gray_lite" />
+
+</RelativeLayout>

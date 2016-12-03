@@ -2,6 +2,7 @@ package com.xiaopeng.xmapnavi.view.appwidget.fragment;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ProviderInfo;
@@ -17,6 +18,7 @@ import com.xiaopeng.lib.utils.utils.LogUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -40,7 +42,6 @@ import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.BaseFuncActivityInteface;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.MainActivity;
-import com.xiaopeng.xmapnavi.view.appwidget.activity.ShowPosiActivity;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.HistItemAdapater;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.TipItemAdapter;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.DelSlideListView;
@@ -75,7 +76,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
+        BugHunter.countTimeStart(BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
         super.onCreate(savedInstanceState);
         mLocationProvider = LocationProvider.getInstence(getActivity());
         mLocation = mLocationProvider.getAmapLocation();
@@ -106,6 +107,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
 //        findViewById(R.id.title_title).setOnClickListener(this);
         findViewById(R.id.pre_beginnavi).setOnClickListener(this);
         findViewById(R.id.btn_go_collect).setOnClickListener(this);
+        findViewById(R.id.btn_search).setOnClickListener(this);
         mEtvSearch = (EditText) findViewById(R.id.prepare_edittext);
         mEtvSearch.addTextChangedListener(this);
 
@@ -130,7 +132,8 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
     public void onResume() {
         super.onResume();
         mLocationProvider.addSearchListner(this);
-        BugHunter.statisticsEnd(getActivity().getApplication(),BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
+        mEtvSearch.requestFocus();
+        BugHunter.countTimeEnd(getActivity().getApplication(),BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
     }
 
     /**
@@ -147,12 +150,14 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
         super.onStart();
         mLocationProvider.addNaviCalueListner(this);
         mDateHelper.getHisItem(12);
+        showInputT();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         mLocationProvider.removeNaviCalueListner(this);
+        showHide();
     }
 
     @Override
@@ -168,7 +173,16 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
                 break;
 
             case R.id.btn_go_collect:
-                ((BaseFuncActivityInteface)getActivity()).startFragment(new ShowCollectFragment());
+                ((MainActivity)getActivity()).showCollectDialog();
+                break;
+
+            case R.id.btn_search:
+                if (mEtvSearch.getText().length()<3){
+                    Toast.makeText(getActivity(),"请输入正确内容",Toast.LENGTH_SHORT).show();
+                }else {
+                    String msg = mEtvSearch.getText().toString();
+                    readyToSearch(msg);
+                }
                 break;
 
             default:
@@ -249,10 +263,14 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
         LogUtils.d(TAG,"searchSucceful");
         if (mLocationProvider.getPoiResult() != null && mLocationProvider.getPoiResult().getPois().size()>=1){
 
-            Intent intent = new Intent(getActivity(),ShowPosiActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-
-            startActivity(intent);
+//            Intent intent = new Intent(getActivity(),ssShowPosiActivity.class);
+//            intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+//
+//            startActivity(intent);
+            ShowPosiFragment fragment = new ShowPosiFragment();
+            BaseFuncActivityInteface activityInteface = (BaseFuncActivityInteface) getActivity();
+            fragment.setMapView(activityInteface.getMapView());
+            activityInteface.startFragment(fragment);
         } else if ( mLocationProvider.getPoiResult() == null  || mLocationProvider.getPoiResult().getPois().size() < 1){
             Toast.makeText(getActivity(),"查无结果，请重试",Toast.LENGTH_LONG).show();
         }
@@ -362,5 +380,21 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
     @Override
     public void onBack() {
 
+    }
+
+
+    private void showInputT(){
+        InputMethodManager imm = (InputMethodManager) getActivity()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(mEtvSearch, InputMethodManager.RESULT_SHOWN);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,
+                InputMethodManager.HIDE_IMPLICIT_ONLY);
+    }
+    private void showHide(){
+        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        //隐藏软键盘
+        imm.hideSoftInputFromWindow(mEtvSearch.getWindowToken(), 0);
+        //显示软键盘
+//        imm.showSoftInputFromInputMethod(mEtSearch.getWindowToken(), 0);
     }
 }

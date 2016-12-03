@@ -37,7 +37,7 @@ public class ShowCollectFragment extends Fragment implements View.OnClickListene
     private ProgressDialog mProgDialog;
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
+        BugHunter.countTimeStart(BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
         super.onCreate(savedInstanceState);
         mPresenter = new ShowCollectPresenter(getActivity());
         mPresenter.init();
@@ -86,7 +86,7 @@ public class ShowCollectFragment extends Fragment implements View.OnClickListene
     @Override
     public void onResume() {
         super.onResume();
-        BugHunter.statisticsEnd(getActivity().getApplication(),BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
+        BugHunter.countTimeEnd(getActivity().getApplication(),BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
     }
 
     private void initView(){

@@ -52,7 +52,7 @@ import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
 import com.xiaopeng.xmapnavi.presenter.callback.OnClickRightItem;
 import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
-import com.xiaopeng.xmapnavi.view.appwidget.activity.ShowPosiActivity;
+import com.xiaopeng.xmapnavi.view.appwidget.activity.BaseFuncActivityInteface;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.HistoryAndNaviAdapter;
 
 import java.util.ArrayList;
@@ -120,6 +120,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
     private IHistoryDateHelper dateHelper;
     private LinearLayout mLlExit;
     private TextView mEdtShowSearch;
+    private BaseFuncActivityInteface mActivity;
     public void setMapView(MapView mapView){
         mAmapView = mapView;
         mAMap = mAmapView.getMap();
@@ -129,11 +130,13 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
     private View rootView;
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
+        BugHunter.countTimeStart(BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
+        mActivity = (BaseFuncActivityInteface) getActivity();
         super.onCreate(savedInstanceState);
         mLocationPro    = LocationProvider.getInstence(this.getActivity());
         lp          = Utils.getLatLonFromLocation(mLocationPro.getAmapLocation());
         dateHelper = new DateHelper();
+
     }
 
     @Nullable
@@ -227,7 +230,18 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
     @Override
     public void onResume() {
         super.onResume();
-        BugHunter.statisticsEnd(getActivity().getApplication(),BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
+        BugHunter.countTimeEnd(getActivity().getApplication(),BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
+        mEdtShowSearch.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    runMarkerChange(poiOverlay.getMarker(0), 0);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        },1000);
+
     }
 
     @Override
@@ -302,7 +316,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
                 break;
 
             case R.id.ll_exit:
-                getActivity().finish();
+                mActivity.exitFragment();
                 break;
 
             case R.id.btn_start_navi:
@@ -586,10 +600,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
     AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//            findViewById(R.id.ll_search_layout).setVisibility(View.GONE);
             LogUtils.d(TAG,"onItemClick posi:"+poiItems);
-//            mAdapter.setIndex(i);
-//            ShowPosiActivity.this.onMarkerClick(poiOverlay.getMarker(i));
             if (poiOverlay!=null) {
                 ShowPosiFragment.this.runMarkerChange(poiOverlay.getMarker(i), i);
             }
@@ -770,9 +781,11 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
     }
 
     private void requestToNavi(LatLonPoint fromPoint,LatLonPoint toPoint){
-        mAMap = null;
-        mAmapView = null;
-        ((ShowPosiActivity)getActivity()).requestCalueNaviPlan(fromPoint,toPoint);
+//        mAMap = null;
+//        mAmapView = null;
+//        ((ssShowPosiActivity)getActivity()).requestCalueNaviPlan(fromPoint,toPoint);
+        mActivity.requestNaviCalue(fromPoint,toPoint);
+        //TODO
     }
 
 }

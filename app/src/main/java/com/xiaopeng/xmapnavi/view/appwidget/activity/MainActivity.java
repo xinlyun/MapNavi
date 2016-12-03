@@ -11,6 +11,11 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.media.Image;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Bundle;
@@ -20,6 +25,7 @@ import android.text.TextWatcher;
 
 import com.amap.api.maps.Projection;
 import com.amap.api.maps.model.Circle;
+import com.amap.api.maps.model.Poi;
 import com.wangjie.shadowviewhelper.ShadowProperty;
 import com.wangjie.shadowviewhelper.ShadowViewHelper;
 import com.xiaopeng.lib.bughunter.BugHunter;
@@ -32,6 +38,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -73,6 +80,7 @@ import com.amap.api.services.help.Tip;
 import com.xiaopeng.lib.utils.utils.UIUtils;
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.bean.CollectItem;
+import com.xiaopeng.xmapnavi.bean.LocationSaver;
 import com.xiaopeng.xmapnavi.bean.WherePoi;
 import com.xiaopeng.xmapnavi.mode.DateHelper;
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
@@ -86,7 +94,10 @@ import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
 import com.xiaopeng.xmapnavi.presenter.callback.XpWhereListener;
 import com.xiaopeng.xmapnavi.utils.Utils;
+import com.xiaopeng.xmapnavi.view.appwidget.fragment.RunNaviWayFragment;
+import com.xiaopeng.xmapnavi.view.appwidget.fragment.SearchCollectFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.SearchPosiFragment;
+import com.xiaopeng.xmapnavi.view.appwidget.fragment.SettingFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.ShowCollectFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.ShowPosiFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.CircleImageView;
@@ -97,6 +108,7 @@ import com.xiaopeng.xmapnavi.view.appwidget.selfview.TipPopWindow;
 import com.xiaopeng.xmapnavi.view.appwidget.services.LocationProService;
 
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -112,6 +124,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         ,GeocodeSearch.OnGeocodeSearchListener,XpNaviCalueListener
         ,AMap.InfoWindowAdapter , XpCollectListener
         ,ShowCollectDialog.CollectDialogListener
+        ,View.OnTouchListener
 {
     public static final String TAG = "MainActivity";
     private static final String ACTION_SEARCH = "ACTION_SEARCH";
@@ -134,7 +147,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     private MapView mapView;
     private AMap aMap;
     private Marker myLocationMarker;
-//    private TipPopWindow mTipWindow;
+    //    private TipPopWindow mTipWindow;
     private OnLocationChangedListener mListener;
     // 是否需要跟随定位
     private boolean isNeedFollow = true;
@@ -148,12 +161,8 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     private int keyHeight = 0;
     private int screenHeight = 0;
     //View//
-//    private TextView mTvSearch;
-//    private StereoView mStvSearch;
-//    private EditText mEtvSearch;
     //Activity最外层的Layout视图
     private View activityRootView;
-    //    private SearchPosiFragment mSearchFragment;
     private List<Fragment> mFragments;
     private Marker marker,mMarkerPoi;
     private PolylineOptions polylineOptions = new PolylineOptions();
@@ -171,12 +180,10 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     private ProgressDialog mProgDialog;
     private boolean isTraff = true;
     private boolean isCanShow = false;//make the mTxShowPoiName can be show
-//    private RelativeLayout mMainTitleLayout;
-//    private TextView mTxShowPoiName;
     private LineShowView mLsv;
     private View mMarkInfoView;
     private TextView mTxMarkTitle;
-//    private CircleImageView mCirIV;
+    //    private CircleImageView mCirIV;
     private ShadowProperty mShadowPro ;
 
     private DateHelper mCollectDateHelper;
@@ -189,10 +196,21 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     private ImageView mIvShowTraffic;
     private ImageView mIvSeeWatch;
     private TextView mTxSeeWatch;
-    private Marker mLocationMarker;
+    private Marker mLocationMarker,mLocationMarker1;
+    private Button mLoveBtn;
+    private CollectItem mCollectNow;
+    private LatLonPoint fromPoint,toPoint;
+
+
+    private SensorManager mSensorManager;
+    private Sensor mOrientation;
+    private MySensorEventListener mySensorEventListener;
+    private float mSeeFloat = 0;
+    private long saveTouchTime = 0;
+    private long sensorChangeTime = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
+        BugHunter.countTimeStart(BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mCollectDateHelper = new DateHelper();
@@ -203,7 +221,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                 .setShadowDy(0)
                 .setShadowRadius(UIUtils.dip2px(this,5));
         mLocationProvider    = LocationProvider.getInstence(this);
-        mLocationProvider   .addNaviCalueListner(this);
+
         activityRootView = findViewById(R.id.root_layout);
         startService(new Intent(this, LocationProService.class));
         mapView = (MapView) findViewById(R.id.map_main);
@@ -225,28 +243,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                 mCollectDialog .setCollectDialogListener(MainActivity.this);
                 FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) activityRootView.getLayoutParams();
                 LogUtils.d(TAG,"layoutparams width:"+layoutParams.width);
-                marker = aMap.addMarker(new MarkerOptions()
-                        .icon(BitmapDescriptorFactory
-                                .fromResource(R.drawable.amap_car))
-                        .draggable(true));
-                marker.setPositionByPixels(540,720);
-                marker.setAnchor(0.5f,1f);
-
-                mMarkerPoi = aMap.addMarker(new MarkerOptions()
-                        .icon(BitmapDescriptorFactory
-                                .fromResource(R.drawable.pre_list_img0))
-                        .draggable(true));
-
-                mMarkerPoi.setTitle("title");
-                mMarkerPoi.setSnippet("snippet");
-                mMarkerPoi.setPositionByPixels(540,720);
-                mMarkerPoi.setAnchor(0.5f,1f);
-                mMarkerPoi.setVisible(false);
-                mMarkerPoi.setInfoWindowEnable(true);
-                scaleAnimation.setDuration(540);
-                mapView.getMap().setOnMarkerClickListener(MainActivity.this);
-                geocodeSearch = new GeocodeSearch(MainActivity.this);
-                geocodeSearch.setOnGeocodeSearchListener(MainActivity.this);
+                initMarker();
             }
         },1000);
         SEEWATCH_TEXT = new String[]{
@@ -255,6 +252,55 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                 getResources().getString(R.string.watch_3d)
         };
 
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mOrientation = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+        mySensorEventListener = new MySensorEventListener();
+
+
+    }
+
+    private void initMarker(){
+        marker = aMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory
+                        .fromResource(R.drawable.icon_drag_point))
+                .draggable(true));
+        marker.setPositionByPixels(540,720);
+        marker.setAnchor(0.5f,0.5f);
+
+        mMarkerPoi = aMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory
+                        .fromResource(R.drawable.pre_list_img2))
+                .draggable(true));
+
+        mMarkerPoi.setTitle("title");
+        mMarkerPoi.setSnippet("snippet");
+        mMarkerPoi.setPositionByPixels(540,720);
+        mMarkerPoi.setAnchor(0.5f,1f);
+        mMarkerPoi.setVisible(false);
+        mMarkerPoi.setInfoWindowEnable(true);
+        scaleAnimation.setDuration(540);
+        mapView.getMap().setOnMarkerClickListener(MainActivity.this);
+        geocodeSearch = new GeocodeSearch(MainActivity.this);
+        geocodeSearch.setOnGeocodeSearchListener(MainActivity.this);
+
+
+        mLocationMarker = aMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory
+                        .fromResource(R.drawable.icon_location_little))
+                .draggable(false)
+        );
+        mLocationMarker.setAnchor(0.5f,0.5f);
+        mLocationMarker.setVisible(false);
+        mLocationMarker.setFlat(true);
+
+        mLocationMarker1 = aMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory
+                        .fromResource(R.drawable.icon_seewatch_0))
+                .draggable(false)
+        );
+        mLocationMarker1.setAnchor(0.5f,0.5f);
+        mLocationMarker1.setVisible(false);
+        mLocationMarker1.setFlat(true);
 
     }
 
@@ -267,9 +313,12 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         mLocationProvider    = LocationProvider.getInstence(this);
 
 //        mLocationProvider   .addSearchListner(this);
-
+        mLocationProvider   .addNaviCalueListner(this);
         mapView.setVisibility(View.VISIBLE);
         mCollectDateHelper.getWhereItems();
+
+        mSensorManager.registerListener(mySensorEventListener,
+                mOrientation, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
 
@@ -280,7 +329,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         super.onStop();
         mLocationProvider   .removeNaviCalueListner(this);
         mapView.setVisibility(View.GONE);
-
+        mSensorManager.unregisterListener(mySensorEventListener);
     }
 
     /**
@@ -292,9 +341,10 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 //            aMap.setMapType(AMap.MAP_TYPE_NAVI);
             aMap.setTrafficEnabled(isTraff);
             aMap.setInfoWindowAdapter(this);
+            aMap.setOnPOIClickListener(mPoiClickListener);
             myLocationMarker = aMap.addMarker(new MarkerOptions()
                     .icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
-                            .decodeResource(getResources(), com.xiaopeng.amaplib.R.drawable.car))));
+                            .decodeResource(getResources(), R.drawable.icon_drag_point))));
             UiSettings settings = aMap.getUiSettings();
             settings.setTiltGesturesEnabled(false);
             settings.setRotateGesturesEnabled(false);
@@ -307,7 +357,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             mapView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    CameraUpdate update = CameraUpdateFactory.zoomTo(15);
+                    CameraUpdate update = CameraUpdateFactory.zoomTo(16);
                     aMap.animateCamera(update);
                 }
             },800);
@@ -325,6 +375,47 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
     }
 
+    private void reInit(){
+        aMap.clear();
+        aMap.setTrafficEnabled(isTraff);
+        aMap.setInfoWindowAdapter(this);
+        aMap.setLocationSource(this);// 设置定位监听
+        aMap.setOnPOIClickListener(mPoiClickListener);
+        UiSettings settings = aMap.getUiSettings();
+        settings.setAllGesturesEnabled(true);
+        settings.setTiltGesturesEnabled(false);
+        settings.setRotateGesturesEnabled(false);
+        aMap.setOnMarkerDragListener(this);
+        aMap.setOnCameraChangeListener(this);
+        polylineOptions = new PolylineOptions();
+        polylineOptions.width(2);
+        polylineOptions.color(Color.argb(255, 1, 1, 1));
+        polylineOptions.setDottedLine(true);
+        polylineOptions.aboveMaskLayer(true);
+        mPolyline = aMap.addPolyline(polylineOptions);
+
+
+        mLocationMarker = aMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory
+                        .fromResource(R.drawable.icon_location_little))
+                .draggable(false)
+        );
+        mLocationMarker.setAnchor(0.5f,0.5f);
+        mLocationMarker.setVisible(false);
+        mLocationMarker.setFlat(true);
+
+        mLocationMarker1 = aMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory
+                        .fromResource(R.drawable.icon_seewatch_0))
+                .draggable(false)
+        );
+        mLocationMarker1.setAnchor(0.5f,0.5f);
+        mLocationMarker1.setVisible(false);
+        mLocationMarker1.setFlat(true);
+
+        mLocationProvider.reCallLocation();
+    }
+
     /**
      *  初始化View
      */
@@ -335,30 +426,10 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         mIvShowTraffic      = (ImageView) findViewById(R.id.iv_show_traffic);
         mIvSeeWatch         = (ImageView) findViewById(R.id.iv_seewatch);
         mTxSeeWatch         = (TextView) findViewById(R.id.tx_seewatch);
-//        mEtvSearch          = (EditText) findViewById(R.id.edt_search);
-//        mEtvSearch          .setImeOptions(EditorInfo.IME_ACTION_SEARCH);
-//        mTvSearch           = (TextView) findViewById(R.id.tx_search_start);
-//        mStvSearch          = (StereoView) findViewById(R.id.stv_search);
-//        mMainTitleLayout    = (RelativeLayout) findViewById(R.id.main_title);
-//        mTxShowPoiName      = (TextView) findViewById(R.id.tx_show_poi_name);
-//        mTxShowPoiName      . setOnClickListener(this);
-//        mTipWindow          = new TipPopWindow(mEtvSearch);
-//        mDownLayout0        = (LinearLayout) findViewById(R.id.navistart_down_llayout3);
         mDownLayout1        = (FrameLayout) findViewById(R.id.layout_down);
         mTvPoiName          = (TextView) findViewById(R.id.tv_poi_name);
         mTvPoiStr           = (TextView) findViewById(R.id.tv_poi_str);
         mTvPoiDis           = (TextView) findViewById(R.id.tv_poi_dis);
-//        mImgBtnLukuang      = (ImageView) findViewById(R.id.d3_lukuang);
-//        mImgBtnSeeWay       = (ImageView) findViewById(R.id.d3_setting);
-
-        //--listener--//
-//        mImgBtnLukuang      .setOnClickListener(this);
-//        mTvSearch           .setOnClickListener(this);
-//        mImgBtnSeeWay       .setOnClickListener(this);
-
-//        mEtvSearch          .addTextChangedListener(this);
-//        mEtvSearch          .setOnFocusChangeListener(this);
-//        mTipWindow          .setOnTipItemClickListener(this);
         findViewById(R.id.d3_setting).setOnClickListener(this);
         findViewById(R.id.d3_lukuang).setOnClickListener(this);
         findViewById(R.id.btn_begin_navi).setOnClickListener(this);
@@ -371,6 +442,8 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         findViewById(R.id.tx_goto_complete).setOnClickListener(this);
         findViewById(R.id.tx_goto_home).setOnClickListener(this);
         findViewById(R.id.btn_collect).setOnClickListener(this);
+        findViewById(R.id.btn_setting).setOnClickListener(this);
+        mLoveBtn        = (Button) findViewById(R.id.btn_collect);
         mProgDialog = new ProgressDialog(this);
         mProgDialog.setTitle("正在搜索数据");
         mProgDialog.setMessage("正在搜索相关信息....");
@@ -383,12 +456,15 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             }
         });
         initMarkInfo();
+
+        findViewById(R.id.ll_show_fragment).setOnTouchListener(this);
     }
 
     private void initMarkInfo(){
         mMarkInfoView       = getLayoutInflater().inflate(R.layout.layout_tip_show,null);
         mTxMarkTitle        = (TextView) mMarkInfoView.findViewById(R.id.tx_tip_show);
         mTxMarkTitle        .setOnClickListener(this);
+        mMarkInfoView.findViewById(R.id.btn_little_begin_navi).setOnClickListener(this);
     }
 
 
@@ -407,6 +483,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 //                        hideKeyboard(mEtvSearch);
                         // 按下屏幕
                         // 如果timer在执行，关掉它
+                        saveTouchTime = System.currentTimeMillis();
                         clearTimer();
                         // 改变跟随状态
                         isNeedFollow = false;
@@ -415,6 +492,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                     case MotionEvent.ACTION_UP:
                         // 离开屏幕
                         startTimerSomeTimeLater();
+                        findMyPoiDeley.sendEmptyMessageDelayed(0,10 * 1001);
                         break;
 
                     case MotionEvent.ACTION_MOVE:
@@ -428,6 +506,24 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         });
 
     }
+
+    private Handler findMyPoiDeley = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            try {
+                if ((System.currentTimeMillis() - saveTouchTime) >=  10 * 1000) {
+                    if (mFragments.size()==0) {
+                        findMyPosi();
+                    }else {
+                        findMyPoiDeley.sendEmptyMessageDelayed(0,10 * 1001);
+                    }
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    };
 
 
     /**
@@ -466,7 +562,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
         mLocationProvider   .addLocationListener(this);
         mLocationProvider.addSearchListner(this);
-        BugHunter.statisticsEnd(getApplication(),BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
+        BugHunter.countTimeEnd(getApplication(),BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
     }
 
     /**
@@ -523,7 +619,20 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             }
         }
         if (mListener != null){
-            mListener.onLocationChanged(aMapLocation);
+//            mListener.onLocationChanged(aMapLocation);
+        }
+
+        if (mLocationMarker!=null){
+            mLocationMarker.setPosition(new LatLng(aMapLocation.getLatitude(),aMapLocation.getLongitude()));
+            if (mWatchStyle == WATCH_NORTH){
+                mLocationMarker.setVisible(true);
+            }
+        }
+        if (mLocationMarker1!=null){
+            mLocationMarker1.setPosition(new LatLng(aMapLocation.getLatitude(),aMapLocation.getLongitude()));
+            if (mWatchStyle != WATCH_NORTH){
+                mLocationMarker1.setVisible(true);
+            }
         }
 
     }
@@ -614,14 +723,29 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                 collectThePoi();
                 break;
 
+            case R.id.btn_setting:
+                startFragment(new SettingFragment());
+                break;
+
+            case R.id.btn_little_begin_navi:
+                mProgDialog.show();
+                startCalueNavi();
+                break;
+
             default:
                 break;
         }
     }
 
+
+
     private void clickComplete(){
         if (mComplete==null) {
-            startActivityForResult(new Intent(this, SearchCollectActivity.class), REQUEST_FIND_COMPLETE);
+//            startActivityForResult(new Intent(this, SearchCollectActivity.class), REQUEST_FIND_COMPLETE);
+            SearchCollectFragment searchCollectFragment = new SearchCollectFragment();
+            searchCollectFragment.setRequestCode(REQUEST_FIND_COMPLETE);
+            searchCollectFragment.setMapView(mapView);
+            startFragment(searchCollectFragment);
         }else {
             mLatLng = new LatLng(mComplete.posLat,mComplete.posLon);
             mProgDialog.show();
@@ -631,7 +755,11 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
     private void clickHome(){
         if (mHome==null) {
-            startActivityForResult(new Intent(this, SearchCollectActivity.class), REQUEST_FIND_HOME);
+//            startActivityForResult(new Intent(this, SearchCollectActivity.class), REQUEST_FIND_HOME);
+            SearchCollectFragment searchCollectFragment = new SearchCollectFragment();
+            searchCollectFragment.setRequestCode(REQUEST_FIND_HOME);
+            searchCollectFragment.setMapView(mapView);
+            startFragment(searchCollectFragment);
         }else {
             mLatLng = new LatLng(mHome.posLat,mHome.posLon);
             mProgDialog.show();
@@ -640,7 +768,14 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     }
 
     private void collectThePoi(){
-        mCollectDateHelper.saveCollect(poiName,poiDesc,mLatLng.latitude,mLatLng.longitude);
+        if (mCollectNow==null) {
+            mLoveBtn.setBackgroundResource(R.drawable.icon_collect_1);
+            mCollectDateHelper.saveCollect(poiName, poiDesc, mLatLng.latitude, mLatLng.longitude);
+        }else {
+            mLoveBtn.setBackgroundResource(R.drawable.icon_collect_2);
+            mCollectNow.delete();
+            mCollectNow = null;
+        }
     }
 
 
@@ -658,7 +793,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 //                    新的中心点坐标
                     ,16, //新的缩放级别
                     bear, //俯仰角0°~45°（垂直与地图时为0）
-                    0  ////偏航角 0~360° (正北方为0)
+                    mSeeFloat  ////偏航角 0~360° (正北方为0)
             ));
 //            CameraPosition.Builder builder = CameraPosition.builder();
 //            builder.target(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
@@ -700,22 +835,34 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
 
     private void startSearch(){
-        FragmentManager manager = getFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
+//        FragmentManager manager = getFragmentManager();
+//        FragmentTransaction transaction = manager.beginTransaction();
         SearchPosiFragment mSearchFragment = new SearchPosiFragment();
-        mFragments.add(mSearchFragment);
-        transaction.replace(R.id.ll_show_fragment,mSearchFragment);
-        transaction.commit();
+        startFragment(mSearchFragment);
+//        mFragments.add(mSearchFragment);
+//        transaction.replace(R.id.ll_show_fragment,mSearchFragment);
+//        transaction.commit();
     }
 
     @Override
     public void exitFragment(){
-        if (mFragments.size()==0)return;
+        if (mFragments.size()==0){
+            mReleavieView.setVisibility(View.VISIBLE);
+            reInit();
+            initMarker();
+            mLsv.setVisibility(View.VISIBLE);
+            return;
+        }
         if (mFragments.size()==1) {
             FragmentManager manager = getFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
             transaction.remove(mFragments.remove(mFragments.size() - 1));
             transaction.commit();
+            mReleavieView.setVisibility(View.VISIBLE);
+            reInit();
+            initMarker();
+            mLsv.setVisibility(View.VISIBLE);
+
         }else {
             mFragments.remove(mFragments.size()-1);
             FragmentManager manager = getFragmentManager();
@@ -743,11 +890,23 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
     @Override
     public void startFragment(Fragment fragment) {
+        aMap.setMyLocationEnabled(false);
+        mLsv.setVisibility(View.GONE);
+        mDownLayout1.setVisibility(View.GONE);
         mFragments.add(fragment);
         FragmentManager manager = getFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(R.id.ll_show_fragment,fragment);
         transaction.commit();
+        mReleavieView.setVisibility(View.GONE);
+        if (mLocationMarker!=null){
+            mLocationMarker.remove();
+            mLocationMarker = null;
+        }
+        if (mLocationMarker1!=null){
+            mLocationMarker1.remove();
+            mLocationMarker1 = null;
+        }
     }
 
     @Override
@@ -755,28 +914,55 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         //TODO
     }
 
+    @Override
+    public MapView getMapView() {
+        return mapView;
+    }
+
+    @Override
+    public void requestNaviCalue(LatLonPoint fromPoint, LatLonPoint toPoint) {
+        this.fromPoint = fromPoint;
+        this.toPoint = toPoint;
+        beginCalueNavi();
+    }
+
     public void haveCalueNaviSucceful(int[] ints,double posLat,double posLon){
         LogUtils.d(TAG,"haveCalueNaviSucceful:posLat:"+posLat+"  posLon:"+posLon);
         mProgDialog.dismiss();
-        Intent intent = new Intent(this, ShowPosiActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putIntArray(NAVI_MSG,ints);
-        double[] doubles = new double[4];
-        doubles[0] = mLocationProvider.getAmapLocation().getLatitude();
-        doubles[1] = mLocationProvider.getAmapLocation().getLongitude();
-        doubles[2] = posLat;
-        doubles[3] = posLon;
-        bundle.putDoubleArray(NAVI_POI,doubles);
-        intent.putExtra(ACTION_NAVI_COMP,bundle);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        startActivity(intent);
-        if (mFragments.size()>0) {
-            FragmentManager manager = getFragmentManager();
-            FragmentTransaction transaction = manager.beginTransaction();
-            transaction.remove(mFragments.remove(mFragments.size() - 1));
-            transaction.commit();
-            mFragments .clear();
-        }
+
+        showRunNaviFragment(ints,posLat,posLon);
+
+
+
+//        Intent intent = new Intent(this, ssShowPosiActivity.class);
+//        Bundle bundle = new Bundle();
+//        bundle.putIntArray(NAVI_MSG,ints);
+//        double[] doubles = new double[4];
+//        doubles[0] = mLocationProvider.getAmapLocation().getLatitude();
+//        doubles[1] = mLocationProvider.getAmapLocation().getLongitude();
+//        doubles[2] = posLat;
+//        doubles[3] = posLon;
+//        bundle.putDoubleArray(NAVI_POI,doubles);
+//        intent.putExtra(ACTION_NAVI_COMP,bundle);
+//        intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+//        startActivity(intent);
+//        if (mFragments.size()>0) {
+//            FragmentManager manager = getFragmentManager();
+//            FragmentTransaction transaction = manager.beginTransaction();
+//            transaction.remove(mFragments.remove(mFragments.size() - 1));
+//            transaction.commit();
+//            mFragments .clear();
+//        }
+    }
+
+    private void showRunNaviFragment(int[] ints , double posLat,double posLon){
+        double lat = mLocationProvider.getAmapLocation().getLatitude();
+        double lon  = mLocationProvider.getAmapLocation().getLongitude();
+        RunNaviWayFragment runNaviWayFragment = new RunNaviWayFragment();
+        runNaviWayFragment.setSucceful(ints);
+        runNaviWayFragment.setMapView(mapView);
+        runNaviWayFragment.setPosiFromTo(new LatLonPoint(lat,lon),new LatLonPoint(posLat,posLon));
+        startFragment(runNaviWayFragment);
     }
 
 
@@ -810,6 +996,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
         if (mDownLayout1.getVisibility()==View.VISIBLE) {
+            mLoveBtn.setBackgroundResource(R.drawable.icon_collect_2);
             mDownLayout1.setVisibility(View.GONE);
             RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mReleavieView.getLayoutParams();
             layoutParams.height = height;
@@ -901,6 +1088,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     @Override
     public void onRegeocodeSearched(RegeocodeResult regeocodeResult, int i) {
         RegeocodeAddress address = regeocodeResult.getRegeocodeAddress();
+
         if (address.getAois()!=null && address.getAois().size()>0) {
             AoiItem aoiItem = address.getAois().get(0);
 
@@ -909,11 +1097,30 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             mTvPoiName.setText(poiName);
             mTvPoiStr.setText(poiDesc);
             mTxMarkTitle.setText(poiName);
+
         }else {
             poiName = getUsefulInfo(address);
             poiDesc = "";
             mTvPoiName.setText(poiName);
             mTxMarkTitle.setText(poiName);
+        }
+
+        mCollectNow = mCollectDateHelper.getCollectByName(poiName);
+        if (mCollectNow!=null){
+            mLoveBtn.setBackgroundResource(R.drawable.icon_collect_1);
+        }
+
+        LatLonPoint latLonPoint = address.getPois().get(0).getLatLonPoint();
+        LatLng latLng = new LatLng(latLonPoint.getLatitude(),latLonPoint.getLongitude());
+
+        float dis = (int) AMapUtils.calculateLineDistance(latLng,new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
+        if (dis > 1000){
+            dis = dis/1000;
+            DecimalFormat df = new DecimalFormat("0.0");
+            String result = df.format(dis);
+            mTvPoiDis.setText(result+getString(R.string.kmile));
+        }else {
+            mTvPoiDis.setText(""+dis+getString(R.string.mile));
         }
         mMarkerPoi.showInfoWindow();
 
@@ -975,28 +1182,50 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         if (aMap!=null){
             switch (mWatchStyle){
                 case WATCH_NORTH:
+                    mSeeFloat = 0f;
                     if ( mLocationProvider!=null && mLocationProvider.getAmapLocation()!=null) {
-                        CameraUpdate update0 = CameraUpdateFactory.changeBearing(0);
-                        aMap.animateCamera(update0);
-                        CameraUpdate update1 = CameraUpdateFactory.changeTilt(0);
-                        aMap.animateCamera(update1);
-                        aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
+//                        CameraUpdate update0 = CameraUpdateFactory.changeBearing(0);
+//                        aMap.animateCamera(update0);
+//                        CameraUpdate update1 = CameraUpdateFactory.changeTilt(0);
+//                        aMap.animateCamera(update1);
+                        findMyPosi();
+
+//                        aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
+                        if (mLocationMarker!=null) {
+                            mLocationMarker.setVisible(true);
+                        }
+                        if (mLocationMarker1!=null) {
+                            mLocationMarker1.setVisible(false);
+                        }
                     }
+
                     break;
 
                 case WATCH_2D:
                     if ( mLocationProvider!=null && mLocationProvider.getAmapLocation()!=null) {
 //                    CameraUpdate update0 = CameraUpdateFactory.changeBearing(mLocationProvider.getAmapLocation().getBearing());
 //                    aMap.animateCamera(update0);
-                        aMap.setMyLocationType(AMap.LOCATION_TYPE_MAP_ROTATE);
+//                        aMap.setMyLocationType(AMap.LOCATION_TYPE_MAP_ROTATE);
                         CameraUpdate update1 = CameraUpdateFactory.changeTilt(0);
                         aMap.animateCamera(update1);
+                    }
+                    if (mLocationMarker!=null) {
+                        mLocationMarker.setVisible(false);
+                    }
+                    if (mLocationMarker1!=null) {
+                        mLocationMarker1.setVisible(true);
                     }
                     break;
 
                 case WATCH_3D:
                     CameraUpdate update1 = CameraUpdateFactory.changeTilt(30);
                     aMap.animateCamera(update1);
+                    if (mLocationMarker!=null) {
+                        mLocationMarker.setVisible(false);
+                    }
+                    if (mLocationMarker1!=null) {
+                        mLocationMarker1.setVisible(true);
+                    }
                     break;
             }}
     }
@@ -1052,6 +1281,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             double posLat = bundle.getDouble("poiLat");
             double posLon = bundle.getDouble("poiLon");
             mCollectDateHelper.saveWhereIten(requestCode,name,desc,posLat,posLon);
+            if (mFragments.size()!=0)return;
             mLatLng = new LatLng(posLat,posLon);
             mProgDialog.show();
             startCalueNavi();
@@ -1089,4 +1319,89 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
         }
     };
+
+    public void showCollectDialog(){
+        mCollectDateHelper.getCollectItems();
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        if (event.getAction()==MotionEvent.ACTION_DOWN){
+            if (mFragments.size()>0){
+                //TODO
+//                exitFragment();
+//                return true;
+            }
+        }
+        return false;
+    }
+
+
+    private AMap.OnPOIClickListener mPoiClickListener = new AMap.OnPOIClickListener() {
+        @Override
+        public void onPOIClick(Poi poi) {
+            try {
+                aMap.moveCamera(CameraUpdateFactory.changeLatLng(poi.getCoordinate()));
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    };
+
+    private void beginCalueNavi(){
+        if (fromPoint!=null && toPoint!=null){
+
+//            startList.clear();
+            List<NaviLatLng> startList = new ArrayList<>();
+            List<NaviLatLng> wayList = new ArrayList<>();
+            List<NaviLatLng> endList = new ArrayList<>();
+            startList.add(new NaviLatLng(fromPoint.getLatitude(),fromPoint.getLongitude()));
+            endList.clear();
+            endList.add(new NaviLatLng(toPoint.getLatitude(),toPoint.getLongitude()));
+            mProgDialog.show();
+            if (mapView!=null){
+                mapView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mProgDialog.dismiss();
+                    }
+                },6000);
+
+            }
+            mLocationProvider.calueRunWay(startList,wayList,endList);
+        }
+    }
+    float saveA = 0;
+    class MySensorEventListener implements SensorEventListener {
+
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            // TODO Auto-generated method stub
+//            float a = event.values[0];
+//            if (mLocationMarker!=null){
+//                mLocationMarker.setRotateAngle(360 - a);
+//            }
+
+            if (mWatchStyle != WATCH_NORTH) {
+                if ((System.currentTimeMillis() - sensorChangeTime > 300)) {
+                    if (Math.abs(event.values[0] - saveA)>5) {
+                        saveA = event.values[0];
+                        if (mLocationMarker1 != null) {
+                            mLocationMarker1.setRotateAngle(360 - saveA);
+                        }
+                        mSeeFloat = saveA;
+                        aMap.animateCamera(CameraUpdateFactory.changeBearing(saveA), 1, null);
+                        sensorChangeTime = System.currentTimeMillis();
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+            // TODO Auto-generated method stub
+
+        }
+
+    }
 }

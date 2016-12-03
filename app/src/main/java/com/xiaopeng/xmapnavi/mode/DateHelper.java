@@ -308,4 +308,31 @@ public class DateHelper implements IHistoryDateHelper ,ICollectDateHelper,IWhere
                 .orderBy("time desc")
                 .execute();
     }
+
+    @Override
+    public CollectItem getCollectByPoi(double lat,double lon){
+        List<CollectItem> list = new Select()
+                                        .from(CollectItem.class)
+                                        .where("posLat = ?",lat)
+                                        .and("posLon = ?",lon)
+                                        .execute();
+        if (list == null || list.size()==0){
+            return null;
+        }else {
+            return list.get(0);
+        }
+    }
+
+    @Override
+    public CollectItem getCollectByName(String name){
+        List<CollectItem> list = new Select()
+                .from(CollectItem.class)
+                .where("pName = ?",name)
+                .execute();
+        if (list == null || list.size()==0){
+            return null;
+        }else {
+            return list.get(0);
+        }
+    }
 }

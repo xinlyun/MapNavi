@@ -74,4 +74,6 @@ public interface ILocationProvider {
     void setBroadCastMode(int mode);
 
     boolean getNaviLikeStyle(int num);
+
+    void reCallLocation();
 }

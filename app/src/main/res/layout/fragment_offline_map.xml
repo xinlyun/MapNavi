@@ -1,125 +1,183 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/grey"
-    android:orientation="vertical" >
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <ImageView
-            android:id="@+id/back_image_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:src="@drawable/offline_back" />
-
+    >
+    <FrameLayout
+        android:layout_marginTop="8px"
+        android:layout_marginLeft="91px"
+        android:paddingLeft="9px"
+        android:paddingRight="9px"
+        android:paddingTop="4px"
+        android:paddingBottom="14px"
+        android:background="@drawable/shadowss"
+        android:layout_width="898px"
+        android:layout_height="774px">
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true" >
+            android:padding="1px"
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/white_backgrouad"
+            android:orientation="vertical" >
 
-            <TextView
-                android:id="@+id/download_list_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/offlinearrow_tab1_pressed"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:text="@string/all_offline"
-                android:textSize="@dimen/title_text_size" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:background="@color/grey_bg_color"
+                android:layout_width="match_parent"
+                android:layout_height="72px" >
 
-            <TextView
-                android:id="@+id/downloaded_list_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/offlinearrow_tab2_normal"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:text="@string/download_offline"
-                android:textSize="@dimen/title_text_size" />
+                <ImageView
+                    android:id="@+id/back_image_view"
+                    android:layout_width="88px"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:src="@drawable/icon_return" />
+                <TextView
+                    android:textSize="30px"
+                    android:textColor="@color/first_text_color"
+                    android:gravity="center"
+                    android:text="@string/pianhao"
+                    android:layout_width="704px"
+                    android:layout_height="match_parent" />
+
+            </LinearLayout>
+            <!--
+                <LinearLayout
+                   android:layout_width="fill_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dip"
+                   android:layout_marginBottom="5dip"
+                   android:gravity="center_horizontal"
+                   android:orientation="horizontal" >
+
+                   <Button
+                       android:id="@+id/but_all_cancel"
+                       android:layout_width="wrap_content"
+                       android:layout_height="21dp"
+                       android:layout_marginRight="5dp"
+                       android:layout_marginTop="7dp"
+                       android:background="@drawable/offline_common_title_btn_selector_640"
+                       android:paddingLeft="6dp"
+                       android:paddingRight="6dp"
+                       android:text="全部取消"
+                       android:textColor="@color/offline_down_size"
+                       android:textSize="@dimen/font_22" />
+
+                   <Button
+                       android:id="@+id/but_all_pause"
+                       android:layout_width="wrap_content"
+                       android:layout_height="21dp"
+                       android:layout_marginRight="5dp"
+                       android:layout_marginTop="7dp"
+                       android:background="@drawable/offline_common_title_btn_selector_640"
+                       android:paddingLeft="6dp"
+                       android:paddingRight="6dp"
+                       android:text="全部暂停"
+                       android:textColor="@color/offline_down_size"
+                       android:textSize="@dimen/font_22" />
+
+                   <Button
+                       android:id="@+id/but_all_continue"
+                       android:layout_width="wrap_content"
+                       android:layout_height="21dp"
+                       android:layout_marginRight="5dp"
+                       android:layout_marginTop="7dp"
+                       android:background="@drawable/offline_common_title_btn_selector_640"
+                       android:paddingLeft="6dp"
+                       android:paddingRight="6dp"
+                       android:text="全部继续"
+                       android:textColor="@color/offline_down_size"
+                       android:textSize="@dimen/font_22" />
+
+                   <Button
+                       android:id="@+id/but_all_updata"
+                       android:layout_width="wrap_content"
+                       android:layout_height="21dp"
+                       android:layout_marginTop="7dp"
+                       android:background="@drawable/offline_common_title_btn_selector_640"
+                       android:paddingLeft="6dp"
+                       android:paddingRight="6dp"
+                       android:text="全部更新"
+                       android:textColor="@color/offline_down_size"
+                       android:textSize="@dimen/font_22" />
+
+               </LinearLayout>
+               -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:gravity="bottom"
+                android:layout_height="62px">
+                <TextView
+                    android:gravity="bottom"
+                    style="@style/base_text_style_24.black"
+                    android:layout_marginLeft="40px"
+                    android:text="@string/new_city"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:gravity="bottom"
+                    android:layout_marginLeft="40px"
+                    android:textSize="36px"
+                    android:textColor="@color/first_text_color"
+                    android:text="广州市"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:gravity="bottom"
+                    android:textSize="24px"
+                    android:textColor="@color/a3a3a3"
+                    android:layout_marginLeft="30px"
+                    android:text="216MB"
+                    android:layout_width="350px"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:textColor="@color/a3a3a3"
+                    android:textSize="24px"
+                    android:text="已下载"
+                    android:layout_marginRight="20px"
+                    android:gravity="bottom|right"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+            <ImageView
+                android:background="@color/gray_btn_bg_pressed_color"
+                android:layout_marginTop="26px"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_marginTop="26px"
+                    style="@style/base_text_style_24.black"
+                    android:text="@string/all_city"
+                    android:gravity="center"
+                    android:layout_marginLeft="40px"
+                    android:layout_marginRight="30px"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <android.support.v4.view.ViewPager
+
+                    android:id="@+id/content_viewpage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1.0"
+                    android:background="@color/white"
+                    android:flipInterval="30"
+                    android:persistentDrawingCache="animation" />
+            </LinearLayout>
+
+
         </LinearLayout>
-    </RelativeLayout>
-    <!--
-        <LinearLayout
-           android:layout_width="fill_parent"
-           android:layout_height="wrap_content"
-           android:layout_marginTop="5dip"
-           android:layout_marginBottom="5dip"
-           android:gravity="center_horizontal"
-           android:orientation="horizontal" >
+    </FrameLayout>
 
-           <Button
-               android:id="@+id/but_all_cancel"
-               android:layout_width="wrap_content"
-               android:layout_height="21dp"
-               android:layout_marginRight="5dp"
-               android:layout_marginTop="7dp"
-               android:background="@drawable/offline_common_title_btn_selector_640"
-               android:paddingLeft="6dp"
-               android:paddingRight="6dp"
-               android:text="全部取消"
-               android:textColor="@color/offline_down_size"
-               android:textSize="@dimen/font_22" />
-
-           <Button
-               android:id="@+id/but_all_pause"
-               android:layout_width="wrap_content"
-               android:layout_height="21dp"
-               android:layout_marginRight="5dp"
-               android:layout_marginTop="7dp"
-               android:background="@drawable/offline_common_title_btn_selector_640"
-               android:paddingLeft="6dp"
-               android:paddingRight="6dp"
-               android:text="全部暂停"
-               android:textColor="@color/offline_down_size"
-               android:textSize="@dimen/font_22" />
-
-           <Button
-               android:id="@+id/but_all_continue"
-               android:layout_width="wrap_content"
-               android:layout_height="21dp"
-               android:layout_marginRight="5dp"
-               android:layout_marginTop="7dp"
-               android:background="@drawable/offline_common_title_btn_selector_640"
-               android:paddingLeft="6dp"
-               android:paddingRight="6dp"
-               android:text="全部继续"
-               android:textColor="@color/offline_down_size"
-               android:textSize="@dimen/font_22" />
-
-           <Button
-               android:id="@+id/but_all_updata"
-               android:layout_width="wrap_content"
-               android:layout_height="21dp"
-               android:layout_marginTop="7dp"
-               android:background="@drawable/offline_common_title_btn_selector_640"
-               android:paddingLeft="6dp"
-               android:paddingRight="6dp"
-               android:text="全部更新"
-               android:textColor="@color/offline_down_size"
-               android:textSize="@dimen/font_22" />
-
-       </LinearLayout>
-       -->
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/content_viewpage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_weight="1.0"
-        android:background="#000000"
-        android:flipInterval="30"
-        android:persistentDrawingCache="animation" />
-
-</LinearLayout>
+</RelativeLayout>
+    

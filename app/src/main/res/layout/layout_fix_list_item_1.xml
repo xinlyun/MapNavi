@@ -18,14 +18,14 @@
             android:layout_height="107px">
             <ImageView
 
-                android:src="@drawable/icon_search_marker"
+                android:src="@drawable/icon_search_01"
 
                 android:layout_gravity="center_vertical"
                 android:layout_width="88px"
                 android:layout_height="88px" />
 
             <LinearLayout
-                android:layout_marginLeft="28px"
+
                 android:orientation="vertical"
                 android:layout_width="690px"
                 android:gravity="center_vertical"

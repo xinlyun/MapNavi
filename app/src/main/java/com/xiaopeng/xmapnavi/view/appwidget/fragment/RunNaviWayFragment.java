@@ -3,6 +3,7 @@ package com.xiaopeng.xmapnavi.view.appwidget.fragment;
 import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -46,7 +47,9 @@ import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
-import com.xiaopeng.xmapnavi.view.appwidget.activity.ShowPosiActivity;
+import com.xiaopeng.xmapnavi.view.appwidget.activity.BaseFuncActivityInteface;
+import com.xiaopeng.xmapnavi.view.appwidget.activity.RadarNaviActivity;
+import com.xiaopeng.xmapnavi.view.appwidget.activity.RouteNaviActivity;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.NaviPathAdapter;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.LikeChangeDialog;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.NaviChanDialog;
@@ -73,6 +76,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     private boolean isTouch = false;
     private List<RouteOverLay> saveOverLay = new ArrayList<>();
     private LikeChangeDialog mSelectLikeDialog;
+    private BaseFuncActivityInteface mActivity;
     public void setMapView(MapView mapView){
         mAmapView = mapView;
         mAMap = mAmapView.getMap();
@@ -135,13 +139,15 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     private ImageView mIvLKicon;
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        BugHunter.statisticsStart(BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
+        BugHunter.countTimeStart(BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
+        mActivity = (BaseFuncActivityInteface) getActivity();
         super.onCreate(savedInstanceState);
         mLocaionPro = LocationProvider.getInstence(getActivity());
         mStartMarker = mAMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), com.xiaopeng.amaplib.R.drawable.start))));
         mEndMarker = mAMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(), com.xiaopeng.amaplib.R.drawable.end))));
         mOptions = new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(com.xiaopeng.amaplib.R.drawable.way));
         bi = BitmapFactory.decodeResource(getActivity().getResources(),R.drawable.title_back_00);
+
     }
 
     @Nullable
@@ -167,7 +173,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     @Override
     public void onResume() {
         super.onResume();
-        BugHunter.statisticsEnd(getActivity().getApplication(),BugHunter.CUSTOM_STATISTICS_TYPE_START_ACTIVITY,TAG);
+        BugHunter.countTimeEnd(getActivity().getApplication(),BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
     }
 
     private void initView(){
@@ -512,10 +518,21 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.btn_start_navi:
-                ((ShowPosiActivity)getActivity()).requestStartNavi();
+//                ((ssShowPosiActivity)getActivity()).requestStartNavi();
+                Intent intent = new Intent(getActivity(),RouteNaviActivity.class);
+                intent.putExtra("gps", true);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                startActivity(intent);
+//                finish();
                 break;
             case R.id.btn_start_route_navi:
-                ((ShowPosiActivity)getActivity()).requestRouteNavi();
+//                ((ssShowPosiActivity)getActivity()).requestRouteNavi();
+                Intent intent1 = new Intent(getActivity(),RadarNaviActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putDouble("lat",toPoint.getLatitude());
+                bundle.putDouble("lon",toPoint.getLongitude());
+                intent1.putExtras(bundle);
+                startActivity(intent1);
                 break;
 
             case R.id.btn_pianhao:
@@ -528,7 +545,8 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                 break;
 
             case  R.id.btn_exit:
-                getActivity().finish();
+//                getActivity().finish();
+                mActivity.exitFragment();
                 break;
 
             case R.id.btn_zoom_plus:

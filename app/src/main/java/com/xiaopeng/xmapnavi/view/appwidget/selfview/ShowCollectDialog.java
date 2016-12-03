@@ -11,6 +11,9 @@ import android.widget.ListView;
 
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.bean.CollectItem;
+import com.xiaopeng.xmapnavi.mode.DateHelper;
+import com.xiaopeng.xmapnavi.presenter.callback.OnClickRightItem;
+import com.xiaopeng.xmapnavi.presenter.callback.XpCollectListener;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.CollectShowAdapter;
 
 import java.util.ArrayList;
@@ -20,7 +23,7 @@ import java.util.List;
  * Created by linzx on 2016/11/16.
  */
 
-public class ShowCollectDialog implements AdapterView.OnItemClickListener,View.OnClickListener{
+public class ShowCollectDialog implements AdapterView.OnItemClickListener,View.OnClickListener,XpCollectListener{
     private Activity mContext;
     private View mRootView;
     private ListView mLv;
@@ -28,6 +31,7 @@ public class ShowCollectDialog implements AdapterView.OnItemClickListener,View.O
     private CollectShowAdapter mCSAdapter;
     private CollectDialogListener mListener;
     private Dialog mDialog;
+    private DateHelper mDateHelper;
     public ShowCollectDialog(Activity context){
         mContext = context;
         init();
@@ -36,28 +40,37 @@ public class ShowCollectDialog implements AdapterView.OnItemClickListener,View.O
         mDate.clear();
         mDate.addAll(date);
         mCSAdapter.setData(mDate);
+        mCSAdapter.notifyDataSetChanged();
     }
     public void setCollectDialogListener(CollectDialogListener listener){
         mListener = listener;
     }
     private void init(){
         //TODO
+        mDateHelper = new DateHelper();
+        mDateHelper.setOnCollectListener(this);
         mDate = new ArrayList<>();
-        mDialog     = new Dialog(mContext);
+        mDialog     = new Dialog(mContext, R.style.navi_dialog);
         mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);  //无title
-        Window window = mDialog.getWindow();
-        WindowManager.LayoutParams params = window.getAttributes();
-        params.width = 600;
-        params.height= 400;
-        params.y = 600;
-        window.setAttributes(params);
+
         mRootView   = mContext.getLayoutInflater().inflate(R.layout.layout_dialog_show_collect,null);
         mLv         = (ListView) findViewById(R.id.lv_show_collect);
         mCSAdapter  = new CollectShowAdapter(mContext,R.layout.layout_dialog_show_collect);
+        mCSAdapter  .setRightLisener(listener);
         mLv         .setAdapter(mCSAdapter);
         mLv         .setOnItemClickListener(this);
+        mLv         .setDividerHeight(1);
+        mLv         .setDivider(mContext.getResources().getDrawable(R.drawable.gray_button_background));
         findViewById(R.id.rl_out_side).setOnClickListener(this);
+
         mDialog     .setContentView(mRootView);
+        Window window = mDialog.getWindow();
+        WindowManager.LayoutParams params = window.getAttributes();
+        params.width = 1080;
+        params.height= 1440;
+        params.y = 0;
+        params.x = 0;
+        window.setAttributes(params);
     }
 
     private View findViewById(int id){
@@ -73,6 +86,15 @@ public class ShowCollectDialog implements AdapterView.OnItemClickListener,View.O
             mDialog.dismiss();
         }
     }
+    private OnClickRightItem listener = new OnClickRightItem() {
+        @Override
+        public void onClickRightItem(int posi) {
+            CollectItem collectItem  = mDate.get(posi);
+            collectItem.delete();
+            mDateHelper.getCollectItems();
+
+        }
+    };
 
 
     @Override
@@ -94,6 +116,11 @@ public class ShowCollectDialog implements AdapterView.OnItemClickListener,View.O
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onCollectCallBack(List<CollectItem> collectItems) {
+        this.setDate(collectItems);
     }
 
     public interface CollectDialogListener{

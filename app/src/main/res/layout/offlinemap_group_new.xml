@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="716px"
+    android:layout_height="72px"
+    android:minHeight="72px"
+
+
+     >
+
+    <ImageView
+        android:id="@+id/group_image"
+        android:layout_width="42px"
+        android:layout_height="42px"
+        android:layout_marginTop="15px"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20px"
+        android:src="@drawable/icon_down_left"
+        />
+
+    <TextView
+        android:text="安庆"
+        android:id="@+id/group_text"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10px"
+        android:textColor="@color/first_text_color"
+        android:textSize="24px"
+        android:gravity="center_vertical"
+        android:layout_alignTop="@+id/group_image"
+        android:layout_alignParentStart="true" />
+    <ImageView
+        android:layout_alignParentBottom="true"
+        android:background="@color/gray_btn_bg_pressed_color"
+        android:layout_width="match_parent"
+        android:layout_height="1px" />
+</RelativeLayout>

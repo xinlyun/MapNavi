@@ -102,9 +102,9 @@ public class SearchCollectActivity extends Activity implements View.OnClickListe
         mLvShowCollect          = (ListView) findViewById(R.id.lv_show_tip_his);
         mLvShowResult           = (ListView) findViewById(R.id.lv_show_result);
 
-        findViewById(R.id.btn_sure).setOnClickListener(this);
+//        findViewById(R.id.btn_sure).setOnClickListener(this);
+        findViewById(R.id.btn_return).setOnClickListener(this);
         findViewById(R.id.btn_exit).setOnClickListener(this);
-        findViewById(R.id.title_title_2).setOnClickListener(this);
         mLvShowResult           .setOnItemClickListener(mItemClickListner2);
         mEtSearch.addTextChangedListener(this);
 
@@ -177,7 +177,7 @@ public class SearchCollectActivity extends Activity implements View.OnClickListe
                 finish();
                 break;
 
-            case R.id.title_title_2:
+            case R.id.btn_return:
                 mFrameLayout1.setVisibility(View.GONE);
                 mFrameLayout0.setVisibility(View.VISIBLE);
                 break;
@@ -266,6 +266,7 @@ public class SearchCollectActivity extends Activity implements View.OnClickListe
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             mShowResultAdapter.chioceOne(position);
+            saveCollect();
         }
     };
 

@@ -34,6 +34,7 @@
                 android:orientation="horizontal"
                 android:layout_height="56px">
                 <TextView
+                    android:layout_marginLeft="20px"
                     android:gravity="center_vertical"
                     android:textSize="30px"
                     android:background="@color/transparent"
@@ -129,8 +130,6 @@
                 android:layout_height="1px" />
 
             <ListView
-
-                android:background="@drawable/white_backgrouad"
                 android:id="@+id/prepare_listview"
                 android:layout_width="match_parent"
                 android:dividerHeight="1px"
