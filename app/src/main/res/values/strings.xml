@@ -76,4 +76,11 @@
     <string name="download_pause">暂停</string>
     <string name="download_complete">已下载</string>
     <string name="download_uzip">解压中</string>
+    <string name="add_poi">添加地点</string>
+    <string name="please_input_poi">请输入地址</string>
+    <string name="please_input_company">请输入公司地址</string>
+    <string name="please_input_home">请输入家庭地址</string>
+    <string name="find_poi_str_0">共找到\"</string>
+    <string name="find_poi_str_1">\"相关</string>
+    <string name="find_poi_str_2">个结果</string>
 </resources>

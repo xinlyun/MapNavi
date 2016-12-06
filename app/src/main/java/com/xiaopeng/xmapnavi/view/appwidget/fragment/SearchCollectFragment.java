@@ -41,6 +41,7 @@ import com.xiaopeng.xmapnavi.view.appwidget.activity.BaseFuncActivityInteface;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.SearchCollectAdapter;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.ShowResultAdapter;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.TipItemAdapter;
+import com.xiaopeng.xmapnavi.view.appwidget.fragment.second.ShowSearchPoiFragment;
 
 import java.util.List;
 
@@ -68,7 +69,7 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
     private MapView mTmapView;
 
     private View rootView;
-    private int requestCode;
+    private int requestCode = -1;
     private View findViewById(int id){
         return rootView.findViewById(id);
     }
@@ -80,6 +81,8 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
     public void setMapView(MapView mapView){
         this.mTmapView = mapView;
     }
+
+    public String searchStr;
 
     private BaseFuncActivityInteface mActivity;
 //    @Override
@@ -141,6 +144,19 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
 
             }
         });
+
+        switch (requestCode){
+            case -1:
+                mEtSearch.setHint(R.string.please_input_poi);
+                break;
+            case 0:
+                mEtSearch.setHint(R.string.please_input_company);
+                break;
+
+            case 1:
+                mEtSearch.setHint(R.string.please_input_home);
+                break;
+        }
     }
     private void init(){
         mDateHelper             = new DateHelper();
@@ -181,10 +197,14 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
         public void searchSucceful() {
             mProgDialog.dismiss();
             mEtSearch.setText("");
-            mFrameLayout0.setVisibility(View.GONE);
-            mFrameLayout1.setVisibility(View.VISIBLE);
-            List<PoiItem> items = mLocationProvider.getPoiResult().getPois();
-            mShowResultAdapter.setDate(items);
+            ShowSearchPoiFragment fragment = new ShowSearchPoiFragment();
+            fragment.setRequestCode(requestCode);
+            fragment.setSearchStr(searchStr);
+            mActivity.startFragment(fragment);
+//            mFrameLayout0.setVisibility(View.GONE);
+//            mFrameLayout1.setVisibility(View.VISIBLE);
+//            List<PoiItem> items = mLocationProvider.getPoiResult().getPois();
+//            mShowResultAdapter.setDate(items);
         }
     };
 
@@ -309,9 +329,11 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
     };
 
     private void readyToSearch(String str){
+        searchStr = str;
         if (str.length() < 3){
             Toast.makeText(getActivity(),R.string.please_sure_text,Toast.LENGTH_SHORT).show();
         }else {
+            mEtSearch.setText(str);
             mProgDialog.show();
             mLocationProvider.trySearchPosi(str);
             mEtSearch.postDelayed(new Runnable() {

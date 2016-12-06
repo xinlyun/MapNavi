@@ -6,4 +6,5 @@ package com.xiaopeng.xmapnavi.presenter.callback;
 public interface XpNaviCalueListener {
     void onCalculateMultipleRoutesSuccess(int[] ints);
     void onCalculateRouteSuccess();
+    void onCalculateRouteFailure();
 }

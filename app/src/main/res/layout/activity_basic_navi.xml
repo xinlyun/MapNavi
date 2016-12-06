@@ -30,7 +30,14 @@
             />
     </FrameLayout>
 
+    <com.amap.api.navi.view.ZoomInIntersectionView
+        android:id="@+id/myZoomInIntersectionView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="300px"
+        android:layout_marginTop="13px"
 
+        />
     <FrameLayout
         android:paddingTop="4px"
         android:paddingBottom="14px"
@@ -53,11 +60,11 @@
                 android:background="@drawable/icon_x"
                 android:textColor="@color/white"
                 android:layout_width="88px"
-                android:layout_height="108px" />
+                android:layout_height="88px" />
             <com.amap.api.navi.view.NextTurnTipView
                 android:id="@+id/nttv_navi"
                 android:layout_width="match_parent"
-                android:layout_height="134px"
+                android:layout_height="138px"
 
                 android:layout_centerHorizontal="true"
                 >
@@ -95,7 +102,7 @@
                     android:layout_height="match_parent" />
             </LinearLayout>
             <TextView
-                android:layout_marginTop="6px"
+                android:layout_marginTop="12px"
                 android:id="@+id/tx_to_road"
                 android:textSize="24px"
                 android:textColor="@color/white"
@@ -105,7 +112,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
             <LinearLayout
-                android:layout_marginTop="6px"
+                android:layout_marginTop="18px"
                 android:orientation="horizontal"
                 android:background="@color/text_black"
                 android:layout_width="match_parent"
@@ -178,6 +185,7 @@
             android:layout_height="112px">
 
             <LinearLayout
+                android:padding="1px"
                 android:background="@drawable/white_backgrouad"
                 android:orientation="horizontal"
 
@@ -193,8 +201,7 @@
                     android:layout_width="968px"
                     android:layout_height="match_parent" />
                 <ImageView
-                    android:layout_marginTop="20px"
-                    android:layout_marginBottom="20px"
+
                     android:background="@color/gray_btn_bg_pressed_color"
                     android:layout_width="1px"
                     android:layout_height="match_parent" />
@@ -220,6 +227,7 @@
 
         </FrameLayout>
         <RelativeLayout
+            android:layout_marginRight="3px"
             android:layout_alignParentRight="true"
             android:layout_width="500px"
             android:layout_height="1332px">

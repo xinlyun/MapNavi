@@ -26,9 +26,11 @@ public class NaviPathAdapter extends ArrayAdapter{
     private int index = 0;
     private Context mContext;
     public NaviPathAdapter(Context context, int resource) {
-        super(context, resource);
-        viewHashMap = new HashMap<>();
-        mContext = context;
+
+            super(context, resource);
+            viewHashMap = new HashMap<>();
+            mContext = context;
+
 
     }
 

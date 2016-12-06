@@ -9,6 +9,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.xiaopeng.lib.utils.utils.LogUtils;
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.bean.CollectItem;
 import com.xiaopeng.xmapnavi.mode.DateHelper;
@@ -24,6 +25,7 @@ import java.util.List;
  */
 
 public class ShowCollectDialog implements AdapterView.OnItemClickListener,View.OnClickListener,XpCollectListener{
+    private final static String TAG ="ShowCollectDialog";
     private Activity mContext;
     private View mRootView;
     private ListView mLv;
@@ -89,10 +91,10 @@ public class ShowCollectDialog implements AdapterView.OnItemClickListener,View.O
     private OnClickRightItem listener = new OnClickRightItem() {
         @Override
         public void onClickRightItem(int posi) {
+            LogUtils.d(TAG,"onClickRightItem:"+posi);
             CollectItem collectItem  = mDate.get(posi);
             collectItem.delete();
             mDateHelper.getCollectItems();
-
         }
     };
 

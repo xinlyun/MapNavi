@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="758px"
+    android:minWidth="758px"
+    android:minHeight="108px"
+    android:layout_height="108px">
+    <ImageView
+        android:layout_alignParentRight="true"
+        android:src="@drawable/icon_next"
+        android:layout_marginTop="10px"
+        android:layout_width="108px"
+        android:layout_height="88px" />
+    <LinearLayout
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:layout_marginRight="108px"
+        android:layout_width="match_parent"
+        android:minHeight="108px"
+        android:layout_height="108px">
+        <TextView
+            android:id="@+id/tv_collect_name"
+            android:textColor="@color/first_text_color"
+            android:textSize="24px"
+            android:layout_gravity="center_vertical"
+            android:text="广州开发区科技企业加速器"
+            android:singleLine="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_gravity="center_vertical"
+            android:id="@+id/tv_collect_desc"
+            android:singleLine="true"
+            android:textSize="20px"
+            android:textColor="@color/a3a3a3"
+            android:layout_marginTop="10px"
+            android:text="工业园区 广东省广州黄埔区开源大道11号"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</RelativeLayout>

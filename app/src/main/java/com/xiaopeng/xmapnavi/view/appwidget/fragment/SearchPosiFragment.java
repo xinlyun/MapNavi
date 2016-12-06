@@ -173,6 +173,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
                 break;
 
             case R.id.btn_go_collect:
+                showHide();
                 ((MainActivity)getActivity()).showCollectDialog();
                 break;
 
@@ -335,7 +336,12 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
 
     @Override
     public void onCalculateRouteSuccess() {
+        mProgDialog.dismiss();
+    }
 
+    @Override
+    public void onCalculateRouteFailure() {
+        mProgDialog.dismiss();
     }
 
     @Override

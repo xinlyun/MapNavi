@@ -17,4 +17,5 @@ public interface BaseFuncActivityInteface {
     void startFragment(Class<?> cls);
     MapView getMapView();
     void requestNaviCalue(LatLonPoint fromPoint, LatLonPoint toPoint);
+    void showDialogwithOther();
 }

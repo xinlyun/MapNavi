@@ -1,5 +1,6 @@
 package com.xiaopeng.xmapnavi.presenter.callback;
 
+import com.amap.api.navi.model.AMapNaviCross;
 import com.amap.api.navi.model.NaviInfo;
 
 /**
@@ -7,4 +8,6 @@ import com.amap.api.navi.model.NaviInfo;
  */
 public interface XpNaviInfoListener {
     void onNaviInfoUpdate(NaviInfo naviInfo);
+    void showCross(AMapNaviCross aMapNaviCross) ;
+    void hideCross();
 }

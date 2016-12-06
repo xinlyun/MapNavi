@@ -7,28 +7,34 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.xiaopeng.xmapnavi.R;
+import com.xiaopeng.xmapnavi.bean.CollectItem;
 import com.xiaopeng.xmapnavi.bean.WherePoi;
 import com.xiaopeng.xmapnavi.mode.DateHelper;
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
+import com.xiaopeng.xmapnavi.presenter.callback.XpCollectListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpWhereListener;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.BaseFuncActivityInteface;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.MainActivity;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.SearchCollectActivity;
+import com.xiaopeng.xmapnavi.view.appwidget.adapter.SettingShowCollectAdapater;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.SearchCollectFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.ShowCollectFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by linzx on 2016/11/30.
  */
 
-public class SettingSecondFragment extends Fragment implements View.OnClickListener {
+public class SettingSecondFragment extends Fragment implements View.OnClickListener ,AdapterView.OnItemClickListener{
     private View rootView;
     private TextView mTxBackHome,mTxCompany;
 //    private ILocationProvider mLocationPro;
@@ -36,7 +42,9 @@ public class SettingSecondFragment extends Fragment implements View.OnClickListe
     private static final int REQUEST_FIND_HOME = 1;
     private static final int REQUEST_FIND_COMPLETE = 0;
     private BaseFuncActivityInteface mActivity;
-
+    private LinearLayout mListShowCollect ;
+    private ListView mLvShowCollect;
+    private SettingShowCollectAdapater mAdapter;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,10 +67,14 @@ public class SettingSecondFragment extends Fragment implements View.OnClickListe
     private void initView(){
         mTxBackHome     = (TextView) findViewById(R.id.tx_back_home);
         mTxCompany      = (TextView) findViewById(R.id.tx_company);
-
+        mListShowCollect= (LinearLayout) findViewById(R.id.third_ll);
+        mLvShowCollect  = (ListView) findViewById(R.id.lv_show_collect);
         findViewById(R.id.first_ll).setOnClickListener(this);
         findViewById(R.id.second_ll).setOnClickListener(this);
-        findViewById(R.id.third_ll).setOnClickListener(this);
+//        findViewById(R.id.third_ll).setOnClickListener(this);
+        mAdapter        = new SettingShowCollectAdapater(getActivity(),R.layout.layout_item_collect_in_setting);
+        mLvShowCollect  .setAdapter(mAdapter);
+        mLvShowCollect  .setOnItemClickListener(this);
     }
 
     @Override
@@ -83,7 +95,7 @@ public class SettingSecondFragment extends Fragment implements View.OnClickListe
                 break;
 
             case R.id.third_ll:
-                ((MainActivity)getActivity()).showCollectDialog();
+//                ((MainActivity)getActivity()).showCollectDialog();
                 break;
         }
     }
@@ -92,12 +104,15 @@ public class SettingSecondFragment extends Fragment implements View.OnClickListe
     public void onStart() {
         super.onStart();
         mDateHelper.setOnWhereListener(xpWhereListener);
+        mDateHelper.setOnCollectListener(xpCollectListener);
+
     }
 
     @Override
     public void onStop() {
         super.onStop();
         mDateHelper.setOnWhereListener(null);
+        mDateHelper.setOnCollectListener(null);
     }
 
     @Override
@@ -107,8 +122,9 @@ public class SettingSecondFragment extends Fragment implements View.OnClickListe
             @Override
             public void run() {
                 mDateHelper.getWhereItems();
+                mDateHelper.getCollectItems();
             }
-        },500);
+        },50);
 
 
     }
@@ -125,4 +141,27 @@ public class SettingSecondFragment extends Fragment implements View.OnClickListe
             }
         }
     };
+
+    private XpCollectListener xpCollectListener = new XpCollectListener() {
+        @Override
+        public void onCollectCallBack(List<CollectItem> collectItems) {
+            if (collectItems==null || collectItems.size() == 0){
+                mListShowCollect.setVisibility(View.GONE);
+                return;
+            }else {
+                mListShowCollect.setVisibility(View.VISIBLE);
+                mAdapter.setData(collectItems);
+            }
+        }
+    };
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        CollectItem item = mAdapter.getCollectItem(position);
+        if (item!=null) {
+            ShowCollectPoiFragment fragment = new ShowCollectPoiFragment();
+            fragment.setCollectItem(item);
+            mActivity.startFragment(fragment);
+        }
+    }
 }

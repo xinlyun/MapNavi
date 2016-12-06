@@ -432,6 +432,9 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void onCalculateRouteFailure(int i) {
         LogUtils.d(NAVI_TAG,"onCalculateRouteFailure i="+i);
+        for (XpNaviCalueListener listener:mNaviCalueListeners){
+            listener.onCalculateRouteFailure();
+        }
     }
 
     @Override
@@ -488,11 +491,17 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void showCross(AMapNaviCross aMapNaviCross) {
         LogUtils.d(NAVI_TAG,"showCross");
+        for (XpNaviInfoListener listener:mNaviInfoListners){
+            listener.showCross(aMapNaviCross);
+        }
     }
 
     @Override
     public void hideCross() {
         LogUtils.d(NAVI_TAG,"hideCross");
+        for (XpNaviInfoListener listener:mNaviInfoListners){
+            listener.hideCross();
+        }
     }
 
     @Override

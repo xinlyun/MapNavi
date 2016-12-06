@@ -18,9 +18,7 @@ import com.amap.api.maps.model.Poi;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.xiaopeng.xmapnavi.R;
-import com.xiaopeng.xmapnavi.bean.CollectItem;
 import com.xiaopeng.xmapnavi.bean.HistoryPosi;
-import com.xiaopeng.xmapnavi.mode.DateHelper;
 import com.xiaopeng.xmapnavi.presenter.callback.OnClickRightItem;
 
 
@@ -30,23 +28,21 @@ import java.util.List;
 /**
  * Created by xinlyun on 15-11-20.
  */
-public class HistoryAndNaviAdapter extends ArrayAdapter {
+public class SimplePoiAdapter extends ArrayAdapter {
     List<PoiItem> poiItemList;
     List<HistoryPosi> historyPosiList;
     LatLng localPosi;
     int style ;
     private int index = -1;
     private OnClickRightItem mOnClickRightItem;
-    private DateHelper dateHelper ;
-    public HistoryAndNaviAdapter(Context context,List<PoiItem> poiItemList,int resource) {
+
+    public SimplePoiAdapter(Context context,List<PoiItem> poiItemList,int resource) {
         super(context,resource);
         this.poiItemList = poiItemList;
         style = 1;
     }
-    public HistoryAndNaviAdapter(Context context, int resource,List<HistoryPosi> historyPosiList) {
-
+    public SimplePoiAdapter(Context context, int resource,List<HistoryPosi> historyPosiList) {
         super(context, resource);
-        dateHelper = new DateHelper();
         this.historyPosiList = historyPosiList;
         style = 0;
     }
@@ -97,25 +93,23 @@ public class HistoryAndNaviAdapter extends ArrayAdapter {
                 view = LayoutInflater.from(getContext()).inflate(R.layout.layout_fix_list_new,null);
                 itemHolder.naviBtn = (ImageView) view .findViewById(R.id.touch_to_navi);
                 itemHolder.naviBtn.setTag(position);
-
+                itemHolder.naviBtn.setVisibility(View.GONE);
                 itemHolder.naviName = (TextView) view.findViewById(R.id.pre_list_name);
                 itemHolder.naviPosi = (TextView) view.findViewById(R.id.pre_list_posi);
                 itemHolder.naviDis  = (TextView) view.findViewById(R.id.pre_list_dis);
+                itemHolder.naviDis.setVisibility(View.GONE);
+
                 view.setTag(itemHolder);
             }else {
                 view = convertView;
                 itemHolder = (ItemHolder) view.getTag();
-            }
-            CollectItem collectItem  = dateHelper.getCollectByName(poiItem.toString());
-            if (collectItem!=null){
-                itemHolder.naviBtn.setImageResource(R.drawable.icon_collect_1);
             }
             itemHolder.naviName.setText(""+(position+1)+"."+poiItem.toString());
             itemHolder.naviPosi.setText(poiItem.getCityName() + "  " + poiItem.getSnippet());
             itemHolder.naviBtn.setOnClickListener(new lvButtonListener(position));
             if (position == index){
 //                android:background="@color/trans_white_lrc"
-                view.findViewById(R.id.back_ll).setBackgroundColor(getContext().getResources().getColor(R.color.grey_bg_color_0));
+                view.findViewById(R.id.back_ll).setBackgroundColor(getContext().getResources().getColor(R.color.grey_bg_color));
             }else {
                 view.findViewById(R.id.back_ll).setBackground(null);
             }
@@ -156,26 +150,13 @@ public class HistoryAndNaviAdapter extends ArrayAdapter {
                 int posi1 = position;
                 mOnClickRightItem.onClickRightItem(posi1);
             }
-            if (position<poiItemList.size()){
-                ImageView newView = (ImageView) v;
-                PoiItem poiItem = poiItemList.get(position);
-                CollectItem collectItem = dateHelper.getCollectByName(poiItem.toString());
-                if (collectItem==null){
-                    dateHelper.saveCollect(poiItem.toString(),poiItem.getCityName() + "  " + poiItem.getSnippet()
-                            ,poiItem.getLatLonPoint().getLatitude(),poiItem.getLatLonPoint().getLongitude());
-                    newView.setImageResource(R.drawable.icon_collect_1);
-                }else {
-                    collectItem.delete();
-                    newView.setImageResource(R.drawable.icon_collect_2);
-                }
-            }
         }
     }
 
     public void setIndex(int index){
         this.index = index;
         this.notifyDataSetChanged();
-        
+
     }
 
 }

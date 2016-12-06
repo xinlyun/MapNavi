@@ -27,25 +27,25 @@
                 android:layout_height="72px"
                 android:src="@drawable/icon_return"/>
             <LinearLayout
-                
+
                 android:background="@drawable/white_backgrouad"
                 android:layout_marginRight="8px"
                 android:layout_width="match_parent"
                 android:orientation="horizontal"
                 android:layout_height="56px">
                 <TextView
-                    android:text=""
-                    android:textColor="@color/a3a3a3"
                     android:layout_marginLeft="20px"
                     android:gravity="center_vertical"
                     android:textSize="30px"
+                    android:textColor="@color/first_text_color"
                     android:background="@color/transparent"
                     android:id="@+id/edt_show_search"
                     android:layout_width="600px"
                     android:layout_height="match_parent" />
                 <ImageView
-                    android:gravity="center"
 
+
+                    android:src="@drawable/icon_x"
                     android:layout_width="72px"
                     android:layout_height="56px" />
                 <Button
@@ -57,7 +57,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
             </LinearLayout>
-            
+
         </LinearLayout>
     </FrameLayout>
     <FrameLayout
@@ -121,6 +121,7 @@
             <!--android:layout_height="116px" />-->
 
             <!--</LinearLayout>-->
+
             <LinearLayout
                 android:background="@color/grey_bg_color"
                 android:layout_width="match_parent"
@@ -144,7 +145,6 @@
                 android:background="@color/gray_btn_bg_pressed_color"
                 android:layout_width="match_parent"
                 android:layout_height="1px" />
-
             <Button
                 android:visibility="gone"
                 android:id="@+id/btn_pull"
@@ -174,7 +174,7 @@
                     android:layout_width="420px"
                     android:textSize="30px"
                     android:textColor="@color/white"
-                    android:text="@string/calue_navi"
+                    android:text="@string/add_poi"
                     android:layout_height="68px" />
             </LinearLayout>
         </LinearLayout>

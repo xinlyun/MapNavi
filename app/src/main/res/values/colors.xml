@@ -29,6 +29,7 @@
     <color name="translucency">#e0000000</color>
     <color name="orange">#ffa500</color>
     <color name="blue">#0066dd</color>
+    <color name="blue_0">#4f9bfe</color>
     <!-- <color name="red">#bf242a</color> -->
     <color name="transparent">#00000000</color>
     <color name="light_orange">#fcb75c</color>
@@ -75,5 +76,6 @@
 
     <color name="line_red">#ff2222</color>
     <color name="grey_bg_color">#f7f7f7</color>
+    <color name="grey_bg_color_0">#eeeeee</color>
     <color name="gray_text_color">#a3a3a3</color>
 </resources>

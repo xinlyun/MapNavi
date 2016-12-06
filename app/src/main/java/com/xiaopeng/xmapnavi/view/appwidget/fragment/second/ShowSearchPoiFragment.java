@@ -1,4 +1,4 @@
-package com.xiaopeng.xmapnavi.view.appwidget.fragment;
+package com.xiaopeng.xmapnavi.view.appwidget.fragment.second;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
@@ -11,7 +11,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 
+import com.amap.api.maps.AMapUtils;
 import com.amap.api.maps.model.CameraPosition;
+import com.amap.api.navi.model.NaviLatLng;
 import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import android.view.LayoutInflater;
@@ -55,6 +57,7 @@ import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.BaseFuncActivityInteface;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.HistoryAndNaviAdapter;
+import com.xiaopeng.xmapnavi.view.appwidget.adapter.SimplePoiAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +66,7 @@ import java.util.Map;
 /**
  * Created by linzx on 2016/10/15.
  */
-public class ShowPosiFragment extends Fragment implements XpLocationListener
+public class ShowSearchPoiFragment extends Fragment implements XpLocationListener
         , View.OnClickListener,XpSearchListner
         , AMap.OnMapClickListener, AMap.OnInfoWindowClickListener
         , AMap.InfoWindowAdapter, AMap.OnMarkerClickListener
@@ -99,7 +102,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
     private static final int REQ_HAVE_RESULT = 1;
     private ILocationProvider mLocationPro;
     private PoiResult mPoiResult;
-    private HistoryAndNaviAdapter mAdapter;
+    private SimplePoiAdapter mAdapter;
 
     private AMap mAMap;
     private LatLonPoint lp ;// 116.472995,39.993743
@@ -118,27 +121,33 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
     //    private TextView titleTextView;
 //    private EditText mEtvReq;
     private ProgressDialog mProgDialog;
-    private IHistoryDateHelper dateHelper;
+    private DateHelper dateHelper;
     private LinearLayout mLlExit;
-    private TextView mEdtShowSearch;
-    private String searchStr;
-    private TextView mTxSearchResult;
+    private TextView mEdtShowSearch,mTxShowResult;
     private BaseFuncActivityInteface mActivity;
+    private int requestCode;
+    private String searchStr;
     private boolean isFirst = true;
+
     public void setMapView(MapView mapView){
         mAmapView = mapView;
         mAMap = mAmapView.getMap();
         mAMap.clear();
     }
+
+    public void setRequestCode(int code){
+        this.requestCode = code;
+    }
     public void setSearchStr(String str){
         searchStr = str;
-    }
 
+    }
     private View rootView;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         BugHunter.countTimeStart(BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
         mActivity = (BaseFuncActivityInteface) getActivity();
+        setMapView(mActivity.getMapView());
         super.onCreate(savedInstanceState);
         mLocationPro    = LocationProvider.getInstence(this.getActivity());
         lp          = Utils.getLatLonFromLocation(mLocationPro.getAmapLocation());
@@ -149,7 +158,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_show_posi,container,false);
+        rootView = inflater.inflate(R.layout.fragment_show_posi_0,container,false);
         initView();
 
         return rootView;
@@ -168,7 +177,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
         mBtPull         = (Button) findViewById(R.id.btn_pull);
         mLlByPull       = (LinearLayout) findViewById(R.id.ll_search_layout);
         mHistoryLv      = (ListView) findViewById(R.id.prepare_listview);
-        mTxSearchResult = (TextView) findViewById(R.id.tx_show_result_msg);
+        mTxShowResult   = (TextView) findViewById(R.id.tx_show_result_msg);
 //        titleTextView   = (TextView) findViewById(R.id.title_title);
 //        titleTextView.setText("搜索");
 //        mEtvReq = (EditText) findViewById(R.id.prepare_edittext);
@@ -176,7 +185,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
         mProgDialog.setTitle("多样化路径计算");
         mProgDialog.setMessage("正在计算路径......");
         mProgDialog.setCancelable(true);
-
+        mEdtShowSearch.setText(searchStr);
 
         //----init listener ---//
         mProgDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -215,7 +224,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
     private void initListView(Context context){
         List<HistoryPosi> historyPosis= new ArrayList<>();
         historyPosis.add(new HistoryPosi("                       清除历史搜索",0f,0f));
-        mAdapter    = new HistoryAndNaviAdapter(context,R.layout.layout_fix_list_item,historyPosis);
+        mAdapter    = new SimplePoiAdapter(context,R.layout.layout_fix_list_item,historyPosis);
         mAdapter    . setOnClickRightItem(this);
         mAdapter.setLocalPosi(new LatLng(mLocationPro.getAmapLocation().getLatitude(), mLocationPro.getAmapLocation().getLongitude()));
 //        ArrayAdapter adapter = new ArrayAdapter(context,R.layout.mysimple_listitem,strings);
@@ -233,22 +242,16 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
         if (string!=null){
             mEdtShowSearch.setText(string);
         }
+        mAMap.getUiSettings().setAllGesturesEnabled(false);
+        mAMap.getUiSettings().setZoomGesturesEnabled(true);
+        mAMap.getUiSettings().setScrollGesturesEnabled(true);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         BugHunter.countTimeEnd(getActivity().getApplication(),BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
-//        mEdtShowSearch.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                try{
-//                    runMarkerChange(poiOverlay.getMarker(0), 0);
-//                }catch (Exception e){
-//                    e.printStackTrace();
-//                }
-//            }
-//        },1000);
+
 
     }
 
@@ -264,15 +267,17 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
         if (mPoiResult != null && mPoiResult.getQuery() != null
                 && mPoiResult.getPois() != null && mPoiResult.getPois().size() > 0) {// 搜索poi的结果
 //            if (poiResult.getQuery().equals(startSearchQuery)) {
+
+            List<PoiItem> poiItems = mPoiResult.getPois();// 取得poiitem数据
+            LogUtils.d(TAG,"seach successed ,size:"+mPoiResult.getPois().size());
+//            String str = new String("共找到'%s'相关%s个结果",searchStr,""+mPoiResult.getPois().size());
             StringBuffer stringBuffer = new StringBuffer();
             stringBuffer.append(getResources().getString(R.string.find_poi_str_0));
-            stringBuffer.append(mLocationPro.getSearchStr());
+            stringBuffer.append(searchStr);
             stringBuffer.append(getResources().getString(R.string.find_poi_str_1));
             stringBuffer.append(mPoiResult.getPois().size());
             stringBuffer.append(getResources().getString(R.string.find_poi_str_2));
-            mTxSearchResult.setText(stringBuffer);
-            List<PoiItem> poiItems = mPoiResult.getPois();// 取得poiitem数据
-            LogUtils.d(TAG,"seach successed ,size:"+mPoiResult.getPois().size());
+            mTxShowResult.setText(stringBuffer);
             mAdapter.clear();
 
             if (poiItems.size()==0){
@@ -334,23 +339,31 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
                 break;
 
             case R.id.btn_start_navi:
-                startCalueNavi();
+//                startCalueNavi();
+                saveThePoi();
                 break;
         }
     }
 
-    private void startCalueNavi(){
-        //TODO
-        if (mAdapter==null)return;
+
+    private void saveThePoi(){
         int index = mAdapter.getIndex();
         if (index!=-1) {
             PoiItem item = poiItems.get(index);
-            dateHelper.savePoiItem(item);
+            if (requestCode!=-1) {
+                dateHelper.saveWhereIten(requestCode, item.toString(), item.getCityName(), item.getLatLonPoint().getLatitude(), item.getLatLonPoint().getLongitude());
+            }else {
+                dateHelper.saveCollect(item.toString(), item.getCityName(), item.getLatLonPoint().getLatitude(), item.getLatLonPoint().getLongitude());
+            }
+            mActivity.exitFragment();
+//            dateHelper.savePoiItem(item);
 //            Marker marker = poiOverlay.getMarker(posi);
 //            LatLng latLng = marker.getPosition();
-            requestToNavi(lp,item.getLatLonPoint());
+
         }
     }
+
+
 
 
     //-----MapListner--//
@@ -420,7 +433,6 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
                     ));
                     mAMap.animateCamera(update);
                 }
-
             } catch (Exception e) {
                 // TODO: handle exception
             }
@@ -569,31 +581,14 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
 
     }
     private void resetLinearLayout(){
-        //TODO
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mLlByPull.getLayoutParams();
         int height = layoutParams.height ;
         if (height > TOUCH_HEIGHT){
-//            new AnimalHelp(height,WINDOW_HEIGHT).start();
             resetLayoutFinish();
-//            float scalaY  = WINDOW_HEIGHT/((float)height);
-//            ScaleAnimation scaleAnimation = new ScaleAnimation(1f,1f,1f,scalaY);
-//            scaleAnimation.setDuration(350);
-//            scaleAnimation.setAnimationListener(this);
-//            mLlByPull.setAnimation(scaleAnimation);
         }else if (height<=TOUCH_HEIGHT && height > DOWN_HEIGHT){
             new AnimalHelp(height,LAYOUT_REL_HEIGHT).start();
-//            float scalaY  = LAYOUT_REL_HEIGHT/((float)height);
-//            ScaleAnimation scaleAnimation = new ScaleAnimation(1f,1f,1f,scalaY);
-//            scaleAnimation.setDuration(350);
-//            scaleAnimation.setAnimationListener(this);
-//            mLlByPull.setAnimation(scaleAnimation);
         }else {
             new AnimalHelp(height,TITLE_HEIGHT).start();
-//            float scalaY  = TITLE_HEIGHT/((float)height);
-//            ScaleAnimation scaleAnimation = new ScaleAnimation(1f,1f,1f,scalaY);
-//            scaleAnimation.setDuration(350);
-//            scaleAnimation.setAnimationListener(this);
-//            mLlByPull.setAnimation(scaleAnimation);
         }
 
     }
@@ -629,13 +624,16 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
     @Override
     public void onClickRightItem(int posi) {
         LogUtils.d(TAG,"onClickRightItem posi:"+posi);
+        dateHelper.savePoiItem(poiItems.get(posi));
+        Marker marker = poiOverlay.getMarker(posi);
+        LatLng latLng = marker.getPosition();
     }
     AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
             LogUtils.d(TAG,"onItemClick posi:"+poiItems);
             if (poiOverlay!=null) {
-                ShowPosiFragment.this.runMarkerChange(poiOverlay.getMarker(i), i);
+                ShowSearchPoiFragment.this.runMarkerChange(poiOverlay.getMarker(i), i);
             }
         }
     };
@@ -813,12 +811,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
         }
     }
 
-    private void requestToNavi(LatLonPoint fromPoint,LatLonPoint toPoint){
-//        mAMap = null;
-//        mAmapView = null;
-//        ((ssShowPosiActivity)getActivity()).requestCalueNaviPlan(fromPoint,toPoint);
-        mActivity.requestNaviCalue(fromPoint,toPoint);
-        //TODO
-    }
+
+
 
 }

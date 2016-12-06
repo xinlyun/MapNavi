@@ -100,7 +100,7 @@
                     <TextView
                         android:background="@drawable/text_trans_bg"
                         android:textSize="22px"
-                        android:gravity="center"
+                        android:gravity="center|top"
                         android:textColor="@color/first_text_color"
                         android:text="@string/setting"
                         android:layout_width="match_parent"
@@ -128,7 +128,7 @@
                     <TextView
                         android:background="@drawable/text_trans_bg"
                         android:textSize="22px"
-                        android:gravity="center"
+                        android:gravity="center|top"
                         android:textColor="@color/first_text_color"
                         android:text="@string/lukuagg"
                         android:layout_width="match_parent"
@@ -156,7 +156,7 @@
                         android:id="@+id/tx_seewatch"
                         android:background="@drawable/text_trans_bg"
                         android:textSize="22px"
-                        android:gravity="center"
+                        android:gravity="center|top"
                         android:textColor="@color/first_text_color"
                         android:text="@string/watch_north"
                         android:layout_width="match_parent"
@@ -197,7 +197,7 @@
 
                         android:background="@drawable/text_trans_bg"
                         android:textSize="22px"
-                        android:gravity="center"
+                        android:gravity="center|top"
                         android:textColor="@color/first_text_color"
                         android:text="@string/company"
                         android:layout_width="match_parent"
@@ -224,7 +224,7 @@
 
                         android:background="@drawable/text_trans_bg"
                         android:textSize="22px"
-                        android:gravity="center"
+                        android:gravity="center|top"
                         android:textColor="@color/first_text_color"
                         android:text="@string/back_home"
                         android:layout_width="match_parent"
@@ -252,7 +252,7 @@
 
 
                         android:textSize="22px"
-                        android:gravity="center"
+                        android:gravity="center|top"
                         android:textColor="@color/first_text_color"
                         android:text="@string/collect"
                         android:layout_width="match_parent"
@@ -355,10 +355,10 @@
     <FrameLayout
         android:visibility="gone"
         android:id="@+id/layout_down"
-        android:layout_marginLeft="2px"
-        android:layout_marginRight="2px"
-        android:paddingLeft="12px"
-        android:paddingRight="12px"
+        android:layout_marginLeft="5px"
+        android:layout_marginRight="5px"
+        android:paddingLeft="9px"
+        android:paddingRight="9px"
         android:paddingTop="4px"
         android:paddingBottom="0px"
         android:background="@drawable/shadowss"
@@ -369,31 +369,16 @@
 
         <LinearLayout
             android:background="@drawable/white_backgrouad"
-
             android:orientation="horizontal"
-
-
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <LinearLayout
-
-                android:orientation="vertical"
+            <Button
+                android:background="@color/transparent"
+                android:id="@+id/btn_exit_show"
+                android:text="@string/exit"
                 android:layout_width="88px"
-                android:layout_height="88px">
-                <Button
-                    android:visibility="gone"
-                    android:text="@string/around"
+                android:layout_height="88px" />
 
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-                <Button
-                    android:background="@drawable/icon_collect_2"
-                    android:id="@+id/btn_collect"
-
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-            </LinearLayout>
 
             <LinearLayout
                 android:orientation="vertical"
@@ -445,12 +430,25 @@
                     android:layout_width="420px"
                     android:layout_height="68px" />
             </LinearLayout>
-            <Button
-                android:background="@color/transparent"
-                android:id="@+id/btn_exit_show"
-                android:text="@string/exit"
+            <LinearLayout
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
                 android:layout_width="88px"
-                android:layout_height="88px" />
+                android:layout_height="88px">
+                <Button
+                    android:visibility="gone"
+                    android:text="@string/around"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+                <Button
+                    android:background="@drawable/icon_collect_2"
+                    android:id="@+id/btn_collect"
+
+                    android:layout_width="72px"
+                    android:layout_height="72px" />
+
+            </LinearLayout>
         </LinearLayout>
     </FrameLayout>
 

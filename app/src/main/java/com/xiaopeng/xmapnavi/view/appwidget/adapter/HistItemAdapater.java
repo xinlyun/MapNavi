@@ -78,20 +78,23 @@ public class HistItemAdapater extends ArrayAdapter {
                 //end view
                 view.setTag(itemHolder);
             }
-
-            if (hisItem.type == DateHelper.TYPE_POSI) {
-                itemHolder.tvShowName.setText(hisItem.posiName);
-                itemHolder.tvShowMsg.setText(hisItem.posiArt);
-                float dis = AMapUtils.calculateLineDistance(new LatLng(mLocation.getLatitude(), mLocation.getLongitude())
-                        , new LatLng(hisItem.posiLat, hisItem.posiLon));
-                dis = dis / 1000f;
-                DecimalFormat df = new DecimalFormat("0.0");
-                String result = df.format(dis);
+            try {
+                if (hisItem.type == DateHelper.TYPE_POSI) {
+                    itemHolder.tvShowName.setText(hisItem.posiName);
+                    itemHolder.tvShowMsg.setText(hisItem.posiArt);
+                    float dis = AMapUtils.calculateLineDistance(new LatLng(mLocation.getLatitude(), mLocation.getLongitude())
+                            , new LatLng(hisItem.posiLat, hisItem.posiLon));
+                    dis = dis / 1000f;
+                    DecimalFormat df = new DecimalFormat("0.0");
+                    String result = df.format(dis);
 //                itemHolder.tvDis.setText(result + "KM");
-                itemHolder.llTouchNavi.setOnClickListener(new lvButtonListener(position));
+                    itemHolder.llTouchNavi.setOnClickListener(new lvButtonListener(position));
 
-            } else {
-                itemHolder.tvShowMsg.setText(hisItem.msg);
+                } else {
+                    itemHolder.tvShowMsg.setText(hisItem.msg);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
             }
 
 

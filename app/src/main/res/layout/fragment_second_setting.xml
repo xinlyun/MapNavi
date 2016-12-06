@@ -70,34 +70,33 @@
 
     <LinearLayout
         android:id="@+id/third_ll"
-        android:gravity="center_vertical"
+
 
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="108px">
+        android:layout_height="match_parent">
         <TextView
+            android:gravity="center"
             android:layout_marginLeft="40px"
             android:text="@string/collect"
             style="@style/base_text_style_24.black"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
+            android:layout_height="108px" />
+        <ListView
 
+            android:divider="@color/gray_btn_bg_pressed_color"
+            android:dividerHeight="1px"
+            android:id="@+id/lv_show_collect"
             android:layout_marginLeft="30px"
             android:text="@string/collect_like_poi"
-            android:textColor="@color/a3a3a3"
-            style="@style/base_text_style_24"
-            android:layout_width="650px"
-            android:layout_height="wrap_content" />
-        <ImageView
-            android:src="@drawable/icon_next"
-            android:layout_width="108px"
-            android:layout_height="88px" />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <!--android:layout_width="650px"-->
+        <!--<ImageView-->
+            <!--android:src="@drawable/icon_next"-->
+            <!--android:layout_width="108px"-->
+            <!--android:layout_height="88px" />-->
     </LinearLayout>
 
-    <ImageView
-        android:layout_marginLeft="20px"
-        android:background="@color/gray_btn_bg_pressed_color"
-        android:layout_width="match_parent"
-        android:layout_height="1px" />
+
 </LinearLayout>

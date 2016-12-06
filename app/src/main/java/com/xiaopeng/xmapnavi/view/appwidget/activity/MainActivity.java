@@ -28,6 +28,7 @@ import com.amap.api.maps.model.Circle;
 import com.amap.api.maps.model.Poi;
 import com.wangjie.shadowviewhelper.ShadowProperty;
 import com.wangjie.shadowviewhelper.ShadowViewHelper;
+import com.xiaopeng.amaplib.util.ToastUtil;
 import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 
@@ -100,6 +101,7 @@ import com.xiaopeng.xmapnavi.view.appwidget.fragment.SearchPosiFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.SettingFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.ShowCollectFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.ShowPosiFragment;
+import com.xiaopeng.xmapnavi.view.appwidget.fragment.second.ShowSearchPoiFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.CircleImageView;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.LineShowView;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.ShowCollectDialog;
@@ -208,6 +210,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     private float mSeeFloat = 0;
     private long saveTouchTime = 0;
     private long sensorChangeTime = 0;
+    private boolean isFirst = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         BugHunter.countTimeStart(BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
@@ -236,6 +239,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
         LocationProvider.getInstence(this);
 
+
         mapView.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -256,7 +260,19 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         mOrientation = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
         mySensorEventListener = new MySensorEventListener();
 
+        try {
+            CameraUpdate update = CameraUpdateFactory.newCameraPosition(new CameraPosition(
+                    new LatLng(mLocationProvider.getAmapLocation().getLatitude(), mLocationProvider.getAmapLocation().getLongitude())
+//                    新的中心点坐标
+                    , 16, //新的缩放级别
+                    0, //俯仰角0°~45°（垂直与地图时为0）
+                    0  ////偏航角 0~360° (正北方为0)
+            ));
+            aMap.animateCamera(update, 1, null);
 
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void initMarker(){
@@ -302,6 +318,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         mLocationMarker1.setVisible(false);
         mLocationMarker1.setFlat(true);
 
+        mLocationProvider.reCallLocation();
     }
 
 
@@ -444,6 +461,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         findViewById(R.id.btn_collect).setOnClickListener(this);
         findViewById(R.id.btn_setting).setOnClickListener(this);
         mLoveBtn        = (Button) findViewById(R.id.btn_collect);
+
         mProgDialog = new ProgressDialog(this);
         mProgDialog.setTitle("正在搜索数据");
         mProgDialog.setMessage("正在搜索相关信息....");
@@ -487,6 +505,11 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                         clearTimer();
                         // 改变跟随状态
                         isNeedFollow = false;
+                        try {
+                            findMyPoiDeley.removeMessages(0);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
                         break;
 
                     case MotionEvent.ACTION_UP:
@@ -613,10 +636,29 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
+
         if (aMapLocation != null) {
             mCity = aMapLocation.getCity();
             if (aMap !=null && mWatchStyle!= WATCH_NORTH){
             }
+            if (aMap!=null && isFirst){
+                mapView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        CameraUpdate update = CameraUpdateFactory.newCameraPosition(new CameraPosition(
+                                new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude())
+//                    新的中心点坐标
+                                ,16, //新的缩放级别
+                                0, //俯仰角0°~45°（垂直与地图时为0）
+                                0  ////偏航角 0~360° (正北方为0)
+                        ));
+                        aMap.animateCamera(update);
+
+                    }
+                },700);
+                isFirst = false;
+            }
+
         }
         if (mListener != null){
 //            mListener.onLocationChanged(aMapLocation);
@@ -649,6 +691,14 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
     @Override
     public void onClick(View view) {
+        if (mDownLayout1.getVisibility()==View.VISIBLE) {
+            mLoveBtn.setBackgroundResource(R.drawable.icon_collect_2);
+            mDownLayout1.setVisibility(View.GONE);
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mReleavieView.getLayoutParams();
+            layoutParams.height = height;
+            mReleavieView.setLayoutParams(layoutParams);
+        }
+
         switch (view.getId()){
 
             case R.id.btn_begin_navi:
@@ -709,6 +759,9 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                 clickHome();
                 break;
 
+
+            case R.id.btn_little_begin_navi:
+                //fill down
             case R.id.tx_tip_show:
                 if (mDownLayout1.getVisibility()== View.GONE) {
                     mDownLayout1.setVisibility(View.VISIBLE);
@@ -727,10 +780,6 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                 startFragment(new SettingFragment());
                 break;
 
-            case R.id.btn_little_begin_navi:
-                mProgDialog.show();
-                startCalueNavi();
-                break;
 
             default:
                 break;
@@ -771,6 +820,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         if (mCollectNow==null) {
             mLoveBtn.setBackgroundResource(R.drawable.icon_collect_1);
             mCollectDateHelper.saveCollect(poiName, poiDesc, mLatLng.latitude, mLatLng.longitude);
+            mCollectNow = mCollectDateHelper.getCollectByName(poiName);
         }else {
             mLoveBtn.setBackgroundResource(R.drawable.icon_collect_2);
             mCollectNow.delete();
@@ -787,7 +837,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     private void findMyPosi(){
         if (mLocationProvider!=null && mLocationProvider.getAmapLocation()!=null && aMap!=null){
             int bear  = 0;
-            if (mWatchStyle == WATCH_3D)bear = 30;
+            if (mWatchStyle == WATCH_3D)bear = 45;
             CameraUpdate update = CameraUpdateFactory.newCameraPosition(new CameraPosition(
                     new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude())
 //                    新的中心点坐标
@@ -806,6 +856,9 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
     private void startCalueNavi(){
         LogUtils.d(TAG,"startCalueNavi");
+        mProgDialog.show();
+        mCollectDialog.dismiss();
+
         mLocationProvider.removeNaviCalueListner(this);
         mLocationProvider.addNaviCalueListner(this);
         List<NaviLatLng> startPoi = new ArrayList<>();
@@ -891,6 +944,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     @Override
     public void startFragment(Fragment fragment) {
         aMap.setMyLocationEnabled(false);
+        aMap.clear();
         mLsv.setVisibility(View.GONE);
         mDownLayout1.setVisibility(View.GONE);
         mFragments.add(fragment);
@@ -924,6 +978,13 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         this.fromPoint = fromPoint;
         this.toPoint = toPoint;
         beginCalueNavi();
+    }
+
+    @Override
+    public void showDialogwithOther() {
+        if (mProgDialog!=null){
+            mProgDialog.show();
+        }
     }
 
     public void haveCalueNaviSucceful(int[] ints,double posLat,double posLon){
@@ -1099,8 +1160,12 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             mTxMarkTitle.setText(poiName);
 
         }else {
+
             poiName = getUsefulInfo(address);
             poiDesc = "";
+            if (poiName.length()<3){
+                poiName = getString(R.string.unknow_road);
+            }
             mTvPoiName.setText(poiName);
             mTxMarkTitle.setText(poiName);
         }
@@ -1155,13 +1220,29 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     @Override
     public void onCalculateMultipleRoutesSuccess(int[] ints) {
         LogUtils.d(TAG,"onCalculateMultipleRoutesSuccess: mLatLng:"+mLatLng);
-        haveCalueNaviSucceful(ints,mLatLng.latitude,mLatLng.longitude);
+        if (mFragments.size()>0){
+            Fragment fragment = mFragments.get(mFragments.size()-1);
+            if (fragment instanceof RunNaviWayFragment){
+
+            }else {
+                haveCalueNaviSucceful(ints, mLatLng.latitude, mLatLng.longitude);
+            }
+        }else {
+            haveCalueNaviSucceful(ints, mLatLng.latitude, mLatLng.longitude);
+        }
     }
 
     @Override
     public void onCalculateRouteSuccess() {
         mProgDialog.dismiss();
     }
+
+    @Override
+    public void onCalculateRouteFailure() {
+        mProgDialog.dismiss();
+        ToastUtil.show(this,"路径规划失败，请稍后再试");
+    }
+
 
     private void changeTriffical(){
         if (aMap!=null) {
@@ -1259,6 +1340,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     @Override
     public void onClickCollectItem(int position, CollectItem item) {
         //TODO
+        LogUtils.d(TAG,"onClickCollectItem:"+item.pName);
         if (item!=null) {
             mLatLng = new LatLng(item.posLat, item.posLon);
             startCalueNavi();
@@ -1359,15 +1441,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             endList.clear();
             endList.add(new NaviLatLng(toPoint.getLatitude(),toPoint.getLongitude()));
             mProgDialog.show();
-            if (mapView!=null){
-                mapView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mProgDialog.dismiss();
-                    }
-                },6000);
 
-            }
             mLocationProvider.calueRunWay(startList,wayList,endList);
         }
     }

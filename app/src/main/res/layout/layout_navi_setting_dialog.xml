@@ -11,10 +11,10 @@
         android:paddingTop="4px"
         android:paddingBottom="0px"
         android:layout_alignParentBottom="true"
-        android:layout_marginLeft="47px"
+        android:layout_marginLeft="3px"
         android:background="@drawable/shadowss"
 
-        android:layout_width="986px"
+        android:layout_width="1074px"
         android:layout_height="294px">
         <RelativeLayout
             android:background="@drawable/white_backgrouad"

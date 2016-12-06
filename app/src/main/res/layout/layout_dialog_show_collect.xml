@@ -49,6 +49,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px" />
             <ListView
+                android:divider="@color/gray_btn_bg_pressed_color"
+                android:dividerHeight="1px"
                 android:layout_marginTop="73px"
                 android:id="@+id/lv_show_collect"
                 android:layout_width="match_parent"

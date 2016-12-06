@@ -25,6 +25,7 @@ import com.amap.api.navi.AMapNavi;
 import com.amap.api.navi.AMapNaviView;
 import com.amap.api.navi.AMapNaviViewListener;
 import com.amap.api.navi.AMapNaviViewOptions;
+import com.amap.api.navi.model.AMapNaviCross;
 import com.amap.api.navi.model.AMapNaviPath;
 import com.amap.api.navi.model.NaviInfo;
 import com.amap.api.navi.model.NaviLatLng;
@@ -63,6 +64,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	private ImageView mIvLkIcon;
 	private RouteNaviSettingDialog mSettingDialog;
 	private TextView mDanwei;
+	private ImageView mZoomInIntersectionView;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		BugHunter.countTimeStart(BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
@@ -105,9 +107,10 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		}
 
 
+
 		initMap();
 
-		
+
 	}
 
 	@Override
@@ -128,6 +131,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		mTmapLayout		= (FrameLayout) findViewById(R.id.mapview_frlayout);
 		mIvLkIcon 		= (ImageView) findViewById(R.id.iv_lukuang_icon);
 		mDanwei			= (TextView) findViewById(R.id.tx_danwei);
+		mZoomInIntersectionView = (ImageView) findViewById(R.id.myZoomInIntersectionView);
 		findViewById(R.id.btn_exit).setOnClickListener(this);
 		findViewById(R.id.btn_rader_nave).setOnClickListener(this);
 		findViewById(R.id.btn_recalue).setOnClickListener(this);
@@ -144,6 +148,9 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		AMapNaviViewOptions viewOptions = mAMapNaviView.getViewOptions();
 		viewOptions.setLayoutVisible(false);
 		viewOptions.setTrafficBarEnabled(false);
+		viewOptions.setStartPointBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.icon_from_poi));
+		viewOptions.setEndPointBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.icon_end_poi));
+		viewOptions.setWayPointBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.icon_way_poi));
 		mAMapNaviView.setViewOptions(viewOptions);
 		mNextView = (NextTurnTipView) findViewById(R.id.nttv_navi);
 		mAMapNaviView.setLazyNextTurnTipView(mNextView);
@@ -170,7 +177,6 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		//        仅仅是停止你当前在说的这句话，一会到新的路口还是会再说的
 		//
 		//        停止导航之后，会触及底层stop，然后就不会再有回调了，但是讯飞当前还是没有说完的半句话还是会说完
-		//        mAMapNavi.stopNavi();
 	}
 
 	@Override
@@ -244,7 +250,6 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		strRoadNew.append(getString(R.string.from));
 		strRoadNew.append(naviinfo.getCurrentRoadName());
 		strRoadNew.append(getString(R.string.into));
-//		mTxFrom.setText(strRoadNew);
 		mTxTo.setText(naviinfo.getNextRoadName());
 
 
@@ -258,18 +263,12 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			strTimeNeed.append(getString(R.string.hour));
 			strTimeNeed.append(timeMinN);
 			strTimeNeed.append(getString(R.string.min));
-//			strTimeNeed.append("\n");
-//			strTimeNeed.append(getString(R.string.need));
 		}else if (timeMin>0){
 			strTimeNeed.append(timeMin);
 			strTimeNeed.append(getString(R.string.min));
-//			strTimeNeed.append("\n");
-//			strTimeNeed.append(getString(R.string.need));
 		}else {
 			strTimeNeed.append(allTime);
 			strTimeNeed.append(getString(R.string.second));
-//			strTimeNeed.append("\n");
-//			strTimeNeed.append(getString(R.string.need));
 		}
 		mTxTimeNeed.setText(strTimeNeed);
 
@@ -291,6 +290,16 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		mTxLenghtNeed.setText(strLengthNeed);
 	}
 
+	@Override
+	public void showCross(AMapNaviCross aMapNaviCross) {
+		mZoomInIntersectionView.setImageBitmap(aMapNaviCross.getBitmap());
+		mZoomInIntersectionView.setVisibility(View.VISIBLE);
+	}
+
+	@Override
+	public void hideCross() {
+		mZoomInIntersectionView.setVisibility(View.INVISIBLE);
+	}
 
 
 	@Override
@@ -393,7 +402,10 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 				AMapNaviPath path ;
 				if ((path = mLocationPro.getNaviPath())!=null) {
 					RouteOverLay routeOverLay = new RouteOverLay(mAmap, path, RouteNaviActivity.this);
-					routeOverLay.setStartPointBitmap(BitmapFactory.decodeResource(RouteNaviActivity.this.getResources(), R.drawable.title_back_00));
+
+					routeOverLay.setStartPointBitmap(BitmapFactory.decodeResource(RouteNaviActivity.this.getResources(), R.drawable.icon_from_poi));
+					routeOverLay.setWayPointBitmap(BitmapFactory.decodeResource(RouteNaviActivity.this.getResources(), R.drawable.icon_way_poi));
+					routeOverLay.setEndPointBitmap(BitmapFactory.decodeResource(RouteNaviActivity.this.getResources(), R.drawable.icon_end_poi));
 					routeOverLay.setTrafficLine(true);
 					routeOverLay.addToMap();
 					NaviLatLng fromPoint = path.getStartPoint();
