@@ -110,9 +110,9 @@ public class NaviPathAdapter extends ArrayAdapter{
         }
 
         if (index == position){
-            view.setBackgroundColor(getContext().getResources().getColor(R.color.white));
+            view.setBackgroundResource(R.drawable.img_ques_bg);
         }else {
-            view.setBackground(null);
+            view.setBackgroundResource(R.drawable.text_trans_bg);
         }
         itemHolder.tvShowType.setText(typeStrs[position]);
 
@@ -148,9 +148,9 @@ public class NaviPathAdapter extends ArrayAdapter{
         itemHolder.tvShowMsg.setText(timeString);
         itemHolder.tvShowDis.setText(lengthStr);
         if (index == position){
-            itemHolder.tvShowDis.setTextColor(mContext.getResources().getColor(R.color.blue));
-            itemHolder.tvShowType.setTextColor(mContext.getResources().getColor(R.color.blue));
-            itemHolder.tvShowMsg.setTextColor(mContext.getResources().getColor(R.color.blue));
+            itemHolder.tvShowDis.setTextColor(mContext.getResources().getColor(R.color.white));
+            itemHolder.tvShowType.setTextColor(mContext.getResources().getColor(R.color.white));
+            itemHolder.tvShowMsg.setTextColor(mContext.getResources().getColor(R.color.white));
         }else {
             itemHolder.tvShowDis.setTextColor(mContext.getResources().getColor(R.color.gray_btn_bg_pressed_color));
             itemHolder.tvShowType.setTextColor(mContext.getResources().getColor(R.color.gray_btn_bg_pressed_color));

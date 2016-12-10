@@ -207,7 +207,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
         mAMap.setMapType(AMap.MAP_TYPE_NAVI);
         mAMap.setOnMapLongClickListener(this);
-
+        mAMap.setOnMarkerClickListener(markerClickListener);
 
         mLocaionPro.addNaviCalueListner(this);
         mAMap.setTrafficEnabled(isTricall);
@@ -334,7 +334,14 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         mAmapView.postDelayed(new Runnable() {
             @Override
             public void run() {
-
+                try {
+                    int traListhNum = getTrafficLightNum(paths.get(ints[0]));
+                    int cost = paths.get(ints[0]).getTollCost();
+                    String msgShow = "花费约" + cost + "元 ,红绿灯" + traListhNum + "个";
+                    mTvShowMsg.setText(msgShow);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         },800);
 
@@ -360,6 +367,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             if (markerWayPoi == null){
                 options2.position(new LatLng(naviLatLng.getLatitude(),naviLatLng.getLongitude()));
                 markerWayPoi = mAMap.addMarker(options2);
+                markerWayPoi .setClickable(true);
             }else {
                 markerWayPoi.setPosition(new LatLng(naviLatLng.getLatitude(),naviLatLng.getLongitude()));
             }
@@ -457,7 +465,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
         int traListhNum = getTrafficLightNum(path);
         int cost = path.getTollCost();
-        String msgShow = "花费："+cost+"元   经过"+traListhNum+"个红绿灯";
+        String msgShow = "花费约"+cost+"元 ,红绿灯"+traListhNum+"个";
         mTvShowMsg.setText(msgShow);
         LogUtils.d(TAG,"watchAll:changeRoute");
         watchAll();
@@ -1102,18 +1110,42 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         mTxMarkTitle        .setOnClickListener(this);
         mMarkInfoView       .findViewById(R.id.btn_begin_add_way).setOnClickListener(this);
         mMarkInfoView.findViewById(R.id.btn_little_begin_navi).setOnClickListener(this);
+
+
+
     }
 
 
     AMap.InfoWindowAdapter infoWindowAdapter = new AMap.InfoWindowAdapter() {
         @Override
         public View getInfoWindow(Marker marker) {
+            if (marker==mWayPoiMarker) {
+                return mMarkInfoView;
+            }else if(marker == markerWayPoi){
+
+            }
             return mMarkInfoView;
         }
 
         @Override
         public View getInfoContents(Marker marker) {
+            if (marker==mWayPoiMarker) {
+                return mMarkInfoView;
+            }else if(marker == markerWayPoi){
+
+            }
             return mMarkInfoView;
+        }
+    };
+
+    private AMap.OnMarkerClickListener markerClickListener = new AMap.OnMarkerClickListener() {
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+            if (marker == markerWayPoi) {
+                markerWayPoi.showInfoWindow();
+                return true;
+            }
+            return false;
         }
     };
 

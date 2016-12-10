@@ -211,7 +211,6 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
             ShowSearchPoiFragment fragment = new ShowSearchPoiFragment();
             fragment.setRequestCode(requestCode);
             fragment.setSearchStr(searchStr);
-
             if (requestCode != WAY_POI_CODE) {
                 mActivity.startFragment(fragment);
             }else {
@@ -377,12 +376,7 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
             mEtSearch.setText(str);
             mProgDialog.show();
             mLocationProvider.trySearchPosi(str);
-            mEtSearch.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mProgDialog.dismiss();
-                }
-            },6 * 1000);
+
         }
     }
 
