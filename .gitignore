@@ -15,3 +15,4 @@ autolayout/autolayout.iml
 .idea/
 /amaplib/build
 /.gradle
+local.properties
