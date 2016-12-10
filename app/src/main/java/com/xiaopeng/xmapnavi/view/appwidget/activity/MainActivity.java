@@ -262,7 +262,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                 mCollectDialog .setCollectDialogListener(MainActivity.this);
                 FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) activityRootView.getLayoutParams();
                 LogUtils.d(TAG,"layoutparams width:"+layoutParams.width);
-                initMarker();
+
             }
         },3000);
 
@@ -383,7 +383,14 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     private void init() {
         if (aMap == null) {
             aMap = mapView.getMap();
-            aMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude())));
+            CameraUpdate update = CameraUpdateFactory.newCameraPosition(new CameraPosition(
+                    new LatLng(mLocationProvider.getAmapLocation().getLatitude(), mLocationProvider.getAmapLocation().getLongitude())
+//                    新的中心点坐标
+                    , 17, //新的缩放级别
+                    0, //俯仰角0°~45°（垂直与地图时为0）
+                    0  ////偏航角 0~360° (正北方为0)
+            ));
+            aMap.moveCamera(update);
 //            aMap.setMapType(AMap.MAP_TYPE_NAVI);
             aMap.setTrafficEnabled(isTraff);
             aMap.setInfoWindowAdapter(this);
@@ -424,6 +431,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                     mLsv.setVisibility(View.VISIBLE);
                 }
             },2000);
+            initMarker();
 
         }
 

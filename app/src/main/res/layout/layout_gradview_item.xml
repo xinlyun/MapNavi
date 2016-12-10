@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="156px">
+    android:background="@drawable/text_trans_bg"
+    android:layout_height="150px">
     <TextView
         android:textSize="24px"
-        android:layout_marginTop="42px"
+        android:layout_marginTop="18px"
         android:textColor="@color/a3a3a3"
         android:id="@+id/tv_type_show"
         android:gravity="center"

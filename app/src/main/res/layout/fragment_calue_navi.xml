@@ -23,29 +23,32 @@
             >
 
             <LinearLayout
+
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="156px">
+                android:layout_height="170px">
                 <Button
                     android:id="@+id/btn_exit"
                     android:background="@drawable/icon_return"
                     android:layout_width="88px"
                     android:layout_height="72px" />
                 <GridView
+                    android:layout_marginTop="12px"
                     android:background="@color/trans_half_white"
                     android:id="@+id/gv_show_an"
-
                     android:numColumns="auto_fit"
-                    android:columnWidth="292px"
-                    android:layout_width="888px"
-                    android:layout_height="match_parent"></GridView>
+                    android:columnWidth="322px"
+                    android:layout_width="968px"
+                    android:layout_height="150px">
+
+                </GridView>
             </LinearLayout>
 
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="72px">
+                android:layout_height="40px">
 
                 <LinearLayout
 
@@ -62,12 +65,15 @@
                     <!--</LinearLayout>-->
 
                     <TextView
-                        android:textColor="@color/text_blue"
-                        android:layout_marginLeft="86px"
+
+                        android:layout_marginRight="30px"
+                        android:textColor="@color/a3a3a3"
+                        android:layout_marginLeft="30px"
                         android:textSize="22px"
-                        android:gravity="center_vertical|left"
+                        android:gravity="center"
                         android:id="@+id/tv_show_msg"
                         android:layout_weight="2"
+                        android:background="@drawable/img_bottom_line"
                         android:layout_width="match_parent"
                         android:layout_height="70px" />
 
@@ -75,10 +81,7 @@
 
 
             </LinearLayout>
-            <ImageView
-                android:background="@color/gray_btn_bg_pressed_color"
-                android:layout_width="match_parent"
-                android:layout_height="1px" />
+
             <LinearLayout
 
                 android:orientation="horizontal"
