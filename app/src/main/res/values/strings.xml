@@ -10,7 +10,7 @@
     <string name="shouchang">收藏</string>
     <string name="load_get_msg">正在获取数据......</string>
     <string name="unknow_road">无名道路</string>
-    <string name="negiht">附件</string>
+    <string name="negiht">附近</string>
     <string name="kmile">公里</string>
     <string name="mile">米</string>
     <string name="update_navi">更新路线</string>
@@ -83,4 +83,9 @@
     <string name="find_poi_str_0">共找到\"</string>
     <string name="find_poi_str_1">\"相关</string>
     <string name="find_poi_str_2">个结果</string>
+    <string name="num_mile">%s米</string>
+    <string name="num_kilemile">%s公里</string>
+    <string name="way_poi_dian">途径点</string>
+    <string name="please_input_way_poi">请输入途径点</string>
+    <string name="surpise_road">特殊路段</string>
 </resources>

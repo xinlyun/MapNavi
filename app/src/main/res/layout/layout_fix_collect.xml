@@ -41,10 +41,12 @@
         </LinearLayout>
 
         <ImageView
+            android:layout_marginTop="18px"
+            android:layout_marginLeft="8px"
             android:id="@+id/touch_to_navi"
             android:src="@drawable/icon_collect_1"
-            android:layout_width="88px"
-            android:layout_height="match_parent" />
+            android:layout_width="72px"
+            android:layout_height="72px" />
     </LinearLayout>
     <ImageView
         android:background="@color/gray_btn_bg_pressed_color"

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,13 +18,17 @@ import android.media.Image;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.SpannableString;
 import android.text.TextWatcher;
 
+import com.aispeech.aios.common.bean.PoiBean;
+import com.amap.api.maps.AMapOptions;
 import com.amap.api.maps.Projection;
 import com.amap.api.maps.model.Circle;
 import com.amap.api.maps.model.Poi;
+import com.gc.materialdesign.widgets.ProgressDialog;
 import com.wangjie.shadowviewhelper.ShadowProperty;
 import com.wangjie.shadowviewhelper.ShadowViewHelper;
 import com.xiaopeng.amaplib.util.ToastUtil;
@@ -37,6 +40,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -64,7 +68,6 @@ import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.PolygonOptions;
 import com.amap.api.maps.model.Polyline;
 import com.amap.api.maps.model.PolylineOptions;
-import com.amap.api.maps.model.animation.Animation;
 import com.amap.api.maps.model.animation.ScaleAnimation;
 import com.amap.api.navi.model.AMapNaviLocation;
 import com.amap.api.navi.model.NaviLatLng;
@@ -89,12 +92,14 @@ import com.xiaopeng.xmapnavi.presenter.ICollectDateHelper;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
 import com.xiaopeng.xmapnavi.presenter.IWhereDateHelper;
 import com.xiaopeng.xmapnavi.presenter.callback.TipItemClickListener;
+import com.xiaopeng.xmapnavi.presenter.callback.XpAiosMapListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpCollectListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
 import com.xiaopeng.xmapnavi.presenter.callback.XpWhereListener;
 import com.xiaopeng.xmapnavi.utils.Utils;
+import com.xiaopeng.xmapnavi.view.appwidget.fragment.RadarNaviFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.RunNaviWayFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.SearchCollectFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.SearchPosiFragment;
@@ -119,6 +124,7 @@ import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
 import okhttp3.internal.Util;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends Activity implements BaseFuncActivityInteface,LocationSource,XpLocationListener,View.OnClickListener
         ,XpSearchListner ,AMap.OnMarkerDragListener
@@ -198,11 +204,12 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     private ImageView mIvShowTraffic;
     private ImageView mIvSeeWatch;
     private TextView mTxSeeWatch;
-    private Marker mLocationMarker,mLocationMarker1;
+    private Marker mLocationMarker;
+//            ,mLocationMarker1;
     private Button mLoveBtn;
     private CollectItem mCollectNow;
     private LatLonPoint fromPoint,toPoint;
-
+    private TextView mTxBilici;
 
     private SensorManager mSensorManager;
     private Sensor mOrientation;
@@ -211,11 +218,21 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     private long saveTouchTime = 0;
     private long sensorChangeTime = 0;
     private boolean isFirst = true;
+    private int width2 = 540;
+    private int height2 = 720;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         BugHunter.countTimeStart(BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
         super.onCreate(savedInstanceState);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         setContentView(R.layout.activity_main);
+        screenHeight = this.getWindowManager().getDefaultDisplay().getHeight();
+        //阀值设置为屏幕高度的1/5
+        keyHeight = screenHeight/5;
+        mFragments = new ArrayList<>();
+
+        LocationProvider.getInstence(this);
+
         mCollectDateHelper = new DateHelper();
         mCollectDateHelper.setOnCollectListener(this);
         mCollectDateHelper.setOnWhereListener(mWhereListener);
@@ -227,20 +244,18 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
         activityRootView = findViewById(R.id.root_layout);
         startService(new Intent(this, LocationProService.class));
-        mapView = (MapView) findViewById(R.id.map_main);
-        mapView.onCreate(savedInstanceState);// 此方法必须重写
 
+        SEEWATCH_TEXT = new String[]{
+                getResources().getString(R.string.watch_north),
+                getResources().getString(R.string.watch_follow),
+                getResources().getString(R.string.watch_3d)
+        };
         initView();
-
-        screenHeight = this.getWindowManager().getDefaultDisplay().getHeight();
-        //阀值设置为屏幕高度的1/5
-        keyHeight = screenHeight/5;
-        mFragments = new ArrayList<>();
-
-        LocationProvider.getInstence(this);
+        mLsv.setVisibility(View.GONE);
 
 
-        mapView.postDelayed(new Runnable() {
+
+        mReleavieView.postDelayed(new Runnable() {
             @Override
             public void run() {
                 mCollectDialog = new ShowCollectDialog(MainActivity.this);
@@ -249,30 +264,14 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                 LogUtils.d(TAG,"layoutparams width:"+layoutParams.width);
                 initMarker();
             }
-        },1000);
-        SEEWATCH_TEXT = new String[]{
-                getResources().getString(R.string.watch_north),
-                getResources().getString(R.string.watch_follow),
-                getResources().getString(R.string.watch_3d)
-        };
+        },3000);
+
 
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mOrientation = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
         mySensorEventListener = new MySensorEventListener();
 
-        try {
-            CameraUpdate update = CameraUpdateFactory.newCameraPosition(new CameraPosition(
-                    new LatLng(mLocationProvider.getAmapLocation().getLatitude(), mLocationProvider.getAmapLocation().getLongitude())
-//                    新的中心点坐标
-                    , 16, //新的缩放级别
-                    0, //俯仰角0°~45°（垂直与地图时为0）
-                    0  ////偏航角 0~360° (正北方为0)
-            ));
-            aMap.animateCamera(update, 1, null);
 
-        }catch (Exception e){
-            e.printStackTrace();
-        }
     }
 
     private void initMarker(){
@@ -280,7 +279,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                 .icon(BitmapDescriptorFactory
                         .fromResource(R.drawable.icon_drag_point))
                 .draggable(true));
-        marker.setPositionByPixels(540,720);
+        marker.setPositionByPixels(width2,height2);
         marker.setAnchor(0.5f,0.5f);
 
         mMarkerPoi = aMap.addMarker(new MarkerOptions()
@@ -290,7 +289,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
         mMarkerPoi.setTitle("title");
         mMarkerPoi.setSnippet("snippet");
-        mMarkerPoi.setPositionByPixels(540,720);
+        mMarkerPoi.setPositionByPixels(width2,height2);
         mMarkerPoi.setAnchor(0.5f,1f);
         mMarkerPoi.setVisible(false);
         mMarkerPoi.setInfoWindowEnable(true);
@@ -302,21 +301,21 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
         mLocationMarker = aMap.addMarker(new MarkerOptions()
                 .icon(BitmapDescriptorFactory
-                        .fromResource(R.drawable.icon_location_little))
+                        .fromResource(R.drawable.icon_seewatch_1))
                 .draggable(false)
         );
         mLocationMarker.setAnchor(0.5f,0.5f);
         mLocationMarker.setVisible(false);
         mLocationMarker.setFlat(true);
 
-        mLocationMarker1 = aMap.addMarker(new MarkerOptions()
-                .icon(BitmapDescriptorFactory
-                        .fromResource(R.drawable.icon_seewatch_0))
-                .draggable(false)
-        );
-        mLocationMarker1.setAnchor(0.5f,0.5f);
-        mLocationMarker1.setVisible(false);
-        mLocationMarker1.setFlat(true);
+//        mLocationMarker1 = aMap.addMarker(new MarkerOptions()
+//                .icon(BitmapDescriptorFactory
+//                        .fromResource(R.drawable.icon_seewatch_0))
+//                .draggable(false)
+//        );
+//        mLocationMarker1.setAnchor(0.5f,0.5f);
+//        mLocationMarker1.setVisible(false);
+//        mLocationMarker1.setFlat(true);
 
         mLocationProvider.reCallLocation();
     }
@@ -325,7 +324,14 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     @Override
     protected void onStart() {
         super.onStart();
-        init();
+        if (mapView==null) {
+            mapView = (MapView) findViewById(R.id.map_main);
+            mapView.onCreate(null);// 此方法必须重写
+            init();
+        }
+
+
+
 
         mLocationProvider    = LocationProvider.getInstence(this);
 
@@ -336,6 +342,28 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
         mSensorManager.registerListener(mySensorEventListener,
                 mOrientation, SensorManager.SENSOR_DELAY_NORMAL);
+        mapView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+//                    initWidth();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        },500);
+
+
+
+    }
+
+    private void initWidth(){
+        WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        width2 = windowManager.getDefaultDisplay().getWidth()/2;
+        height2 = windowManager.getDefaultDisplay().getHeight()/2;
+        mMarkerPoi.setPositionByPixels(width2,height2);
+        marker.setPositionByPixels(width2,height2);
+
     }
 
 
@@ -355,6 +383,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     private void init() {
         if (aMap == null) {
             aMap = mapView.getMap();
+            aMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude())));
 //            aMap.setMapType(AMap.MAP_TYPE_NAVI);
             aMap.setTrafficEnabled(isTraff);
             aMap.setInfoWindowAdapter(this);
@@ -368,13 +397,14 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             aMap.setLocationSource(this);// 设置定位监听
             aMap.getUiSettings().setMyLocationButtonEnabled(false);// 设置默认定位按钮是否显示
             aMap.getUiSettings().setZoomControlsEnabled(false);
+
             aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
             // 设置定位的类型为定位模式 ，可以由定位、跟随或地图根据面向方向旋转几种
             aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
             mapView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    CameraUpdate update = CameraUpdateFactory.zoomTo(16);
+                    CameraUpdate update = CameraUpdateFactory.zoomTo(17);
                     aMap.animateCamera(update);
                 }
             },800);
@@ -387,6 +417,13 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             polylineOptions.aboveMaskLayer(true);
             mPolyline = aMap.addPolyline(polylineOptions);
             setMapInteractiveListener();
+
+            mapView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mLsv.setVisibility(View.VISIBLE);
+                }
+            },2000);
 
         }
 
@@ -414,21 +451,17 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
         mLocationMarker = aMap.addMarker(new MarkerOptions()
                 .icon(BitmapDescriptorFactory
-                        .fromResource(R.drawable.icon_location_little))
+                        .fromResource(R.drawable.icon_seewatch_1))
                 .draggable(false)
         );
+        if (mWatchStyle!=WATCH_NORTH){
+            mLocationMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_seewatch_0));
+        }
         mLocationMarker.setAnchor(0.5f,0.5f);
         mLocationMarker.setVisible(false);
         mLocationMarker.setFlat(true);
+        mLocationMarker.setPosition(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
 
-        mLocationMarker1 = aMap.addMarker(new MarkerOptions()
-                .icon(BitmapDescriptorFactory
-                        .fromResource(R.drawable.icon_seewatch_0))
-                .draggable(false)
-        );
-        mLocationMarker1.setAnchor(0.5f,0.5f);
-        mLocationMarker1.setVisible(false);
-        mLocationMarker1.setFlat(true);
 
         mLocationProvider.reCallLocation();
     }
@@ -447,6 +480,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         mTvPoiName          = (TextView) findViewById(R.id.tv_poi_name);
         mTvPoiStr           = (TextView) findViewById(R.id.tv_poi_str);
         mTvPoiDis           = (TextView) findViewById(R.id.tv_poi_dis);
+        mTxBilici           = (TextView) findViewById(R.id.tx_bilici);
         findViewById(R.id.d3_setting).setOnClickListener(this);
         findViewById(R.id.d3_lukuang).setOnClickListener(this);
         findViewById(R.id.btn_begin_navi).setOnClickListener(this);
@@ -462,10 +496,11 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         findViewById(R.id.btn_setting).setOnClickListener(this);
         mLoveBtn        = (Button) findViewById(R.id.btn_collect);
 
-        mProgDialog = new ProgressDialog(this);
-        mProgDialog.setTitle("正在搜索数据");
-        mProgDialog.setMessage("正在搜索相关信息....");
-        mProgDialog.setCancelable(true);
+        mProgDialog = new ProgressDialog(this,"正在搜索数据");
+//        mProgDialog.setTitle("正在搜索数据...");
+//        mProgDialog.set("正在搜索相关信息....");
+        mProgDialog.setCancelable(false);
+        mProgDialog.getWindow().setDimAmount(0.7f);
         //----init listener ---//
         mProgDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
@@ -476,6 +511,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         initMarkInfo();
 
         findViewById(R.id.ll_show_fragment).setOnTouchListener(this);
+
     }
 
     private void initMarkInfo(){
@@ -516,6 +552,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                         // 离开屏幕
                         startTimerSomeTimeLater();
                         findMyPoiDeley.sendEmptyMessageDelayed(0,10 * 1001);
+                        updateScale();
                         break;
 
                     case MotionEvent.ACTION_MOVE:
@@ -585,6 +622,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
         mLocationProvider   .addLocationListener(this);
         mLocationProvider.addSearchListner(this);
+        mLocationProvider.setAiosListener(aiosMapListener);
         BugHunter.countTimeEnd(getApplication(),BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
     }
 
@@ -648,7 +686,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                         CameraUpdate update = CameraUpdateFactory.newCameraPosition(new CameraPosition(
                                 new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude())
 //                    新的中心点坐标
-                                ,16, //新的缩放级别
+                                ,17, //新的缩放级别
                                 0, //俯仰角0°~45°（垂直与地图时为0）
                                 0  ////偏航角 0~360° (正北方为0)
                         ));
@@ -670,12 +708,12 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                 mLocationMarker.setVisible(true);
             }
         }
-        if (mLocationMarker1!=null){
-            mLocationMarker1.setPosition(new LatLng(aMapLocation.getLatitude(),aMapLocation.getLongitude()));
-            if (mWatchStyle != WATCH_NORTH){
-                mLocationMarker1.setVisible(true);
-            }
-        }
+//        if (mLocationMarker1!=null){
+//            mLocationMarker1.setPosition(new LatLng(aMapLocation.getLatitude(),aMapLocation.getLongitude()));
+//            if (mWatchStyle != WATCH_NORTH){
+//                mLocationMarker1.setVisible(true);
+//            }
+//        }
 
     }
 
@@ -691,7 +729,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
     @Override
     public void onClick(View view) {
-        if (mDownLayout1.getVisibility()==View.VISIBLE) {
+        if (mDownLayout1.getVisibility()==View.VISIBLE && view.getId()!=R.id.btn_collect) {
             mLoveBtn.setBackgroundResource(R.drawable.icon_collect_2);
             mDownLayout1.setVisibility(View.GONE);
             RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mReleavieView.getLayoutParams();
@@ -722,6 +760,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                 if (aMap!=null) {
                     aMap.animateCamera(CameraUpdateFactory.zoomIn());
                 }
+                updateScale();
                 break;
 
             case R.id.btn_zoom_jian:
@@ -729,6 +768,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                 if (aMap!=null) {
                     aMap.animateCamera(CameraUpdateFactory.zoomOut());
                 }
+                updateScale();
                 break;
 
             case R.id.btn_exit_show:
@@ -835,23 +875,27 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
 
     private void findMyPosi(){
-        if (mLocationProvider!=null && mLocationProvider.getAmapLocation()!=null && aMap!=null){
-            int bear  = 0;
-            if (mWatchStyle == WATCH_3D)bear = 45;
-            CameraUpdate update = CameraUpdateFactory.newCameraPosition(new CameraPosition(
-                    new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude())
-//                    新的中心点坐标
-                    ,16, //新的缩放级别
-                    bear, //俯仰角0°~45°（垂直与地图时为0）
-                    mSeeFloat  ////偏航角 0~360° (正北方为0)
-            ));
-//            CameraPosition.Builder builder = CameraPosition.builder();
-//            builder.target(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
-//            CameraPosition position = builder.build();
-//            CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+        LogUtils.d(TAG,"findMyPosi");
+        try {
 
-            aMap.animateCamera(update);
+            marker.setVisible(false);
+            if (mLocationProvider != null && mLocationProvider.getAmapLocation() != null && aMap != null) {
+                int bear = 0;
+                if (mWatchStyle == WATCH_3D) bear = 35;
+                CameraUpdate update = CameraUpdateFactory.newCameraPosition(new CameraPosition(
+                        new LatLng(mLocationProvider.getAmapLocation().getLatitude(), mLocationProvider.getAmapLocation().getLongitude())
+//                    新的中心点坐标
+                        , 17, //新的缩放级别
+                        bear, //俯仰角0°~45°（垂直与地图时为0）
+                        mSeeFloat  ////偏航角 0~360° (正北方为0)
+                ));
+
+                aMap.moveCamera(update);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
     }
 
     private void startCalueNavi(){
@@ -904,24 +948,41 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             reInit();
             initMarker();
             mLsv.setVisibility(View.VISIBLE);
+            findMyPosi();
+            mLsv.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    upDateLineTo(null);
+                }
+            },400);
+
             return;
         }
         if (mFragments.size()==1) {
             FragmentManager manager = getFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
             transaction.remove(mFragments.remove(mFragments.size() - 1));
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
             transaction.commit();
             mReleavieView.setVisibility(View.VISIBLE);
             reInit();
             initMarker();
             mLsv.setVisibility(View.VISIBLE);
-
+            findMyPosi();
+            mLsv.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    upDateLineTo(null);
+                }
+            },400);
+            showWatchWay();
         }else {
             mFragments.remove(mFragments.size()-1);
             FragmentManager manager = getFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
             Fragment tFragment = mFragments.get(mFragments.size()-1);
             transaction.replace(R.id.ll_show_fragment,tFragment);
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             transaction.commit();
         }
 
@@ -943,6 +1004,11 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
     @Override
     public void startFragment(Fragment fragment) {
+        if (mFragments.size()==0){
+            CameraUpdate update1 = CameraUpdateFactory.changeBearing(0);
+            aMap.moveCamera(update1);
+        }
+
         aMap.setMyLocationEnabled(false);
         aMap.clear();
         mLsv.setVisibility(View.GONE);
@@ -951,16 +1017,25 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         FragmentManager manager = getFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.replace(R.id.ll_show_fragment,fragment);
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         transaction.commit();
-        mReleavieView.setVisibility(View.GONE);
+        if (mReleavieView.getVisibility() == View.VISIBLE) {
+            AlphaAnimation alphaAnimation = new AlphaAnimation(1.0f, 0.0f);
+            alphaAnimation.setDuration(500);
+            mReleavieView.setAnimation(alphaAnimation);
+            mReleavieView.setVisibility(View.GONE);
+        }
         if (mLocationMarker!=null){
             mLocationMarker.remove();
             mLocationMarker = null;
         }
-        if (mLocationMarker1!=null){
-            mLocationMarker1.remove();
-            mLocationMarker1 = null;
-        }
+
+    }
+
+    @Override
+    public void startFragmentReplace(Fragment fragment) {
+        mFragments.remove(mFragments.size()-1);
+        startFragment(fragment);
     }
 
     @Override
@@ -989,7 +1064,16 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
     public void haveCalueNaviSucceful(int[] ints,double posLat,double posLon){
         LogUtils.d(TAG,"haveCalueNaviSucceful:posLat:"+posLat+"  posLon:"+posLon);
-        mProgDialog.dismiss();
+        mTxBilici.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    mProgDialog.dismiss();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        },2000);
 
         showRunNaviFragment(ints,posLat,posLon);
 
@@ -1017,6 +1101,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     }
 
     private void showRunNaviFragment(int[] ints , double posLat,double posLon){
+        aMap.clear();
         double lat = mLocationProvider.getAmapLocation().getLatitude();
         double lon  = mLocationProvider.getAmapLocation().getLongitude();
         RunNaviWayFragment runNaviWayFragment = new RunNaviWayFragment();
@@ -1042,16 +1127,29 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
     }
 
-    private void upDateLineTo(CameraPosition cameraPosition){
-        try{
-            LatLng mLatlon = new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude());
-            Projection projection = aMap.getProjection();
-            Point pM =  projection.toScreenLocation(mLatlon);
+    //    private void upDateLineTo(CameraPosition cameraPosition){
+    private void upDateLineTo(CameraPosition position){
+//        if (position==null) {
+            try {
+                LatLng mLatlon = new LatLng(mLocationProvider.getAmapLocation().getLatitude(), mLocationProvider.getAmapLocation().getLongitude());
+                Projection projection = aMap.getProjection();
+                Point pM = projection.toScreenLocation(mLatlon);
 //            Point pT = projection.toScreenLocation(cameraPosition.target);
-            mLsv.setPoint(pM);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+                LogUtils.d(TAG, "upDateLineTo:\nx:" + pM.x + "\ny:" + pM.y);
+                mLsv.setPoint(pM);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+//        }else {
+//            LatLng mLatlon = new LatLng(mLocationProvider.getAmapLocation().getLatitude(), mLocationProvider.getAmapLocation().getLongitude());
+//            Projection projection = aMap.getProjection();
+//            Point pM = projection.toScreenLocation(mLatlon);
+//
+////            Point pT = projection.toScreenLocation(cameraPosition.target);
+//            LogUtils.d(TAG, "upDateLineTo:\nx:" + pM.x + "\ny:" + pM.y);
+//
+//            mLsv.setPoint(pM);
+//        }
     }
 
     @Override
@@ -1065,6 +1163,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         }
 
         upDateLineTo(cameraPosition);
+
         if (marker!=null) {
             marker.setVisible(true);
         }
@@ -1097,6 +1196,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             isCanShow = false;
 
         }
+        updateScale();
     }
 
 
@@ -1220,9 +1320,22 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     @Override
     public void onCalculateMultipleRoutesSuccess(int[] ints) {
         LogUtils.d(TAG,"onCalculateMultipleRoutesSuccess: mLatLng:"+mLatLng);
+        mTxBilici.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    mProgDialog.dismiss();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        },2000);
         if (mFragments.size()>0){
             Fragment fragment = mFragments.get(mFragments.size()-1);
-            if (fragment instanceof RunNaviWayFragment){
+            if (fragment instanceof RunNaviWayFragment ||
+                    fragment instanceof RadarNaviFragment ||
+                        fragment instanceof SearchCollectFragment ||
+                            fragment instanceof ShowSearchPoiFragment){
 
             }else {
                 haveCalueNaviSucceful(ints, mLatLng.latitude, mLatLng.longitude);
@@ -1234,12 +1347,31 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
     @Override
     public void onCalculateRouteSuccess() {
-        mProgDialog.dismiss();
+        mTxBilici.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    mProgDialog.dismiss();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        },2000);
+
     }
 
     @Override
     public void onCalculateRouteFailure() {
-        mProgDialog.dismiss();
+        mTxBilici.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    mProgDialog.dismiss();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        },1000);
         ToastUtil.show(this,"路径规划失败，请稍后再试");
     }
 
@@ -1256,59 +1388,80 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         }
     }
 
-    private void changeWatchWay(){
-        mWatchStyle = (mWatchStyle+1)%3;
-        mIvSeeWatch.setImageResource(IMG_WEK[mWatchStyle]);
-        mTxSeeWatch.setText(SEEWATCH_TEXT[mWatchStyle]);
+    private void showWatchWay(){
         if (aMap!=null){
             switch (mWatchStyle){
                 case WATCH_NORTH:
                     mSeeFloat = 0f;
                     if ( mLocationProvider!=null && mLocationProvider.getAmapLocation()!=null) {
-//                        CameraUpdate update0 = CameraUpdateFactory.changeBearing(0);
-//                        aMap.animateCamera(update0);
-//                        CameraUpdate update1 = CameraUpdateFactory.changeTilt(0);
-//                        aMap.animateCamera(update1);
+//
                         findMyPosi();
 
-//                        aMap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
-                        if (mLocationMarker!=null) {
-                            mLocationMarker.setVisible(true);
+//
+                        if (mLocationMarker!=null){
+                            mLocationMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_seewatch_1));
+                            mLocationMarker.setPosition(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
+                        }else{
+                            mLocationMarker  = aMap.addMarker(new MarkerOptions()
+                                    .icon(BitmapDescriptorFactory
+                                            .fromResource(R.drawable.icon_seewatch_1))
+                                    .draggable(false));
+                            mLocationMarker.setAnchor(0.5f,0.5f);
+                            mLocationMarker.setVisible(false);
+                            mLocationMarker.setFlat(true);
+                            mLocationMarker.setPosition(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
                         }
-                        if (mLocationMarker1!=null) {
-                            mLocationMarker1.setVisible(false);
-                        }
+
+//
                     }
 
                     break;
 
                 case WATCH_2D:
                     if ( mLocationProvider!=null && mLocationProvider.getAmapLocation()!=null) {
-//                    CameraUpdate update0 = CameraUpdateFactory.changeBearing(mLocationProvider.getAmapLocation().getBearing());
-//                    aMap.animateCamera(update0);
-//                        aMap.setMyLocationType(AMap.LOCATION_TYPE_MAP_ROTATE);
                         CameraUpdate update1 = CameraUpdateFactory.changeTilt(0);
                         aMap.animateCamera(update1);
                     }
-                    if (mLocationMarker!=null) {
+                    if (mLocationMarker!=null){
+                        mLocationMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_seewatch_0));
+                        mLocationMarker.setPosition(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
+                    }else{
+                        mLocationMarker  = aMap.addMarker(new MarkerOptions()
+                                .icon(BitmapDescriptorFactory
+                                        .fromResource(R.drawable.icon_seewatch_0))
+                                .draggable(false));
+                        mLocationMarker.setAnchor(0.5f,0.5f);
                         mLocationMarker.setVisible(false);
-                    }
-                    if (mLocationMarker1!=null) {
-                        mLocationMarker1.setVisible(true);
+                        mLocationMarker.setFlat(true);
+                        mLocationMarker.setPosition(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
                     }
                     break;
 
                 case WATCH_3D:
                     CameraUpdate update1 = CameraUpdateFactory.changeTilt(30);
                     aMap.animateCamera(update1);
-                    if (mLocationMarker!=null) {
+                    if (mLocationMarker!=null){
+                        mLocationMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_seewatch_0));
+                        mLocationMarker.setPosition(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
+                    }else{
+                        mLocationMarker  = aMap.addMarker(new MarkerOptions()
+                                .icon(BitmapDescriptorFactory
+                                        .fromResource(R.drawable.icon_seewatch_0))
+                                .draggable(false));
+                        mLocationMarker.setAnchor(0.5f,0.5f);
                         mLocationMarker.setVisible(false);
-                    }
-                    if (mLocationMarker1!=null) {
-                        mLocationMarker1.setVisible(true);
+                        mLocationMarker.setFlat(true);
+                        mLocationMarker.setPosition(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
                     }
                     break;
             }}
+    }
+
+    private void changeWatchWay(){
+        mWatchStyle = (mWatchStyle+1)%3;
+        mIvSeeWatch.setImageResource(IMG_WEK[mWatchStyle]);
+        mTxSeeWatch.setText(SEEWATCH_TEXT[mWatchStyle]);
+        showWatchWay();
     }
 
 
@@ -1378,12 +1531,9 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
                 default:
                     break;
-
-
             }
 
         }
-//        super.onActivityResult(requestCode, resultCode, data);
     }
 
 
@@ -1423,7 +1573,9 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         @Override
         public void onPOIClick(Poi poi) {
             try {
-                aMap.moveCamera(CameraUpdateFactory.changeLatLng(poi.getCoordinate()));
+                if (mFragments.size()==0) {
+                    aMap.moveCamera(CameraUpdateFactory.changeLatLng(poi.getCoordinate()));
+                }
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -1432,8 +1584,6 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
     private void beginCalueNavi(){
         if (fromPoint!=null && toPoint!=null){
-
-//            startList.clear();
             List<NaviLatLng> startList = new ArrayList<>();
             List<NaviLatLng> wayList = new ArrayList<>();
             List<NaviLatLng> endList = new ArrayList<>();
@@ -1441,7 +1591,6 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             endList.clear();
             endList.add(new NaviLatLng(toPoint.getLatitude(),toPoint.getLongitude()));
             mProgDialog.show();
-
             mLocationProvider.calueRunWay(startList,wayList,endList);
         }
     }
@@ -1455,17 +1604,20 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 //            if (mLocationMarker!=null){
 //                mLocationMarker.setRotateAngle(360 - a);
 //            }
+            if (mFragments.size()==0) {
+                if (mLocationMarker != null) {
+                    mLocationMarker.setRotateAngle(360 - saveA);
+                }
 
-            if (mWatchStyle != WATCH_NORTH) {
-                if ((System.currentTimeMillis() - sensorChangeTime > 300)) {
-                    if (Math.abs(event.values[0] - saveA)>5) {
-                        saveA = event.values[0];
-                        if (mLocationMarker1 != null) {
-                            mLocationMarker1.setRotateAngle(360 - saveA);
+                if (mWatchStyle != WATCH_NORTH) {
+                    if ((System.currentTimeMillis() - sensorChangeTime > 300)) {
+                        if (Math.abs(event.values[0] - saveA) > 5) {
+                            saveA = event.values[0];
+
+                            mSeeFloat = saveA;
+                            aMap.animateCamera(CameraUpdateFactory.changeBearing(saveA));
+                            sensorChangeTime = System.currentTimeMillis();
                         }
-                        mSeeFloat = saveA;
-                        aMap.animateCamera(CameraUpdateFactory.changeBearing(saveA), 1, null);
-                        sensorChangeTime = System.currentTimeMillis();
                     }
                 }
             }
@@ -1478,4 +1630,100 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         }
 
     }
+
+
+    private void updateScale(){
+        float pixel = aMap.getScalePerPixel();
+        LogUtils.d(TAG,"updateScale:"+pixel);
+        int mi = (int) (pixel*94);
+        if (mi<1000) {
+            if (mi>100){
+                mi = mi/100 *100;
+            }else {
+                if (mi > 50){
+                    mi = 50;
+                }else {
+                    mi = 25;
+                }
+            }
+            String str = String.format(getString(R.string.num_mile),""+mi);
+            mTxBilici.setText(str);
+        }else if (mi > 1000){
+            mi = mi/1000;
+            String str = String.format(getString(R.string.num_kilemile),""+mi);
+            mTxBilici.setText(str);
+        }
+    }
+
+//    @Override
+//    protected void attachBaseContext(Context newBase) {
+//        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+//    }
+
+
+    private XpAiosMapListener aiosMapListener = new XpAiosMapListener() {
+        @Override
+        public void onStartNavi(@NonNull String s, @NonNull PoiBean poiBean) {
+            if (mFragments.size()>0){
+                Fragment fragment = mFragments.get(mFragments.size()-1);
+                if (fragment instanceof RadarNaviFragment){
+                    return;
+                }
+            }
+            NaviLatLng naviLatLng = new NaviLatLng(poiBean.getLatitude(),poiBean.getLongitude());
+            List<NaviLatLng> endList = new ArrayList<>();
+            endList.add(naviLatLng);
+            mLocationProvider.tryCalueRunWay(endList);
+            if (mProgDialog!=null){
+                mProgDialog.show();
+            }
+        }
+
+        @Override
+        public void onStartNavi(double lat, double lon) {
+            if (mFragments.size()>0){
+                Fragment fragment = mFragments.get(mFragments.size()-1);
+                if (fragment instanceof RadarNaviFragment){
+                    return;
+                }
+            }
+            NaviLatLng naviLatLng = new NaviLatLng(lat,lon);
+            List<NaviLatLng> endList = new ArrayList<>();
+            endList.add(naviLatLng);
+            mLocationProvider.tryCalueRunWay(endList);
+            if (mProgDialog!=null){
+                mProgDialog.show();
+            }
+        }
+
+        @Override
+        public void onCancelNavi(@NonNull String s) {
+
+        }
+
+        @Override
+        public void onOverview(@NonNull String s) {
+            findMyPosi();
+        }
+
+        @Override
+        public void onRoutePlanning(@NonNull String s, @NonNull String s1) {
+
+        }
+
+        @Override
+        public void onZoom(@NonNull String s, int i) {
+            LogUtils.d(TAG,"onZoom:"+i);
+            if (i==0){
+                aMap.animateCamera(CameraUpdateFactory.zoomOut());
+            }else {
+                aMap.animateCamera(CameraUpdateFactory.zoomIn());
+            }
+        }
+
+        @Override
+        public void onLocate(@NonNull String s) {
+            findMyPosi();
+        }
+    };
 }

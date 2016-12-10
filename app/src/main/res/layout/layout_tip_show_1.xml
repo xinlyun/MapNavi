@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="104px"
+    android:background="@drawable/img_markinfo_0"
+    android:paddingBottom="16px"
+    android:paddingTop="4px"
+    android:paddingLeft="9px"
+    android:paddingRight="9px"
+    >
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="80px" />
+    <LinearLayout
+
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+
+        android:layout_height="88px"
+        >
+        <LinearLayout
+            android:id="@+id/btn_little_begin_navi"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+            <RelativeLayout
+                android:id="@+id/btn_begin_add_way"
+                android:layout_width="88px"
+                android:layout_height="88px">
+                <ImageView
+
+                    android:textColor="@color/white"
+                    android:src="@drawable/icon_white_way_poi"
+                    android:textSize="25px"
+                    android:background="@color/blue_0"
+
+                    android:layout_width="88px"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:layout_marginBottom="10px"
+                    android:layout_alignParentBottom="true"
+                    android:textColor="@color/white"
+                    android:text="@string/way_poi_dian"
+                    android:textSize="22px"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:layout_marginLeft="28px"
+                android:layout_marginRight="28px"
+                android:id="@+id/tx_tip_show"
+                android:textSize="24px"
+                android:textColor="@color/first_text_color"
+                android:gravity="center"
+                android:text="@string/loading_hard"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+        <!--<TextView-->
+        <!--android:textSize="30px"-->
+        <!--android:text="    "-->
+        <!--android:layout_width="478px"-->
+        <!--android:layout_height="match_parent" />-->
+    </LinearLayout>
+</RelativeLayout>
+

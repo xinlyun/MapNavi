@@ -2,7 +2,6 @@ package com.xiaopeng.xmapnavi.view.appwidget.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,10 +22,12 @@ import android.widget.Toast;
 
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.TextureMapView;
+import com.amap.api.navi.model.NaviLatLng;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.help.Inputtips;
 import com.amap.api.services.help.InputtipsQuery;
 import com.amap.api.services.help.Tip;
+import com.gc.materialdesign.widgets.ProgressDialog;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.bean.CollectItem;
@@ -36,6 +37,7 @@ import com.xiaopeng.xmapnavi.presenter.ICollectDateHelper;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
 import com.xiaopeng.xmapnavi.presenter.callback.TipItemClickListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpCollectListener;
+import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.BaseFuncActivityInteface;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.SearchCollectAdapter;
@@ -70,6 +72,7 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
 
     private View rootView;
     private int requestCode = -1;
+    private static final int WAY_POI_CODE = 2;
     private View findViewById(int id){
         return rootView.findViewById(id);
     }
@@ -128,12 +131,14 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
         findViewById(R.id.btn_return).setOnClickListener(this);
         findViewById(R.id.btn_exit).setOnClickListener(this);
         findViewById(R.id.pre_beginnavi).setOnClickListener(this);
+        findViewById(R.id.first_framelayout).setOnClickListener(this);
+        findViewById(R.id.outside_ll).setOnClickListener(this);
         mLvShowResult           .setOnItemClickListener(mItemClickListner2);
         mEtSearch.addTextChangedListener(this);
 
-        mProgDialog = new ProgressDialog(getActivity());
-        mProgDialog.setTitle("正在搜索数据");
-        mProgDialog.setMessage("正在搜索相关信息....");
+        mProgDialog = new ProgressDialog(getActivity(),"正在搜索相关信息....");
+//        mProgDialog.setTitle("正在搜索数据");
+//        mProgDialog.setMessage("正在搜索相关信息....");
         mProgDialog.setCancelable(true);
 
 
@@ -155,6 +160,10 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
 
             case 1:
                 mEtSearch.setHint(R.string.please_input_home);
+                break;
+
+            case 2:
+                mEtSearch.setHint(R.string.please_input_way_poi);
                 break;
         }
     }
@@ -181,6 +190,7 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
     public void onStart() {
         super.onStart();
         mLocationProvider.addSearchListner(mSearchListener);
+        mLocationProvider.addNaviCalueListner(mNaviCalueListener);
         mDateHelper.getCollectItems();
         showInputT();
     }
@@ -189,6 +199,7 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
     public void onStop() {
         super.onStop();
         mLocationProvider.removeSearchListner(mSearchListener);
+        mLocationProvider.removeNaviCalueListner(mNaviCalueListener);
         showHide();
     }
 
@@ -200,11 +211,34 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
             ShowSearchPoiFragment fragment = new ShowSearchPoiFragment();
             fragment.setRequestCode(requestCode);
             fragment.setSearchStr(searchStr);
-            mActivity.startFragment(fragment);
+
+            if (requestCode != WAY_POI_CODE) {
+                mActivity.startFragment(fragment);
+            }else {
+                mActivity.startFragmentReplace(fragment);
+            }
+
 //            mFrameLayout0.setVisibility(View.GONE);
 //            mFrameLayout1.setVisibility(View.VISIBLE);
 //            List<PoiItem> items = mLocationProvider.getPoiResult().getPois();
 //            mShowResultAdapter.setDate(items);
+        }
+    };
+
+    private XpNaviCalueListener mNaviCalueListener = new XpNaviCalueListener() {
+        @Override
+        public void onCalculateMultipleRoutesSuccess(int[] ints) {
+            mActivity.exitFragment();
+        }
+
+        @Override
+        public void onCalculateRouteSuccess() {
+            mActivity.exitFragment();
+        }
+
+        @Override
+        public void onCalculateRouteFailure() {
+
         }
     };
 
@@ -216,6 +250,7 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
                 break;
 
             case R.id.btn_exit:
+                showHide();
                 mActivity.exitFragment();
                 break;
 
@@ -225,10 +260,13 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
                 break;
 
             case R.id.pre_beginnavi:
+                showHide();
                 String str = mEtSearch.getText().toString();
+                readyToSearch(str);
+                break;
 
-                    readyToSearch(str);
-
+            case R.id.outside_ll:
+                mActivity.exitFragment();
                 break;
 
             default:
@@ -293,17 +331,19 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
             LogUtils.d(TAG,"mItemClickListner"+"  mCollectItems:"+mCollectItems);
+
             if (mCollectItems==null || position>=mCollectItems.size())return;
             CollectItem item = mCollectItems.get(position);
-            Intent intent = new Intent();
-            Bundle bundle = new Bundle();
-            bundle.putString("name",item.pName);
-            bundle.putString("desc",item.pDesc);
-            bundle.putDouble("poiLat",item.posLat);
-            bundle.putDouble("poiLon",item.posLon);
-            intent.putExtras(bundle);
-            mDateHelper.saveWhereIten(requestCode,item.pName,item.pDesc,item.posLat,item.posLon);
-            mActivity.exitFragment();
+            if (requestCode  != WAY_POI_CODE) {
+                mDateHelper.saveWhereIten(requestCode, item.pName, item.pDesc, item.posLat, item.posLon);
+                mActivity.exitFragment();
+            }else {
+                if (item!=null) {
+                    mLocationProvider.tryAddWayPoiCalue(new NaviLatLng(item.posLat, item.posLon));
+                    mActivity.showDialogwithOther();
+                }
+            }
+            showHide();
 
 //            setResult(RESULT_OK,intent);
 //            finish();
@@ -318,6 +358,7 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
             String name = tip.getName();
             mEtSearch.setText(name);
             readyToSearch(name);
+            showHide();
         }
     };
     private AdapterView.OnItemClickListener mItemClickListner2 = new AdapterView.OnItemClickListener() {

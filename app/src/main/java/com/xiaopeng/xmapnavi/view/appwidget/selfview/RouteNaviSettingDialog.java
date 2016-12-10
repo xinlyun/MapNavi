@@ -31,8 +31,10 @@ public class RouteNaviSettingDialog implements View.OnClickListener{
     private ImageView[] imageViews = new ImageView[6];
     private TextView[] textViews = new TextView[6];
     private boolean[] booleen = new boolean[]{
-        false,false,false,false
+            false,false,false,false
     };
+    private OnSettingDailoginShowListener mListener;
+
     public RouteNaviSettingDialog(Context context){
         mContext = context;
         mLocationPro = LocationProvider.getInstence(context);
@@ -54,15 +56,10 @@ public class RouteNaviSettingDialog implements View.OnClickListener{
     }
 
     public void show(){
-        if (mDialog!=null)
-        mDialog.show();
+        showDialog();
     }
     public void dismiss(){
-        if (mDialog!=null){
-            if (mDialog.isShowing()){
-                mDialog.dismiss();
-            }
-        }
+        disMiss();
     }
 
     private void initView(View view){
@@ -114,7 +111,7 @@ public class RouteNaviSettingDialog implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btn_return:
-                mDialog.dismiss();
+                disMiss();
                 break;
 
             case R.id.iv_icon_0:
@@ -178,13 +175,44 @@ public class RouteNaviSettingDialog implements View.OnClickListener{
                 break;
 
             case R.id.touch_out:
-                if (mDialog!=null && mDialog.isShowing()){
-                    mDialog.dismiss();
-                }
+                disMiss();
                 break;
 
 
 
         }
+    }
+
+    private void showDialog(){
+        if (mDialog!=null && !mDialog.isShowing()) {
+            mDialog.show();
+        }
+        if (mListener != null){
+            mListener.onDialogShow();
+        }
+    }
+
+    private void disMiss(){
+        if (mDialog!=null && mDialog.isShowing()){
+            mDialog.dismiss();
+        }
+        if (mListener != null){
+            mListener.onDialogMiss();
+        }
+    }
+
+    public void setOnDialogListener(OnSettingDailoginShowListener listener){
+        mListener = listener;
+    }
+
+    public boolean isShow(){
+        if (mDialog==null)return false;
+        return mDialog.isShowing();
+    }
+
+
+    public interface  OnSettingDailoginShowListener{
+        void onDialogShow();
+        void onDialogMiss();
     }
 }

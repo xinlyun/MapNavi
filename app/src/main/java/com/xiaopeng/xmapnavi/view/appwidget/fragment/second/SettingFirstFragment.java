@@ -1,6 +1,7 @@
 package com.xiaopeng.xmapnavi.view.appwidget.fragment.second;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.amap.api.navi.enums.AimLessMode;
 import com.amap.api.navi.enums.BroadcastMode;
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
@@ -42,11 +44,14 @@ public class SettingFirstFragment extends Fragment implements View.OnClickListen
     private boolean[] booleens = new boolean[]{
             false,false,false,false
     };
+
+    private int aimState;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLocationPro = LocationProvider.getInstence(getActivity());
-
+        aimState = mLocationPro.getAimState();
     }
 
     @Nullable
@@ -69,8 +74,11 @@ public class SettingFirstFragment extends Fragment implements View.OnClickListen
             textViews[i] = (TextView) findViewById(txId[i]);
             textViews[i] .setOnClickListener(this);
         }
+
+        findViewById(R.id.btn_weixin).setOnClickListener(this);
         initFirst();
         initSecond();
+        initThird();
     }
     private void initFirst(){
         for (int i=0;i<4;i++){
@@ -100,9 +108,59 @@ public class SettingFirstFragment extends Fragment implements View.OnClickListen
         }
     }
 
+    private void initThird(){
+
+        switch (aimState){
+            case AimLessMode.NONE_DETECTED:
+                imageViews[6].setImageResource(R.drawable.icon_like_01);
+                imageViews[8].setImageResource(R.drawable.icon_like_01);
+                textViews[6].setTextColor(getResources().getColor(R.color.first_text_color));
+                textViews[8].setTextColor(getResources().getColor(R.color.first_text_color));
+
+                break;
+
+            case AimLessMode.CAMERA_DETECTED:
+                imageViews[6].setImageResource(R.drawable.icon_like_01);
+                imageViews[8].setImageResource(R.drawable.icon_like_02);
+                textViews[6].setTextColor(getResources().getColor(R.color.first_text_color));
+                textViews[8].setTextColor(getResources().getColor(R.color.text_blue));
+                break;
+
+            case AimLessMode.SPECIALROAD_DETECTED:
+                imageViews[6].setImageResource(R.drawable.icon_like_02);
+                imageViews[8].setImageResource(R.drawable.icon_like_01);
+                textViews[6].setTextColor(getResources().getColor(R.color.text_blue));
+                textViews[8].setTextColor(getResources().getColor(R.color.first_text_color));
+                break;
+
+            case AimLessMode.CAMERA_AND_SPECIALROAD_DETECTED:
+                imageViews[6].setImageResource(R.drawable.icon_like_02);
+                imageViews[8].setImageResource(R.drawable.icon_like_02);
+                textViews[6].setTextColor(getResources().getColor(R.color.text_blue));
+                textViews[8].setTextColor(getResources().getColor(R.color.text_blue));
+                break;
+        }
+    }
+
+    private void startWeixinNavi(){
+        try{
+            Intent intent = new Intent();
+            intent.setClassName("com.xiaopeng.naviprovide","com.xiaopeng.naviprovide.ShowCode2Activity");
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getActivity().startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()){
+            case R.id.btn_weixin:
+                startWeixinNavi();
+                break;
+
+
             case R.id.iv_icon_0:
                 //fill down
             case R.id.btn_select_0:
@@ -160,7 +218,66 @@ public class SettingFirstFragment extends Fragment implements View.OnClickListen
                 initSecond();
                 break;
 
+            case R.id.iv_icon_6:
+                //fill down
+            case R.id.btn_select_6:
+                clickDegree();
+                break;
+
+            case R.id.iv_icon_8:
+                //fill down
+            case R.id.btn_select_8:
+                clickCamera();
+                break;
+
+
 
         }
     }
+
+    private void clickDegree(){
+        switch (aimState){
+            case AimLessMode.NONE_DETECTED:
+                aimState = AimLessMode.SPECIALROAD_DETECTED;
+                break;
+
+            case AimLessMode.CAMERA_DETECTED:
+                aimState = AimLessMode.CAMERA_AND_SPECIALROAD_DETECTED;
+                break;
+
+            case AimLessMode.SPECIALROAD_DETECTED:
+                aimState = AimLessMode.NONE_DETECTED;
+                break;
+
+            case AimLessMode.CAMERA_AND_SPECIALROAD_DETECTED:
+                aimState = AimLessMode.CAMERA_DETECTED;
+                break;
+        }
+        mLocationPro.setAimState(aimState);
+        initThird();
+    }
+
+    private void clickCamera(){
+        switch (aimState){
+            case AimLessMode.NONE_DETECTED:
+                aimState = AimLessMode.CAMERA_DETECTED;
+
+                break;
+
+            case AimLessMode.CAMERA_DETECTED:
+                aimState = AimLessMode.NONE_DETECTED;
+                break;
+
+            case AimLessMode.SPECIALROAD_DETECTED:
+                aimState = AimLessMode.CAMERA_AND_SPECIALROAD_DETECTED;
+                break;
+
+            case AimLessMode.CAMERA_AND_SPECIALROAD_DETECTED:
+                aimState = AimLessMode.SPECIALROAD_DETECTED;
+                break;
+        }
+        mLocationPro.setAimState(aimState);
+        initThird();
+    }
+
 }

@@ -3,10 +3,11 @@ package com.xiaopeng.xmapnavi.view.appwidget.fragment;
 import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 
 import com.amap.api.maps.model.BitmapDescriptorFactory;
@@ -15,19 +16,16 @@ import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.Polyline;
 import com.amap.api.maps.model.PolylineOptions;
+import com.amap.api.navi.AMapNavi;
 import com.amap.api.navi.model.AMapNaviCross;
-import com.iflytek.cloud.util.ResourceUtil;
 import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.lib.utils.utils.LogUtils;
-import android.util.SparseArray;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.maps.AMap;
@@ -42,7 +40,6 @@ import com.amap.api.navi.model.AMapNaviLocation;
 import com.amap.api.navi.model.AMapNaviPath;
 import com.amap.api.navi.model.NaviInfo;
 import com.amap.api.navi.model.NaviLatLng;
-import com.amap.api.navi.view.RouteOverLay;
 import com.amap.api.services.core.LatLonPoint;
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.mode.FindForWardPoi;
@@ -55,12 +52,13 @@ import com.xiaopeng.xmapnavi.presenter.callback.XpRouteListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSensorListener;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.BaseFuncActivityInteface;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.RouteNaviActivity;
+import com.xiaopeng.xmapnavi.view.appwidget.selfview.MRouteOverLay;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.MapFloatView;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by linzx on 2016/10/18.
@@ -69,6 +67,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         ,XpLocationListener , LocationSource
         , XpNaviInfoListener,View.OnClickListener
         , XpSensorListener ,AMap.OnCameraChangeListener
+
 {
     private static final String TAG = "RadarNaviFragment";
     private MapView mMapView;
@@ -78,14 +77,14 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     private OnLocationChangedListener mLisenerClient;
     private LatLonPoint fromPoint,toPoint;
     int routeID =1 ;
-    private int zindex = 1;
+    private int zindex = 2;
     private ImageView mIvLukuang;
     private long timeSave;
     private LatLng poiSave;
-
     private MapFloatView mMapFloatView;
     private Marker mLineMarker0,mLineMarker1;
     private Marker mMarker0,mMarker1;
+
     private static final int LINE_TYPE_TOP=0 ;
     private static final int LINE_TYPE_BOTTOM=1 ;
     private static final int LINE_TYPE_LEFT=2 ;
@@ -93,6 +92,8 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     private static final int[] ANGLE_STYLE = {
             0,180,90,270
     };
+
+    private TextView mTxShowShengyu;
 
     BaseFuncActivityInteface mActivity;
 
@@ -116,12 +117,15 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     /**
      * 保存当前算好的路线
      */
-    private SparseArray<RouteOverLay> routeOverlays = new SparseArray<RouteOverLay>();
-
+//    private SparseArray<RouteOverLay> routeOverlays = new SparseArray<RouteOverLay>();
+    private MRouteOverLay mRouteOverlay;
     private TextView mTvShowMsg;
     private Marker mLocationMarker;
     private boolean isFirst = true;
     private boolean isTriffice = false;
+
+    private Marker markerFromPoi,markerEndPoi;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         BugHunter.countTimeStart(BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
@@ -136,7 +140,11 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         // 设置定位的类型为定位模式 ，可以由定位、跟随或地图根据面向方向旋转几种
         mActivity = (BaseFuncActivityInteface) getActivity();
 
+        mAmap.setOnPolylineClickListener(polylineClickListener);
+
     }
+
+
 
     @Override
     public void onDestroy() {
@@ -155,6 +163,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     public void onResume() {
         super.onResume();
         mMapView.onResume();
+        mAmap .setMapType(AMap.MAP_TYPE_NAVI);
         BugHunter.countTimeEnd(getActivity().getApplication(),BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
     }
 
@@ -162,7 +171,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_rader_navi,container,false);
-        mAmap.clear();
+//        mAmap.clear();
 
         initView();
         return rootView;
@@ -173,6 +182,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         mMapFloatView = (MapFloatView) findViewById(R.id.mfv_show);
         mMapFloatView.initAmap(mAmap);
         mIvLukuang      = (ImageView) findViewById(R.id.iv_lukuang);
+        mTxShowShengyu  = (TextView) findViewById(R.id.tv_show_shengyu);
         findViewById(R.id.btn_see_all).setOnClickListener(this);
         findViewById(R.id.btn_exit).setOnClickListener(this);
         findViewById(R.id.btn_lukuang).setOnClickListener(this);
@@ -190,6 +200,8 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
 
     }
 
+
+
     private View findViewById(int id){
         return rootView.findViewById(id);
     }
@@ -199,7 +211,6 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     public void onStart() {
         super.onStart();
         LogUtils.d(TAG,"onStart");
-        mAmap .setMapType(AMap.MAP_TYPE_NAVI);
         mAmap.getUiSettings().setAllGesturesEnabled(true);
         mAmap.setOnCameraChangeListener(this);
         mLocationPro.addLocationListener(this);
@@ -207,24 +218,43 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         mLocationPro.addRouteListener(this);
         mLocationPro.addNaviInfoListner(this);
         mLocationPro.addSensorListner(this);
+
+
         if (isFirst){
             if(mLocationPro==null || mLocationPro.getAmapLocation()==null){
                 getActivity().finish();
             }
-            beginFirst();
+//            beginFirst();
             AMapLocation location = mLocationPro.getAmapLocation();
             fromPoint = new LatLonPoint(location.getLatitude(),location.getLongitude());
-            LatLngBounds bounds = LatLngBounds.builder().include(new LatLng(fromPoint.getLatitude(), fromPoint.getLongitude()))
-                    .include(new LatLng(toPoint.getLatitude(), toPoint.getLongitude())).build();
-            CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, 30);
-            mAmap.animateCamera(update);
-
-            mAmap.animateCamera(CameraUpdateFactory.zoomTo(15));
+//            LatLngBounds bounds = LatLngBounds.builder().include(new LatLng(fromPoint.getLatitude(), fromPoint.getLongitude()))
+//                    .include(new LatLng(toPoint.getLatitude(), toPoint.getLongitude())).build();
+//            CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, 30);
+//            mAmap.animateCamera(update);
+//
+//            mAmap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
             isFirst = false;
+
+
+            MarkerOptions options = new MarkerOptions();
+            options.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_from_poi));
+            options.anchor(0.5f,1f);
+            options.position(new LatLng(fromPoint.getLatitude(),fromPoint.getLongitude()));
+            markerFromPoi = mAmap.addMarker(options);
+
+            MarkerOptions options1 = new MarkerOptions();
+            options1.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_end_poi));
+            options1.anchor(0.5f,1f);
+            options1.position(new LatLng(fromPoint.getLatitude(),fromPoint.getLongitude()));
+            markerEndPoi = mAmap.addMarker(options1);
+
             this.onCalculateMultipleRoutesSuccess(mLocationPro.getPathsInts());
+//            beginFirst();
+
         }
         mAmap.setTrafficEnabled(isTriffice);
+
     }
 
     @Override
@@ -285,6 +315,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
 
 
         endPoi.add(new NaviLatLng(toPoint.getLatitude(),toPoint.getLongitude()));
+        mLocationPro.stopNavi();
         mLocationPro.tryCalueRunWay(endPoi);
     }
 
@@ -294,82 +325,18 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     }
 
 
-    private void clearPathLay(){
-        if (routeOverlays.size() > 0) {
-            for (int i = 0; i < ints.length; i++) {
-                try {
-                    routeOverlays.get(ints[i]).removeFromMap();
-                } catch (Exception e) {
-
-                }
-
-            }
-        }
-        routeOverlays.clear();
-        if (mLineMarker0!=null){
-            mLineMarker0.remove();
-            mLineMarker0 = null;
-        }
-        if (mLineMarker1!=null){
-            mLineMarker1.remove();
-            mLineMarker1 = null;
-        }
-    }
-
     private void seeAll(){
         watchAll();
     }
 
-    private void beginFirst(){
-        this.ints = mLocationPro.getPathsInts();
-        routeID = ints[0];
-        mPaths = mLocationPro.getNaviPaths();
-        if (mPaths !=null) {
-            LogUtils.d(TAG, "onCalculateMultipleRoutesSuccess getPath size:" + mPaths.size());
-        }
-
-        if (mPaths != null && mPaths.size() > 1 && ints != null){
-            for (int i = 0; i < ints.length; i++) {
-                AMapNaviPath path = mPaths.get(ints[i]);
-                if (path != null) {
-                    drawRoutes(ints[i], path);
-                }
-            }
-        } else {
-            /**
-             * 单路径不需要进行路径选择，直接传入－1即可
-             */
-//            drawRoutes(-1, path);
-        }
 
 
-        mMapView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                try {
-                    LogUtils.d(TAG,"ready to changeRoute \nfrom:"+fromPoint+"\n toPoint："+toPoint);
-                    changeRoute();
-
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        },50);
-        mMapView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-//                drawInfoMarker();
-            }
-        },100);
-
-    }
 
     @Override
     public void onCalculateMultipleRoutesSuccess(int[] ints) {
         LogUtils.d(TAG,"onCalculateMultipleRoutesSuccess ints size:"+ints.length);
-        mLocationPro.startRouteNavi();
-        clearPathLay();
+//        mLocationPro.startRouteNavi();
+//        clearPathLay();
         this.ints = ints;
         routeID = ints[0];
         mPaths = mLocationPro.getNaviPaths();
@@ -378,7 +345,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
             LogUtils.d(TAG, "onCalculateMultipleRoutesSuccess getPath size:" + mPaths.size());
         }
 
-        if (ints.length==3) {
+        if (ints.length>1) {
             AMapNaviPath path0 = mPaths.get(ints[0]);
             AMapNaviPath path1 = mPaths.get(ints[1]);
             AMapNaviPath path2 = mPaths.get(ints[2]);
@@ -402,159 +369,83 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
             }
             mPoline2 = drawPolyLine(path2);
 
+
+
+        }
+        changeRoute();
+    }
+
+    private void drawInfoLine(){
+        if (mPaths.size()>1) {
+            AMapNaviPath path0 = mPaths.get(routeID);
+            AMapNaviPath path1 = null,path2=null;
+
+            int in0 = ints[0];
+            int in1 = ints[1];
+            int in2 = -1;
+            if (ints.length==3){
+                in2 = ints[2];
+            }
+            if (routeID==in0){
+                path1 = mPaths.get(in1);
+                if (in2!=-1){
+                    path2 = mPaths.get(in2);
+                }
+
+            }else if (routeID==in1){
+                path1 = mPaths.get(in0);
+                if (in2!=-1){
+                    path2 = mPaths.get(in2);
+                }
+
+            }else if(routeID==in2){
+                path1 = mPaths.get(in0);
+                path2 = mPaths.get(in1);
+            }
+
+
             List<AMapNaviPath> paths = new ArrayList<>();
             paths.add(path0);
-            paths.add(path2);
-            FindForWardPoi findForWardPoi = new FindForWardPoi(path1,paths);
+            if (path2!=null) {
+                paths.add(path2);
+            }
+            FindForWardPoi findForWardPoi = new FindForWardPoi(path1, path0,path2);
             findForWardPoi.setOnFindPoiInPathListener(poiInPath0);
             findForWardPoi.start();
 
-            List<AMapNaviPath> paths0 = new ArrayList<>();
-            paths0.add(path0);
-            paths0.add(path1);
-            FindForWardPoi findForWardPoix = new FindForWardPoi(path2,paths0);
-            findForWardPoix.setOnFindPoiInPathListener(poiInPath1);
-            findForWardPoix.start();
-
-        }
-
-        if (mPaths != null && mPaths.size() > 1 && ints != null){
-            for (int i = 0; i < ints.length; i++) {
-                AMapNaviPath path = mPaths.get(ints[i]);
-                if (path != null) {
-                    drawRoutes(ints[i], path);
-                }
-            }
-        } else {
-//            AMapNaviPath path = mLocationPro.getNaviPath();
-            /**
-             * 单路径不需要进行路径选择，直接传入－1即可
-             */
-//            drawRoutes(-1, path);
-        }
-
-
-
-        mMapView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-//                drawInfoMarker();
-            }
-        },100);
-
-    }
-
-    private void drawInfoMarker(){
-        if (mPaths==null || mPaths.size()==1)return;
-        AMapNaviPath path0 = mPaths.get(ints[0]);
-        AMapNaviPath path1 = mPaths.get(ints[1]);
-        AMapNaviPath path2 = null;
-        if (mPaths.size()==3){
-            path2 = mPaths.get(ints[2]);
-        }
-
-        int allsize0 = path0.getCoordList().size();
-        int allsize1 = path1.getCoordList().size();
-        int allsize2 = 0;
-        if (path2!=null){
-            allsize2 = path2.getCoordList().size();
-        }
-        NaviLatLng wayPath0Point0 = path0.getCoordList().get(allsize0/3);
-        NaviLatLng wayPath0Point1 = path0.getCoordList().get(2*allsize0/3);
-        NaviLatLng wayPath1Point0 = path1.getCoordList().get(allsize1/3);
-        NaviLatLng wayPath1Point1 = path1.getCoordList().get(2*allsize1/3);
-        NaviLatLng wayPath2Point0 = null;
-        NaviLatLng wayPath2Point1 = null;
-        if (path2!=null) {
-            wayPath2Point0 = path2.getCoordList().get(allsize2 / 3);
-            wayPath2Point1 = path2.getCoordList().get(2 * allsize2 / 3);
-        }
-        style0 = pointInto(wayPath1Point0,wayPath0Point0,wayPath2Point0);
-        style1 = -1;
-        if (path2!=null){
-            style1 = pointInto(wayPath2Point1,wayPath0Point1,wayPath1Point1);
-        }
-
-        MarkerOptions options  = new MarkerOptions();
-        options.icon(BitmapDescriptorFactory.fromResource(R.drawable.line_icon));
-        mLineMarker0 = mAmap.addMarker(options);
-        mLineMarker0.setAnchor(0.5f,1f);
-        mLineMarker0.setPosition(new LatLng(wayPath1Point0.getLatitude(),wayPath1Point0.getLongitude()));
-        mLineMarker0.setRotateAngle(ANGLE_STYLE[style0]);
-
-        if (path2!=null) {
-            MarkerOptions options1 = new MarkerOptions();
-            options1.icon(BitmapDescriptorFactory.fromResource(R.drawable.line_icon));
-            mLineMarker1 = mAmap.addMarker(options1);
-            mLineMarker1.setAnchor(0.5f, 1f);
-            mLineMarker1.setPosition(new LatLng(wayPath2Point1.getLatitude(), wayPath2Point1.getLongitude()));
-            mLineMarker1.setRotateAngle(ANGLE_STYLE[style1]);
-        }
-
-        if (mLineMarker1==null) {
-            mMapFloatView.setPoint(mLineMarker0.getPosition(),style0,null,-1);
-        }else {
-            mMapFloatView.setPoint(mLineMarker0.getPosition(),style0,mLineMarker1.getPosition(),style1);
-        }
-
-    }
-
-    private int pointInto(NaviLatLng startLatLng,NaviLatLng rightLatlng,@Nullable NaviLatLng otherLatlng){
-        if (otherLatlng!=null){
-//            PolylineOptions polylineOptions = new PolylineOptions();
-//            polylineOptions.add(new LatLng(rightLatlng.getLatitude(),rightLatlng.getLongitude()));
-//            polylineOptions.add(new LatLng(otherLatlng.getLatitude(),otherLatlng.getLongitude()));
-//            polylineOptions.color(getResources().getColor(R.color.red));
-//            mAmap.addPolyline(polylineOptions);
-            double newLat = (rightLatlng.getLatitude()+otherLatlng.getLatitude())/2f;
-            double newLon = (rightLatlng.getLongitude()+otherLatlng.getLongitude())/2f;
-            double disLat = newLat - startLatLng.getLatitude();
-            double disLon = newLon - startLatLng.getLongitude();
-            if (Math.abs(disLat) > Math.abs(disLon)){
-                if (disLat>0)return LINE_TYPE_BOTTOM;
-                else return LINE_TYPE_TOP;
-            }else {
-                if (disLat>0)return LINE_TYPE_LEFT;
-                else return LINE_TYPE_RIGHT;
-            }
-        }else {
-            double disLat = rightLatlng.getLatitude() - startLatLng.getLatitude();
-            double disLon = rightLatlng.getLongitude() - startLatLng.getLongitude();
-            if (Math.abs(disLat)>Math.abs(disLon)){
-                //is not right ?
-                if (disLon>0)return LINE_TYPE_RIGHT;
-                else return LINE_TYPE_LEFT;
-            }else {
-                if (disLat>0)return LINE_TYPE_BOTTOM;
-                else return LINE_TYPE_TOP;
+            if (path2!=null) {
+                List<AMapNaviPath> paths0 = new ArrayList<>();
+                paths0.add(path0);
+                paths0.add(path1);
+                FindForWardPoi findForWardPoix = new FindForWardPoi(path2, path0,path1);
+                findForWardPoix.setOnFindPoiInPathListener(poiInPath1);
+                findForWardPoix.start();
             }
         }
     }
+
+
 
     public void changeRoute() {
-
-        if (routeOverlays.size() == 1) {
-//            chooseRouteSuccess = true;
-//            Toast.makeText(getActivity(), "导航距离:" + (mLocaionPro.getNaviPath()).getAllLength() + "m" + "\n" + "导航时间:" + (mLocaionPro.getNaviPath()).getAllTime() + "s", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-
-        //突出选择的那条路
-        for (int i = 0; i < routeOverlays.size(); i++) {
-            int key = routeOverlays.keyAt(i);
-            routeOverlays.get(key).setTransparency(0.0f);
-        }
         try {
-
             LogUtils.d(TAG,"changeRoute:routeID="+routeID);
-            RouteOverLay routeOverLay = routeOverlays.get(routeID);
-            if (routeOverLay==null)return;
-            routeOverLay.setTransparency(1f);
+            watchAll();
+            mLocationPro.stopNavi();
+            drawInfoLine();
+//            RouteOverLay routeOverLay = routeOverlays.get(routeID);
+//            if (routeOverLay==null)return;
+//            routeOverLay.setTransparency(1f);
             /**
              * 把用户选择的那条路的权值弄高，使路线高亮显示的同时，重合路段不会变的透明
              **/
-            routeOverLay.setZindex(zindex+1);
+
+
+//            routeOverLay.setZindex(zindex+1);
+
+            AMapNaviPath path = mLocationPro.getNaviPaths().get(routeID);
+            drawRoutes(routeID,path);
+            mLocationPro.selectRouteId(routeID);
+            mLocationPro.startNavi(AMapNavi.GPSNaviMode);
         }catch (Exception e){
             e.printStackTrace();
             LogUtils.e(TAG,"changeRoute error:routeId = "+routeID);
@@ -580,8 +471,10 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     @Override
     public void nearBy(int pathId, int stepNum, int poiNum) {
         LogUtils.d(TAG,"nearBy:"+pathId);
-        routeID = pathId;
-        changeRoute();
+//        if (pathId!=routeID) {
+//            routeID = pathId;
+//            changeRoute();
+//        }
     }
 
     @Override
@@ -597,27 +490,56 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
 
     private void drawRoutes(int routeId, AMapNaviPath path) {
         LogUtils.d(TAG,"drawRoutes id:"+routeId);
+        if (mRouteOverlay!=null){
+            mRouteOverlay.removeFromMap();
+            mRouteOverlay = null;
+        }
+
         mAmap.moveCamera(CameraUpdateFactory.changeTilt(0));
-        RouteOverLay routeOverLay = new RouteOverLay(mAmap, path, getActivity());
+        MRouteOverLay routeOverLay = new MRouteOverLay(mAmap, path, getActivity());
 
-        routeOverLay.setStartPointBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.icon_from_poi));
-        routeOverLay.setEndPointBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.icon_end_poi));
-        routeOverLay.setWayPointBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.icon_way_poi));
+        routeOverLay.setStartPointBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.nothing_poi));
+        routeOverLay.setEndPointBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.nothing_poi));
+        routeOverLay.setWayPointBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.nothing_poi));
 
+        markerFromPoi.setPosition(new LatLng(path.getStartPoint().getLatitude(),path.getStartPoint().getLongitude()));
+        markerEndPoi.setPosition(new LatLng(path.getEndPoint().getLatitude(),path.getEndPoint().getLongitude()));
+
+        routeOverLay.setZindex(zindex);
         routeOverLay.setTrafficLine(true);
         routeOverLay.addToMap();
-        routeOverlays.put(routeId, routeOverLay);
+        mRouteOverlay = routeOverLay;
     }
 
 
     @Override
     public void onNaviInfoUpdate(NaviInfo naviInfo) {
         if (naviInfo != null) {
-            String str = "" + naviInfo.getCurStepRetainDistance() + "米后,从" + naviInfo.getCurrentRoadName() + "进入" + naviInfo.getNextRoadName() +
-                    "\n剩余" + naviInfo.getPathRetainTime() / 60 + "分钟," + naviInfo.getPathRetainDistance() / 1000 + "公里";
+            String str = "" + naviInfo.getCurStepRetainDistance() + "米后" + "进入" + naviInfo.getNextRoadName();
             if (mTvShowMsg != null) {
                 mTvShowMsg.setText(str);
             }
+            String timeL;
+            int allTime = naviInfo.getPathRetainTime();
+            if (allTime > 60)allTime = allTime/60;
+            if (allTime>60){
+                timeL = "剩余"+allTime/60 +"小时"+allTime%60+"分钟 ";
+            }else {
+                timeL = "剩余"+allTime%60+"分钟 ";
+            }
+
+            String lenght;
+            int dis = naviInfo.getPathRetainDistance();
+            if (dis > 1000){
+                dis = dis/1000;
+                DecimalFormat df = new DecimalFormat("0.0");
+                String result = df.format(dis);
+                lenght = ""+result+"公里";
+            }else {
+                lenght = dis+"米";
+            }
+            mTxShowShengyu.setText(timeL+lenght);
+
         }
 
     }
@@ -672,6 +594,8 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
                 }
                 break;
 
+
+
             default:
                 break;
 
@@ -683,7 +607,6 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         Intent intent = new Intent(getActivity(), RouteNaviActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         getActivity().startActivity(intent);
-//        getActivity().finish();
         mActivity.exitFragment();
     }
 
@@ -722,6 +645,15 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
 
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
+        updateLineMarkerPosition();
+    }
+
+    @Override
+    public void onCameraChangeFinish(CameraPosition cameraPosition) {
+        updateLineMarkerPosition();
+    }
+
+    private void updateLineMarkerPosition(){
         if (mLineMarker0!=null){
             if (mLineMarker1!=null) {
                 mMapFloatView.setPoint(mLineMarker0.getPosition(), style0, mLineMarker1.getPosition(), style1);
@@ -731,16 +663,6 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         }
     }
 
-    @Override
-    public void onCameraChangeFinish(CameraPosition cameraPosition) {
-        if (mLineMarker0!=null){
-            if (mLineMarker1!=null) {
-                mMapFloatView.setPoint(mLineMarker0.getPosition(), style0, mLineMarker1.getPosition(), style1);
-            }else {
-                mMapFloatView.setPoint(mLineMarker0.getPosition(), style0, null, style1);
-            }
-        }
-    }
 //    private Marker marker;
 
 
@@ -767,10 +689,11 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     }
     FindForWardPoi.OnFindRightPoiInPath poiInPath0 = new FindForWardPoi.OnFindRightPoiInPath() {
         @Override
-        public void OntheRightPoi(int index, NaviLatLng myLatLng, NaviLatLng reLatLng) {
-            LogUtils.e(TAG,"\npoi0:"+myLatLng+"\npoi1:"+reLatLng);
+        public void OntheRightPoi(int index, NaviLatLng myLatLng, NaviLatLng reLatLng,String infoText) {
+            LogUtils.e(TAG,"\npoi0:"+myLatLng+"\npoi1:"+reLatLng+"\ninfo:"+infoText);
 //            double disX = Math.abs(myLatLng.getLatitude()-reLatLng.getLatitude());
 //            double disY = Math.abs(myLatLng.getLongitude()  - reLatLng.getLongitude());
+
             float disX = disMwithLat(myLatLng,reLatLng);
             float disY = disMwithLon(myLatLng,reLatLng);
             if (disX > disY){
@@ -790,8 +713,15 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
             }
             MarkerOptions options  = new MarkerOptions();
             options.icon(BitmapDescriptorFactory.fromResource(R.drawable.line_icon));
+
+            if (mLineMarker0!=null){
+                mLineMarker0.remove();
+                mLineMarker0 = null;
+            }
+
             mLineMarker0 = mAmap.addMarker(options);
             mLineMarker0.setAnchor(0.5f,1f);
+            mLineMarker0.setClickable(false);
             mLineMarker0.setPosition(new LatLng(myLatLng.getLatitude(),myLatLng.getLongitude()));
             mLineMarker0.setRotateAngle(ANGLE_STYLE[style0]);
 
@@ -802,11 +732,15 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
             mMarker0 = mAmap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_location_little)));
             mMarker0.setAnchor(0.5f,0.5f);
             mMarker0.setPosition(new LatLng(reLatLng.getLatitude(),reLatLng.getLongitude()));
+            if (mMapFloatView!=null){
+                mMapFloatView.setFirstString(infoText);
+            }
+            updateLineMarkerPosition();
         }
     };
     FindForWardPoi.OnFindRightPoiInPath poiInPath1 = new FindForWardPoi.OnFindRightPoiInPath() {
         @Override
-        public void OntheRightPoi(int index, NaviLatLng myLatLng, NaviLatLng reLatLng) {
+        public void OntheRightPoi(int index, NaviLatLng myLatLng, NaviLatLng reLatLng,String infoText) {
 //            double disX = Math.abs(myLatLng.getLatitude()-reLatLng.getLatitude());
 //            double disY = Math.abs(myLatLng.getLongitude()  - reLatLng.getLongitude());
 
@@ -830,10 +764,17 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
             }
             MarkerOptions options  = new MarkerOptions();
             options.icon(BitmapDescriptorFactory.fromResource(R.drawable.line_icon));
+
+            if (mLineMarker1!=null){
+                mLineMarker1.remove();
+                mLineMarker1 = null;
+            }
+
             mLineMarker1 = mAmap.addMarker(options);
             mLineMarker1.setAnchor(0.5f,1f);
             mLineMarker1.setPosition(new LatLng(myLatLng.getLatitude(),myLatLng.getLongitude()));
             mLineMarker1.setRotateAngle(ANGLE_STYLE[style1]);
+            mLineMarker1.setClickable(false);
 
             if (mLineMarker0!=null){
                 mMapFloatView.setPoint(mLineMarker0.getPosition(),style0,mLineMarker1.getPosition(),style1);
@@ -846,35 +787,97 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
             mMarker1 = mAmap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_location_little)));
             mMarker1.setAnchor(0.5f,0.5f);
             mMarker1.setPosition(new LatLng(reLatLng.getLatitude(),reLatLng.getLongitude()));
-
+            if (mMapFloatView!=null){
+                mMapFloatView.setSecondString(infoText);
+            }
+            updateLineMarkerPosition();
         }
     };
 
     private void watchAll(){
-        mMapFloatView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    LogUtils.d(TAG,"ready to changeRoute \nfrom:"+fromPoint+"\n toPoint："+toPoint);
-                    HashMap<Integer,AMapNaviPath> pathHashMap = mLocationPro.getNaviPaths();
-                    int[] ints = mLocationPro.getPathsInts();
-                    LatLngBounds.Builder builder = LatLngBounds.builder();
+        new WatchSee().start();
+    }
 
-                    for (int i =0 ;i < ints.length;i++){
-                        AMapNaviPath path = pathHashMap.get(ints[i]);
-                        for(NaviLatLng latLng : path.getCoordList()){
-                            builder.include(new LatLng(latLng.getLatitude(),latLng.getLongitude()));
-                        }
+
+
+    class WatchSee extends Thread{
+        @Override
+        public void run() {
+            super.run();
+            try {
+                LogUtils.d(TAG,"ready to changeRoute \nfrom:"+fromPoint+"\n toPoint："+toPoint);
+                HashMap<Integer,AMapNaviPath> pathHashMap = mLocationPro.getNaviPaths();
+                int[] ints = mLocationPro.getPathsInts();
+
+                LatLngBounds.Builder builder = LatLngBounds.builder();
+                NaviLatLng startPoi = pathHashMap.get(ints[0]).getStartPoint();
+                NaviLatLng endPoi = pathHashMap.get(ints[0]).getEndPoint();
+                float disF = disMwithLat(startPoi,endPoi);
+                float disK = disMwithLon(startPoi,endPoi);
+                double alllenght = Math.sqrt(disF*disF + disK*disK);
+                double num = disF/alllenght;
+                double scall =Math.toDegrees(Math.atan(disF/disK));
+                LogUtils.d(TAG,"scall:"+scall);
+                for (int i =0 ;i < ints.length;i++){
+                    AMapNaviPath path = pathHashMap.get(ints[i]);
+                    for(NaviLatLng latLng : path.getCoordList()){
+                        builder.include(new LatLng(latLng.getLatitude(),latLng.getLongitude()));
                     }
-                    LatLngBounds latLngBounds = builder.build();
-                    CameraUpdate update = CameraUpdateFactory.newLatLngBounds(latLngBounds,50);
-                    mAmap.animateCamera(update);
+                }
+//                    CameraUpdate update1 = CameraUpdateFactory.changeBearing((float) scall);
+//                    mAMap.animateCamera(update1,0,null);
+                LatLngBounds latLngBounds = builder.build();
+                CameraUpdate update = CameraUpdateFactory.newLatLngBounds(latLngBounds, (int) (num * 160));
 
-                }catch (Exception e){
-                    e.printStackTrace();
+                Message message = handlTheWatch.obtainMessage();
+                message.what = 0;
+                message.obj = update;
+                handlTheWatch.sendMessage(message);
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    Handler handlTheWatch = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            CameraUpdate update = (CameraUpdate) msg.obj;
+            mAmap.animateCamera(update);
+        }
+    };
+
+    AMap.OnPolylineClickListener polylineClickListener = new AMap.OnPolylineClickListener() {
+        @Override
+        public void onPolylineClick(Polyline polyline) {
+            LogUtils.d(TAG,"\n touch one:"+polyline+"\n first:"+mPoline0+"\n first1:"+mPoline1+"\n first2:"+mPoline2);
+            if (polyline.equals(mPoline0)){
+                if (mLocationPro.getPathsInts()[0]!=routeID) {
+                    routeID = mLocationPro.getPathsInts()[0];
+                    changeRoute();
+                }
+            }else if (polyline.equals(mPoline1)){
+                if (mLocationPro.getPathsInts()[1]!=routeID) {
+                    routeID = mLocationPro.getPathsInts()[1];
+                    changeRoute();
+                }
+            }else if(polyline.equals(mPoline2)){
+                if (mLocationPro.getPathsInts()[2]!=routeID) {
+                    routeID = mLocationPro.getPathsInts()[2];
+                    changeRoute();
                 }
             }
-        },200);
-    }
+        }
+    };
+
+
+
+
+
+
+
+
 
 }

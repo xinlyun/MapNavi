@@ -6,12 +6,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 
 import com.amap.api.maps.AMapUtils;
+import com.amap.api.maps.Projection;
 import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.navi.model.NaviLatLng;
 import com.xiaopeng.lib.bughunter.BugHunter;
@@ -54,10 +56,13 @@ import com.xiaopeng.xmapnavi.presenter.IHistoryDateHelper;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
 import com.xiaopeng.xmapnavi.presenter.callback.OnClickRightItem;
 import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
+import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.BaseFuncActivityInteface;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.HistoryAndNaviAdapter;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.SimplePoiAdapter;
+import com.xiaopeng.xmapnavi.view.appwidget.fragment.SearchCollectFragment;
+import com.xiaopeng.xmapnavi.view.appwidget.fragment.ShowPosiFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,16 +78,30 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
         , View.OnTouchListener
         , OnClickRightItem {
 
-    private int[] markers = {com.xiaopeng.amaplib.R.drawable.poi_marker_1,
-            com.xiaopeng.amaplib.R.drawable.poi_marker_2,
-            com.xiaopeng.amaplib.R.drawable.poi_marker_3,
-            com.xiaopeng.amaplib.R.drawable.poi_marker_4,
-            com.xiaopeng.amaplib.R.drawable.poi_marker_5,
-            com.xiaopeng.amaplib.R.drawable.poi_marker_6,
-            com.xiaopeng.amaplib.R.drawable.poi_marker_7,
-            com.xiaopeng.amaplib.R.drawable.poi_marker_8,
-            com.xiaopeng.amaplib.R.drawable.poi_marker_9,
-            com.xiaopeng.amaplib.R.drawable.poi_marker_10
+    private int[] markers = {
+            R.drawable.poi_marker_true_1
+            , R.drawable.poi_marker_true_2
+            , R.drawable.poi_marker_true_3
+            , R.drawable.poi_marker_true_4
+            , R.drawable.poi_marker_true_5
+            , R.drawable.poi_marker_true_6
+            , R.drawable.poi_marker_true_7
+            , R.drawable.poi_marker_true_8
+            , R.drawable.poi_marker_true_9
+            , R.drawable.poi_marker_true_10
+    };
+
+    private int[] markers0 = {
+            R.drawable.poi_marker_false_1
+            , R.drawable.poi_marker_false_2
+            , R.drawable.poi_marker_false_3
+            , R.drawable.poi_marker_false_4
+            , R.drawable.poi_marker_false_5
+            , R.drawable.poi_marker_false_6
+            , R.drawable.poi_marker_false_7
+            , R.drawable.poi_marker_false_8
+            , R.drawable.poi_marker_false_9
+            , R.drawable.poi_marker_false_10
     };
 
     private static final String TAG = "ShowPosiFragment";
@@ -128,6 +147,8 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
     private int requestCode;
     private String searchStr;
     private boolean isFirst = true;
+
+    private static final int WAY_POI_CODE = 2;
 
     public void setMapView(MapView mapView){
         mAmapView = mapView;
@@ -213,7 +234,7 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
             locationMarker = mAMap.addMarker(new MarkerOptions()
                     .anchor(0.5f, 0.5f)
                     .icon(BitmapDescriptorFactory
-                            .fromBitmap(BitmapFactory.decodeResource(getResources(), com.xiaopeng.amaplib.R.drawable.point4)))
+                            .fromBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.icon_seewatch_1)))
                     .position(new LatLng(lp.getLatitude(), lp.getLongitude())));
             locationMarker.showInfoWindow();
 
@@ -235,6 +256,7 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
     public void onStart() {
         super.onStart();
         mLocationPro    .addSearchListner(this);
+        mLocationPro    .addNaviCalueListner(mNaviCalueListener);
         initListView(this.getActivity());
         initMap();
         showResult();
@@ -245,6 +267,7 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
         mAMap.getUiSettings().setAllGesturesEnabled(false);
         mAMap.getUiSettings().setZoomGesturesEnabled(true);
         mAMap.getUiSettings().setScrollGesturesEnabled(true);
+
     }
 
     @Override
@@ -260,6 +283,7 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
         super.onStop();
         mLocationPro.removeLocationListener(this);
         mLocationPro    .removeSearchListner(this);
+        mLocationPro.removeNaviCalueListner(mNaviCalueListener);
     }
 
     private void showResult(){
@@ -289,9 +313,6 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
                 LogUtils.d(TAG,"new Adapter");
                 mAdapter.notifyDataSetChanged();
                 mHistoryLv.setOnItemClickListener(onItemClickListener);
-//                mBeginNavi.setTextColor(getResources().getColor(R.color.white));
-//                mBeginNavi.setBackgroundResource(R.drawable.prepare_seach_btn_true);
-//                mBeginNavi.setOnClickListener(this);
 
             }
 
@@ -302,11 +323,24 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
             public void run() {
                 try {
                     onPoiSearched(mLocationPro.getPoiResult(), 1000);
+//                    runMarkerChange(poiOverlay.getMarker(0), 0);
                 }catch (Exception e){
                     e.printStackTrace();
                 }
             }
-        },1000);
+        },100);
+
+        mAmapView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+//                    onPoiSearched(mLocationPro.getPoiResult(), 1000);
+                    runMarkerChange(poiOverlay.getMarker(0), 0);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        },800);
 
     }
     @Override
@@ -335,7 +369,14 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
                 break;
 
             case R.id.ll_exit:
-                mActivity.exitFragment();
+                if (requestCode!=WAY_POI_CODE) {
+                    mActivity.exitFragment();
+                }else {
+                    SearchCollectFragment searchCollectFragment = new SearchCollectFragment();
+                    searchCollectFragment.setMapView(mActivity.getMapView());
+                    searchCollectFragment.setRequestCode(requestCode);
+                    mActivity.startFragmentReplace(searchCollectFragment);
+                }
                 break;
 
             case R.id.btn_start_navi:
@@ -350,12 +391,17 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
         int index = mAdapter.getIndex();
         if (index!=-1) {
             PoiItem item = poiItems.get(index);
-            if (requestCode!=-1) {
-                dateHelper.saveWhereIten(requestCode, item.toString(), item.getCityName(), item.getLatLonPoint().getLatitude(), item.getLatLonPoint().getLongitude());
+            if (requestCode!=WAY_POI_CODE) {
+                if (requestCode != -1) {
+                    dateHelper.saveWhereIten(requestCode, item.toString(), item.getCityName(), item.getLatLonPoint().getLatitude(), item.getLatLonPoint().getLongitude());
+                } else {
+                    dateHelper.saveCollect(item.toString(), item.getCityName(), item.getLatLonPoint().getLatitude(), item.getLatLonPoint().getLongitude());
+                }
+                mActivity.exitFragment();
             }else {
-                dateHelper.saveCollect(item.toString(), item.getCityName(), item.getLatLonPoint().getLatitude(), item.getLatLonPoint().getLongitude());
+                mLocationPro.tryAddWayPoiCalue(new NaviLatLng(item.getLatLonPoint().getLatitude(),item.getLatLonPoint().getLongitude()));
+                mActivity.showDialogwithOther();
             }
-            mActivity.exitFragment();
 //            dateHelper.savePoiItem(item);
 //            Marker marker = poiOverlay.getMarker(posi);
 //            LatLng latLng = marker.getPosition();
@@ -416,23 +462,26 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
                 detailMarker.setIcon(BitmapDescriptorFactory
                         .fromBitmap(BitmapFactory.decodeResource(
                                 getResources(),
-                                com.xiaopeng.amaplib.R.drawable.poi_marker_pressed)));
+                                markers0[index])));
+                detailMarker.setZIndex(2);
 
 //                setPoiItemDisplayContent(mCurrentPoi);
                 if (isFirst) {
-                    CameraUpdate cameraUpdate = CameraUpdateFactory.changeLatLng(new LatLng(mCurrentPoi.getLatLonPoint().getLatitude(), mCurrentPoi.getLatLonPoint().getLongitude()));
-                    mAMap.animateCamera(cameraUpdate);
+//                    CameraUpdate cameraUpdate = CameraUpdateFactory.changeLatLng(new LatLng(mCurrentPoi.getLatLonPoint().getLatitude(), mCurrentPoi.getLatLonPoint().getLongitude()));
+//                    mAMap.animateCamera(cameraUpdate);
                     isFirst = false;
                 }else {
-                    CameraUpdate update = CameraUpdateFactory.newCameraPosition(new CameraPosition(
-                            new LatLng(mCurrentPoi.getLatLonPoint().getLatitude(), mCurrentPoi.getLatLonPoint().getLongitude())
-//                    新的中心点坐标
-                            ,19, //新的缩放级别
-                            0, //俯仰角0°~45°（垂直与地图时为0）
-                            0  ////偏航角 0~360° (正北方为0)
-                    ));
-                    mAMap.animateCamera(update);
+                    moveToMarker(detailMarker);
+//                    CameraUpdate update = CameraUpdateFactory.newCameraPosition(new CameraPosition(
+//                            new LatLng(mCurrentPoi.getLatLonPoint().getLatitude(), mCurrentPoi.getLatLonPoint().getLongitude())
+////                    新的中心点坐标
+//                            ,17, //新的缩放级别
+//                            0, //俯仰角0°~45°（垂直与地图时为0）
+//                            0  ////偏航角 0~360° (正北方为0)
+//                    ));
+//                    mAMap.animateCamera(update);
                 }
+
             } catch (Exception e) {
                 // TODO: handle exception
             }
@@ -440,6 +489,26 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
             whetherToShowDetailInfo(false);
             resetlastmarker();
         }
+    }
+    private void moveToMarker(Marker marker){
+        LogUtils.d(TAG,"moveToMarker start:"+System.currentTimeMillis());
+        Projection projection = mAMap.getProjection();
+        Point point = projection.toScreenLocation(marker.getPosition());
+        LogUtils.d(TAG,"moveToMarker:\nx:"+point.x+"\ny:"+point.y);
+        float poiX = point.x;
+        float poiY = point.y + 280;
+        MarkerOptions options = new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.btn_normal))
+                .anchor(0.5f,0.5f);
+        Marker marker1 = mAMap.addMarker(options);
+        marker1.setPositionByPixels((int)poiX, (int)poiY);
+        LatLng latLng = marker1.getPosition().clone();
+        LogUtils.d(TAG,"moveToMarker:\nlat:"+latLng.latitude+"\nlon:"+latLng.longitude);
+        CameraUpdate update = CameraUpdateFactory.changeLatLng(latLng);
+        mAMap.moveCamera(update);
+        marker1.remove();
+        LogUtils.d(TAG,"moveToMarker: end"+System.currentTimeMillis());
+
+
     }
 
 
@@ -452,6 +521,7 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
                         .fromBitmap(BitmapFactory.decodeResource(
                                 getActivity().getResources(),
                                 markers[index])));
+                mlastMarker.setZIndex(1);
             } else {
                 mlastMarker.setIcon(BitmapDescriptorFactory.fromBitmap(
                         BitmapFactory.decodeResource(getActivity().getResources(), com.xiaopeng.amaplib.R.drawable.marker_other_highlight)));
@@ -500,30 +570,19 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
                             .anchor(0.5f, 0.5f)
                             .icon(BitmapDescriptorFactory
                                     .fromBitmap(BitmapFactory.decodeResource(
-                                            getResources(), com.xiaopeng.amaplib.R.drawable.point4)))
+                                            getResources(), R.drawable.icon_seewatch_1)))
                             .position(new LatLng(lp.getLatitude(), lp.getLongitude())));
 
-                    mAMap.addCircle(new CircleOptions()
-                            .center(new LatLng(lp.getLatitude(),
-                                    lp.getLongitude())).radius(5000)
-                            .strokeColor(Color.BLUE)
-                            .fillColor(Color.argb(50, 1, 1, 1))
-                            .strokeWidth(2));
+//                    mAMap.addCircle(new CircleOptions()
+//                            .center(new LatLng(lp.getLatitude(),
+//                                    lp.getLongitude())).radius(5000)
+//                            .strokeColor(Color.BLUE)
+//                            .fillColor(Color.argb(50, 1, 1, 1))
+//                            .strokeWidth(2));
 
-                    mEdtShowSearch.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            try{
-                                runMarkerChange(poiOverlay.getMarker(0), 0);
-                            }catch (Exception e){
-                                e.printStackTrace();
-                            }
-                        }
-                    },1000);
 
                 } else if (suggestionCities != null
                         && suggestionCities.size() > 0) {
-//                        showSuggestCity(suggestionCities);
                 } else {
 //                    }
                 }
@@ -737,8 +796,20 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
 
                 if (mamap == null)
                     return;
-                LatLngBounds bounds = getLatLngBounds();
-                mamap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
+                if (mPois.size()>1) {
+                    LatLngBounds bounds = getLatLngBounds();
+                    mamap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200));
+                }else {
+                    PoiItem poiItem = mPois.get(0);
+                    CameraUpdate update = CameraUpdateFactory.newCameraPosition(new CameraPosition(
+                            new LatLng(poiItem.getLatLonPoint().getLatitude(),poiItem.getLatLonPoint().getLongitude())
+//                    新的中心点坐标
+                            ,15, //新的缩放级别
+                            0, //俯仰角0°~45°（垂直与地图时为0）
+                            0  ////偏航角 0~360° (正北方为0)
+                    ));
+                    mamap.moveCamera(update);
+                }
             }
         }
 
@@ -748,7 +819,21 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
                 b.include(new LatLng(mPois.get(i).getLatLonPoint().getLatitude(),
                         mPois.get(i).getLatLonPoint().getLongitude()));
             }
-            return b.build();
+            LatLngBounds bounds = b.build();
+            LatLng latLngNot = bounds.northeast;
+            LatLng latLngSory = bounds.southwest;
+            double dis = latLngNot.latitude - latLngSory.latitude;
+
+            LogUtils.d(TAG,"getLatLngBounds:\nnortheast:"+latLngNot+"\nsouthwest:"+latLngSory+"\ndis:"+dis);
+
+            LatLng newLatlng = new LatLng(latLngSory.latitude - dis,latLngSory.longitude);
+            LatLngBounds.Builder c = LatLngBounds.builder();
+            for (int i = 0; i < mPois.size(); i++) {
+                c.include(new LatLng(mPois.get(i).getLatLonPoint().getLatitude(),
+                        mPois.get(i).getLatLonPoint().getLongitude()));
+            }
+            c.include(newLatlng);
+            return c.build();
         }
 
         private MarkerOptions getMarkerOptions(int index) {
@@ -810,6 +895,24 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
             }
         }
     }
+
+
+    private XpNaviCalueListener mNaviCalueListener = new XpNaviCalueListener() {
+        @Override
+        public void onCalculateMultipleRoutesSuccess(int[] ints) {
+            mActivity.exitFragment();
+        }
+
+        @Override
+        public void onCalculateRouteSuccess() {
+            mActivity.exitFragment();
+        }
+
+        @Override
+        public void onCalculateRouteFailure() {
+
+        }
+    };
 
 
 

@@ -95,7 +95,7 @@ public class SearchCollectActivity extends Activity implements View.OnClickListe
     }
 
     private void initView(){
-        mTmapView               = (TextureMapView) findViewById(R.id.base_map);
+//        mTmapView               = (TextureMapView) findViewById(R.id.base_map);
         mFrameLayout0           = (FrameLayout) findViewById(R.id.first_framelayout);
         mFrameLayout1           = (FrameLayout) findViewById(R.id.second_framelayout);
         mEtSearch               = (EditText) findViewById(R.id.prepare_edittext);

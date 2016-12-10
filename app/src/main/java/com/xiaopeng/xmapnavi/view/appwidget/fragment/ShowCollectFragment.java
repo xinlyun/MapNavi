@@ -1,7 +1,6 @@
 package com.xiaopeng.xmapnavi.view.appwidget.fragment;
 
 import android.app.Fragment;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.gc.materialdesign.widgets.ProgressDialog;
 import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.bean.CollectItem;
@@ -55,10 +55,10 @@ public class ShowCollectFragment extends Fragment implements View.OnClickListene
 //        rootView.postDelayed(new Runnable() {
 //            @Override
 //            public void run() {
-        mProgDialog = new ProgressDialog(ShowCollectFragment.this.getActivity());
-        mProgDialog.setTitle("正在搜索数据");
-        mProgDialog.setMessage("正在搜索相关信息....");
-        mProgDialog.setCancelable(true);
+        mProgDialog = new ProgressDialog(ShowCollectFragment.this.getActivity(),"正在搜索相关信息....");
+//        mProgDialog.setTitle("正在搜索数据");
+//        mProgDialog.setMessage("正在搜索相关信息....");
+        mProgDialog.setCancelable(false);
         //----init listener ---//
         mProgDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override

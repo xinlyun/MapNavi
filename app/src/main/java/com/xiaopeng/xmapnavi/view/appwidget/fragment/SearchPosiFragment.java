@@ -1,7 +1,6 @@
 package com.xiaopeng.xmapnavi.view.appwidget.fragment;
 
 import android.app.Fragment;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextWatcher;
 
+import com.gc.materialdesign.widgets.ProgressDialog;
 import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import android.view.LayoutInflater;
@@ -108,14 +108,16 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
         findViewById(R.id.pre_beginnavi).setOnClickListener(this);
         findViewById(R.id.btn_go_collect).setOnClickListener(this);
         findViewById(R.id.btn_search).setOnClickListener(this);
+        findViewById(R.id.inside_ll).setOnClickListener(this);
+        findViewById(R.id.outside_ll).setOnClickListener(this);
         mEtvSearch = (EditText) findViewById(R.id.prepare_edittext);
         mEtvSearch.addTextChangedListener(this);
 
-        mProgDialog = new ProgressDialog(this.getActivity());
-        mProgDialog.setTitle("正在搜索数据");
-        mProgDialog.setMessage("正在搜索相关信息....");
-        mProgDialog.setCancelable(true);
-
+        mProgDialog = new ProgressDialog(this.getActivity(),"正在搜索数据");
+//        mProgDialog.setTitle("正在搜索数据");
+//        mProgDialog.setMessage("正在搜索相关信息....");
+        mProgDialog.setCancelable(false);
+        mProgDialog.getWindow().setDimAmount(0.7f);
 
         //----init listener ---//
         mProgDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -131,9 +133,23 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
     @Override
     public void onResume() {
         super.onResume();
+
         mLocationProvider.addSearchListner(this);
         mEtvSearch.requestFocus();
         BugHunter.countTimeEnd(getActivity().getApplication(),BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
+        rootView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                showInputT();
+            }
+        },800);
+        rootView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mDateHelper.getHisItem(12);
+            }
+        },400);
+
     }
 
     /**
@@ -143,21 +159,22 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
     public void onPause() {
         super.onPause();
         mLocationProvider.removeSearchListner(this);
+        showHide();
     }
 
     @Override
     public void onStart() {
         super.onStart();
         mLocationProvider.addNaviCalueListner(this);
-        mDateHelper.getHisItem(12);
-        showInputT();
+
+
     }
 
     @Override
     public void onStop() {
         super.onStop();
         mLocationProvider.removeNaviCalueListner(this);
-        showHide();
+
     }
 
     @Override
@@ -178,12 +195,17 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
                 break;
 
             case R.id.btn_search:
+                showHide();
                 if (mEtvSearch.getText().length()<3){
                     Toast.makeText(getActivity(),"请输入正确内容",Toast.LENGTH_SHORT).show();
                 }else {
                     String msg = mEtvSearch.getText().toString();
                     readyToSearch(msg);
                 }
+                break;
+
+            case R.id.outside_ll:
+                ((BaseFuncActivityInteface)getActivity()).exitFragment();
                 break;
 
             default:
@@ -197,12 +219,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
         }else {
             mProgDialog.show();
             mLocationProvider.trySearchPosi(str);
-            mEtvSearch.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mProgDialog.dismiss();
-                }
-            },6 * 1000);
+
         }
     }
 
@@ -254,7 +271,16 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
 
     @Override
     public void searchSucceful() {
-        mProgDialog.dismiss();
+        mEtvSearch.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    mProgDialog.dismiss();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        },2000);
         mEtvSearch.setText("");
         BaseFuncActivityInteface activity = (BaseFuncActivityInteface) getActivity();
         tryToShowPosi();
@@ -279,8 +305,10 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
 
 
     private AdapterView.OnItemClickListener mItemHisClickListner = new AdapterView.OnItemClickListener() {
+
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            SearchPosiFragment.this.showHide();
             if (i < mHisItems.size()) {
                 HisItem item = mHisItems.get(i);
                 mDateHelper.updateHisItem(item);
@@ -292,9 +320,10 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
                         break;
 
                     case DateHelper.TYPE_POSI:
-                        String name1 = item.posiName;
-                        mEtvSearch.setText(name1);
-                        readyToSearch(name1);
+//                        String name1 = item.posiName;
+//                        mEtvSearch.setText(name1);
+//                        readyToSearch(name1);
+                        SearchPosiFragment.this.onClickRightItem(i);
                         break;
 
                     case DateHelper.TYPE_WAY:
@@ -316,6 +345,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
     private AdapterView.OnItemClickListener mItemTipClickListner = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            SearchPosiFragment.this.showHide();
             Tip tip = mTips.get(i);
             String name = tip.getName();
             mDateHelper.savePosiStr(name);
@@ -327,7 +357,16 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
 
     @Override
     public void onCalculateMultipleRoutesSuccess(int[] ints) {
-        mProgDialog.dismiss();
+        mEtvSearch.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    mProgDialog.dismiss();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        },2000);
         mEtvSearch.setText("");
 //        BaseFuncActivityInteface activity = (BaseFuncActivityInteface) getActivity();
 //        activity.haveCalueNaviSucceful(ints,poiLat,poiLon);
@@ -336,12 +375,30 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
 
     @Override
     public void onCalculateRouteSuccess() {
-        mProgDialog.dismiss();
+        mEtvSearch.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    mProgDialog.dismiss();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        },2000);
     }
 
     @Override
     public void onCalculateRouteFailure() {
-        mProgDialog.dismiss();
+        mEtvSearch.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    mProgDialog.dismiss();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        },1000);
     }
 
     @Override
@@ -359,12 +416,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
             ((MainActivity)getActivity()).setPosi(poiLat,poiLon);
             mLocationProvider.calueRunWay(startPoi,wayPoi,endPoi);
             mProgDialog.show();
-            mLvShowMsg.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mProgDialog.dismiss();
-                }
-            },6000);
+
         }
     }
 
@@ -390,17 +442,25 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
 
 
     private void showInputT(){
-        InputMethodManager imm = (InputMethodManager) getActivity()
-                .getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(mEtvSearch, InputMethodManager.RESULT_SHOWN);
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,
-                InputMethodManager.HIDE_IMPLICIT_ONLY);
+        try {
+            InputMethodManager imm = (InputMethodManager) getActivity()
+                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(mEtvSearch, InputMethodManager.RESULT_SHOWN);
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,
+                    InputMethodManager.HIDE_IMPLICIT_ONLY);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
     private void showHide(){
-        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        //隐藏软键盘
-        imm.hideSoftInputFromWindow(mEtvSearch.getWindowToken(), 0);
-        //显示软键盘
+        try {
+            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            //隐藏软键盘
+            imm.hideSoftInputFromWindow(mEtvSearch.getWindowToken(), 0);
+            //显示软键盘
 //        imm.showSoftInputFromInputMethod(mEtSearch.getWindowToken(), 0);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

@@ -4,30 +4,34 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#55000000"
-    android:padding="32dp" >
+    android:padding="32px" >
 
     <RelativeLayout
+        android:layout_marginLeft="200px"
+        android:layout_marginRight="200px"
         android:id="@+id/contentDialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:background="@drawable/dialog_background"
-        android:padding="24dp" >
+        android:padding="24px" >
 
         <com.gc.materialdesign.views.ProgressBarCircularIndeterminate
             android:id="@+id/progressBarCircularIndetermininate"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="32px"
+            android:layout_height="32px"
             android:layout_centerVertical="true"
             android:background="#1E88E5" />
 
         <TextView
             android:id="@+id/title"
-            android:layout_width="wrap_content"
+            android:paddingRight="32px"
+            android:gravity="center"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/progressBarCircularIndetermininate"
-            android:layout_marginLeft="8dp"
+            android:layout_marginLeft="8px"
             android:text="Title"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="#000" />

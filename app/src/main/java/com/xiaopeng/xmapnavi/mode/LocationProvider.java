@@ -1,17 +1,35 @@
 package com.xiaopeng.xmapnavi.mode;
 
+import android.app.Activity;
+import android.app.Application;
+import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
+import com.aispeech.aios.common.bean.MapInfo;
+import com.aispeech.aios.common.bean.PoiBean;
+import com.aispeech.aios.common.manage.AIOSManager;
+import com.aispeech.aios.common.property.MapProperty;
+import com.aispeech.aios.sdk.AIOSForCarSDK;
+import com.aispeech.aios.sdk.listener.AIOSMapListener;
+import com.aispeech.aios.sdk.manager.AIOSMapManager;
 import com.amap.api.maps.offlinemap.OfflineMapManager;
+import com.amap.api.navi.TBTEngine;
 import com.amap.api.navi.enums.BroadcastMode;
 import com.xiaopeng.lib.utils.utils.LogUtils;
+
+import android.support.annotation.NonNull;
 import android.util.SparseArray;
 import android.widget.Toast;
 
@@ -47,6 +65,7 @@ import com.xiaopeng.amaplib.util.TTSController;
 import com.xiaopeng.xmapnavi.bean.LocationSaver;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
 import com.xiaopeng.xmapnavi.presenter.IRoutePower;
+import com.xiaopeng.xmapnavi.presenter.callback.XpAiosMapListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpCollectListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
@@ -54,6 +73,7 @@ import com.xiaopeng.xmapnavi.presenter.callback.XpNaviInfoListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpRouteListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSensorListener;
+import com.xiaopeng.xmapnavi.view.appwidget.activity.MainActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,6 +106,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private static List<XpNaviInfoListener> mNaviInfoListners;
     private static List<XpSensorListener> mSensorListners;
     private static List<XpCollectListener> mCollectListeners;
+    private XpAiosMapListener mAiosListener;
     private OfflineMapManager.OfflineMapDownloadListener mMapDownListener;
     private OfflineMapManager mDownMapManager;
     private PoiSearch mPoiSearch;
@@ -110,6 +131,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     //---------------------------//
     private int mBroadCastMode = BroadcastMode.CONCISE;
     private List<NaviLatLng> saveEndList = new ArrayList<>();
+    private int AIM_STATE = AimLessMode.CAMERA_AND_SPECIALROAD_DETECTED;
     public static void init(Context context) {
         mContext = context;
         mLp      = new LocationProvider(context);
@@ -202,10 +224,28 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         mMapDownListener = listner;
     }
 
+    @Override
+    public void setAiosListener(XpAiosMapListener xpAiosMapListener) {
+        mAiosListener = xpAiosMapListener;
+    }
+
 
     @Override
     public void trySearchPosi(String str) {
         beginSearchAddr(str);
+    }
+
+    @Override
+    public boolean tryAddWayPoiCalue(NaviLatLng wayPoi) {
+        if (saveEndList.size()==0 || mAmapLocation==null)return false;
+        List<NaviLatLng> startPois = new ArrayList<>();
+        List<NaviLatLng> wayPois = new ArrayList<>();
+        List<NaviLatLng> endPois = new ArrayList<>();
+        startPois.add(new NaviLatLng(mAmapLocation.getLatitude(),mAmapLocation.getLongitude()));
+        wayPois.add(wayPoi);
+        endPois.addAll(saveEndList);
+        calueRunWay(startPois,wayPois,endPois);
+        return true;
     }
 
     @Override
@@ -258,6 +298,9 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         return true;
     }
 
+
+
+
     @Override
     public AMapNaviPath getNaviPath() {
         AMapNaviPath path = aMapNavi.getNaviPath();
@@ -289,8 +332,12 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         mNaviInfoListners   = new ArrayList<>();
         mSensorListners     = new ArrayList<>();
         mCollectListeners   = new ArrayList<>();
+
         mSendNaviBroad = new SendNaviBroad();
         mSendNaviBroad  .initBroad(context);
+        SharedPreferences sharedPreferences = context.getSharedPreferences("myown",Context.MODE_PRIVATE);
+        AIM_STATE = sharedPreferences.getInt("aimState",AimLessMode.CAMERA_AND_SPECIALROAD_DETECTED);
+
         if (mLocationClient == null) {
             mLocationClient = new AMapLocationClient(context.getApplicationContext());
             mLocationOption = getDefaultOption();
@@ -311,7 +358,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         }
 
         aMapNavi = AMapNavi.getInstance(context);
-        aMapNavi.startAimlessMode(AimLessMode.CAMERA_AND_SPECIALROAD_DETECTED);
+        aMapNavi.startAimlessMode(AIM_STATE);
 
         ttsManager = TTSController.getInstance(context.getApplicationContext());
         ttsManager.init();
@@ -319,14 +366,59 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         aMapNavi.addAMapNaviListener(this);
         aMapNavi.addAMapNaviListener(ttsManager);
 
+        mAmapLocation = LocationSaver.getSaveLocation();
         updateLoction.sendEmptyMessageDelayed(REQUEST_INIT,1000);
 
         mRoutePower = new RoutePower();
         mRoutePower .setXpRouteListner(this);
 
-       manager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        manager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         mDownMapManager = new OfflineMapManager(context,this);
+
+
+        initAiosListener();
+        initBroadCast();
     }
+
+    private void initAiosListener(){
+        MapInfo xpMap = new MapInfo("小鹏地图","com.xiaopeng.xmapnavi");
+        xpMap.setCancelNaviSupported(true);
+        xpMap.setOverviewSupported(true);
+        xpMap.setZoomSupported(true);
+//        xpMap.setSupportedRoutePlanningStrategy(MapProperty.SupportedRoutePlanningStrategy.DRIVING_AVOID_CONGESTION ,
+//                MapProperty.SupportedRoutePlanningStrategy.DRIVING_SAVE_MONEY);
+        AIOSMapManager.getInstance().setLocalMapInfo(xpMap,true);
+        AIOSMapManager.getInstance().registerMapListener(mapAiosListener);
+    }
+
+    private void initBroadCast(){
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("AUTONAVI_STANDARD_BROADCAST_RECV");
+        mContext.registerReceiver(naviStateReceiver,intentFilter);
+    }
+
+    BroadcastReceiver naviStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            LogUtils.d(TAG,"naviStateReceiver onReceive:");
+            int keyt = intent.getIntExtra("KEY_TYPE", 10000);
+            if (keyt == 10007){
+                double lat = intent.getDoubleExtra("EXTRA_DLAT",0d);
+                double lon = intent.getDoubleExtra("EXTRA_DLON",0d);
+                if (lat ==0 || lon ==0)return;
+                Bundle bundle = new Bundle();
+                bundle.putDouble("lat",lat);
+                bundle.putDouble("lon",lon);
+                Message msg = deleyToStartNavi.obtainMessage();
+                msg.what = 2;
+                msg.obj = bundle;
+                deleyToStartNavi.sendMessage(msg);
+            }
+        }
+    };
+
+
+
 
     Handler updateLoction = new Handler(){
         @Override
@@ -643,7 +735,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void stopNavi() {
         aMapNavi.stopNavi();
-        aMapNavi.startAimlessMode(AimLessMode.CAMERA_AND_SPECIALROAD_DETECTED);
+        aMapNavi.startAimlessMode(AIM_STATE);
         mSendNaviBroad.stopNavi();
     }
 
@@ -706,10 +798,13 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         mRoutePower.startRoute();
     }
 
+
+
+
     @Override
     public void stopRouteNavi(){
         aMapNavi.addAMapNaviListener(ttsManager);
-        aMapNavi.startAimlessMode(AimLessMode.CAMERA_AND_SPECIALROAD_DETECTED);
+        aMapNavi.startAimlessMode(AIM_STATE);
 
         mRoutePower.stopRoute();
     }
@@ -799,19 +894,125 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         }
     }
 
+    @Override
+    public void setAimState(int state) {
+        SharedPreferences sp = mContext.getSharedPreferences("myown",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putInt("aimState",state);
+        editor.commit();
+        AIM_STATE = state;
+        aMapNavi.stopAimlessMode();
+        aMapNavi.startAimlessMode(AIM_STATE);
+    }
+
+    @Override
+    public int getAimState() {
+        return AIM_STATE;
+    }
+
 
     @Override
     public void nearBy(int pathId, int stepNum, int poiNum) {
-        aMapNavi.stopNavi();
-        aMapNavi.selectRouteId(pathId);
-        aMapNavi.startNavi(AMapNavi.GPSNaviMode);
+        //TODO
+//        aMapNavi.stopNavi();
+//        aMapNavi.selectRouteId(pathId);
+//        aMapNavi.startNavi(AMapNavi.GPSNaviMode);
         for (XpRouteListener listener:mRouteListeners){
             listener.nearBy(pathId,stepNum,poiNum);
         }
     }
 
+    Handler deleyToStartNavi = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 0:
+                    PoiBean poiBean = (PoiBean) msg.obj;
+
+                    if (mAiosListener != null) {
+                        mAiosListener.onStartNavi("", poiBean);
+                    }
+                    break;
 
 
+
+                case 1:
+                    LogUtils.d(TAG,"Handler onStartActivity");
+                    LogUtils.d(TAG,"is Service:"+(mContext instanceof Service));
+                    LogUtils.d(TAG,"is Activity:"+(mContext instanceof Activity));
+                    LogUtils.d(TAG,"is Application:"+(mContext instanceof Application));
+                    Intent dialogIntent = new Intent(mContext, MainActivity.class);
+//                    Intent dialogIntent = new Intent();
+//                    dialogIntent.setClassName("com.xiaopeng.xmapnavi","com.xiaopeng.xmapnavi.view.appwidget.activity.MainActivity");
+//                    if (!(mContext instanceof MainActivity)) {
+                        dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                    }
+                    mContext.getApplicationContext().startActivity(dialogIntent);
+                    break;
+
+                case 2:
+                    Bundle bundle = (Bundle) msg.obj;
+                    double lat = bundle.getDouble("lat",0);
+                    double lon = bundle.getDouble("lon",0);
+                    if (mAiosListener != null) {
+                        mAiosListener.onStartNavi(lat,lon);
+                    }
+                    break;
+            }
+        }
+    };
+
+
+    private AIOSMapListener mapAiosListener = new AIOSMapListener() {
+        @Override
+        public void onStartNavi(@NonNull String s, @NonNull PoiBean poiBean) {
+            LogUtils.d(TAG,"onStartNavi");
+            deleyToStartNavi.sendEmptyMessage(1);
+
+            Message message = deleyToStartNavi.obtainMessage();
+            message.obj = poiBean;
+            deleyToStartNavi.sendMessageDelayed(message,3000);
+
+        }
+
+        @Override
+        public void onCancelNavi(@NonNull String s) {
+            if (mAiosListener!=null){
+                mAiosListener.onCancelNavi(s);
+            }
+        }
+
+        @Override
+        public void onOverview(@NonNull String s) {
+            if (mAiosListener!=null){
+                mAiosListener.onOverview(s);
+            }
+        }
+
+        @Override
+        public void onRoutePlanning(@NonNull String s, @NonNull String s1) {
+            if (mAiosListener!=null){
+                mAiosListener.onRoutePlanning(s,s1);
+            }
+        }
+
+        @Override
+        public void onZoom(@NonNull String s, int i) {
+            if (mAiosListener!=null){
+                mAiosListener.onZoom(s,i);
+            }
+        }
+
+        @Override
+        public void onLocate(@NonNull String s) {
+            if (mAiosListener!=null){
+                mAiosListener.onLocate(s);
+            }
+
+        }
+
+    };
 
 
 

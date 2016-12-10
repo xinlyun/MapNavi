@@ -161,8 +161,8 @@
 
                 android:textSize="45px"
                 android:textColor="@color/black"
-                android:layout_width="94px"
-                android:layout_height="94px" />
+                android:layout_width="88px"
+                android:layout_height="88px" />
             <ImageView
                 android:background="@color/gray_btn_bg_color"
                 android:layout_marginLeft="12px"
@@ -174,8 +174,8 @@
                 android:textSize="45px"
                 android:background="@drawable/icon_zoom_small"
                 android:id="@+id/btn_zoom_jian"
-                android:layout_width="94px"
-                android:layout_height="94px" />
+                android:layout_width="88px"
+                android:layout_height="88px" />
         </LinearLayout>
     </FrameLayout>
 
@@ -199,7 +199,7 @@
             android:layout_height="match_parent">
             <LinearLayout
                 android:id="@+id/btn_pianhao"
-                android:background="@drawable/transparent"
+                android:background="@drawable/text_trans_bg"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="106px">
@@ -209,7 +209,6 @@
                     android:layout_height="72px" />
                 <TextView
 
-                    android:background="@drawable/text_trans_bg"
                     android:textSize="22px"
                     android:gravity="center_horizontal"
                     android:textColor="@color/first_text_color"
@@ -225,8 +224,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px" />
             <LinearLayout
-
-                android:background="@drawable/transparent"
+                android:id="@+id/btn_add_way_poi"
+                android:background="@drawable/text_trans_bg"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="106px">
@@ -235,7 +234,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="72px" />
                 <TextView
-                    android:background="@drawable/text_trans_bg"
                     android:textSize="22px"
                     android:gravity="center_horizontal"
                     android:textColor="@color/first_text_color"
@@ -252,7 +250,7 @@
                 android:layout_height="1px" />
             <LinearLayout
                 android:id="@+id/btn_lukuang"
-                android:background="@drawable/transparent"
+                android:background="@drawable/text_trans_bg"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
@@ -262,7 +260,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="72px" />
                 <TextView
-                    android:background="@drawable/text_trans_bg"
                     android:textSize="22px"
                     android:gravity="center_horizontal"
                     android:textColor="@color/first_text_color"
@@ -273,4 +270,25 @@
 
         </LinearLayout>
     </FrameLayout>
+
+    <ImageView
+        android:layout_marginRight="128px"
+        android:layout_marginBottom="330px"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/img_bilici"
+        android:layout_width="94px"
+        android:layout_height="14px" />
+    <TextView
+        android:id="@+id/tx_bilici"
+        android:gravity="center|bottom"
+        android:textSize="24px"
+        android:text="5公里"
+        android:textColor="@color/first_text_color"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="128px"
+        android:layout_marginBottom="340px"
+        android:layout_width="94px"
+        android:layout_height="wrap_content" />
 </RelativeLayout>

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools=" http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -18,7 +20,7 @@
         android:background="@drawable/shadowss"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_marginBottom="@dimen/bottom_first"
+        android:layout_marginBottom="16px"
         android:layout_width="268px"
         android:layout_height="268px">
         <com.amap.api.maps.TextureMapView
@@ -48,103 +50,119 @@
         android:background="@drawable/shadowss"
         android:layout_width="288px"
         android:layout_height="378px">
-        <LinearLayout
+        <RelativeLayout
             android:background="@color/black_p80"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_alignParentBottom="true"
+                android:layout_width="match_parent"
+                android:layout_height="290px">
+                <com.amap.api.navi.view.NextTurnTipView
+                    android:id="@+id/nttv_navi"
+                    android:layout_width="match_parent"
+                    android:layout_height="140px"
+
+                    android:layout_centerHorizontal="true"
+                    >
+
+                </com.amap.api.navi.view.NextTurnTipView>
+                <LinearLayout
+                    android:layout_marginTop="12px"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+
+                        android:layout_marginLeft="24px"
+                        android:gravity="center_vertical|bottom"
+                        android:text="260"
+                        android:id="@+id/tx_length"
+                        android:textSize="33px"
+                        android:textColor="@color/white"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
+                    <TextView
+
+                        android:id="@+id/tx_danwei"
+                        android:textSize="24px"
+                        android:textColor="@color/white"
+                        android:layout_marginLeft="5px"
+                        android:text="米后"
+                        android:gravity="left|bottom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
+                    <TextView
+
+                        android:textSize="24px"
+                        android:textColor="@color/gray_btn_bg_pressed_color"
+                        android:layout_marginLeft="5px"
+                        android:text="@string/entra"
+                        android:gravity="left|bottom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+                <TextView
+
+                    android:layout_marginTop="12px"
+                    android:id="@+id/tx_to_road"
+                    android:textSize="24px"
+                    android:textColor="@color/white"
+                    android:text="无名道路"
+                    android:layout_marginLeft="24px"
+                    android:gravity="center_vertical|left"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <LinearLayout
+                    android:layout_marginTop="18px"
+                    android:orientation="horizontal"
+                    android:background="@color/text_black"
+                    android:layout_width="match_parent"
+                    android:layout_height="40px">
+                    <TextView
+
+                        android:text="@string/shengyu"
+                        android:textColor="@color/gray_btn_bg_pressed_color"
+                        android:textSize="22px"
+                        android:layout_marginLeft="24px"
+                        android:gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
+                    <TextView
+
+                        android:id="@+id/tx_time_need"
+                        android:text="30分钟"
+                        android:textColor="@color/white"
+                        android:textSize="20px"
+                        android:layout_marginLeft="10px"
+                        android:gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
+                    <TextView
+
+                        android:id="@+id/tx_length_need"
+                        android:text="18.4公里"
+                        android:textColor="@color/white"
+                        android:textSize="20px"
+                        android:layout_marginLeft="10px"
+                        android:gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+            </LinearLayout>
             <TextView
+                android:layout_marginTop="-10px"
                 android:id="@+id/btn_exit"
                 android:gravity="center"
                 android:textSize="45px"
                 android:background="@drawable/icon_x"
                 android:textColor="@color/white"
                 android:layout_width="88px"
-                android:layout_height="88px" />
-            <com.amap.api.navi.view.NextTurnTipView
-                android:id="@+id/nttv_navi"
-                android:layout_width="match_parent"
-                android:layout_height="138px"
-
-                android:layout_centerHorizontal="true"
-                >
-
-            </com.amap.api.navi.view.NextTurnTipView>
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_marginLeft="24px"
-                    android:gravity="center_vertical|bottom"
-                    android:text="260"
-                    android:id="@+id/tx_length"
-                    android:textSize="33px"
-                    android:textColor="@color/white"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent" />
-                <TextView
-                    android:id="@+id/tx_danwei"
-                    android:textSize="24px"
-                    android:textColor="@color/white"
-                    android:layout_marginLeft="5px"
-                    android:text="米后"
-                    android:gravity="left|bottom"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent" />
-                <TextView
-                    android:textSize="24px"
-                    android:textColor="@color/gray_btn_bg_pressed_color"
-                    android:layout_marginLeft="5px"
-                    android:text="@string/entra"
-                    android:gravity="left|bottom"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent" />
-            </LinearLayout>
-            <TextView
-                android:layout_marginTop="12px"
-                android:id="@+id/tx_to_road"
-                android:textSize="24px"
-                android:textColor="@color/white"
-                android:text="无名道路"
-                android:layout_marginLeft="24px"
-                android:gravity="center_vertical|left"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-            <LinearLayout
-                android:layout_marginTop="18px"
-                android:orientation="horizontal"
-                android:background="@color/text_black"
-                android:layout_width="match_parent"
-                android:layout_height="40px">
-                <TextView
-                    android:text="@string/shengyu"
-                    android:textColor="@color/gray_btn_bg_pressed_color"
-                    android:textSize="22px"
-                    android:layout_marginLeft="24px"
-                    android:gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent" />
-                <TextView
-                    android:id="@+id/tx_time_need"
-                    android:text="30分钟"
-                    android:textColor="@color/white"
-                    android:textSize="20px"
-                    android:layout_marginLeft="10px"
-                    android:gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent" />
-                <TextView
-                    android:id="@+id/tx_length_need"
-                    android:text="18.4公里"
-                    android:textColor="@color/white"
-                    android:textSize="20px"
-                    android:layout_marginLeft="10px"
-                    android:gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent" />
-            </LinearLayout>
-        </LinearLayout>
+                android:layout_height="108px" />
+        </RelativeLayout>
 
     </FrameLayout>
     <com.xiaopeng.xmapnavi.view.appwidget.selfview.CircleImageView
@@ -157,13 +175,20 @@
 
         />
 
-    <com.amap.api.navi.view.TrafficBarView
+    <com.xiaopeng.xmapnavi.view.appwidget.selfview.MTrafficBarView
         android:id="@+id/tbv_show"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="20px"
+        android:layout_marginRight="-200px"
         android:layout_marginTop="20px"
         android:layout_width="45px"
         android:layout_height="500px" />
+    <com.xiaopeng.xmapnavi.view.appwidget.selfview.MTrafficBarView2
+        android:id="@+id/tbv_show_1"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20px"
+        android:layout_marginTop="20px"
+        android:layout_width="58px"
+        android:layout_height="691px" />
 
 
     <RelativeLayout
@@ -193,6 +218,7 @@
                 android:layout_height="match_parent">
 
                 <TextView
+                     
                     android:id="@+id/btn_goto_again"
                     android:textColor="@color/text_bluse"
                     android:textSize="30px"
@@ -215,6 +241,7 @@
                         android:layout_width="88px"
                         android:layout_height="70px" />
                     <TextView
+                         
                         android:gravity="center_horizontal|top"
                         android:textSize="24px"
                         android:text="@string/setting"
@@ -227,6 +254,8 @@
 
         </FrameLayout>
         <RelativeLayout
+            android:layout_alignParentTop="true"
+            android:id="@+id/rv_be_change"
             android:layout_marginRight="3px"
             android:layout_alignParentRight="true"
             android:layout_width="500px"
@@ -249,7 +278,7 @@
                     android:layout_height="match_parent">
 
                     <TextView
-
+                         
                         android:background="@drawable/icon_zoom_plus"
                         android:gravity="center"
                         android:textSize="40px"
@@ -265,6 +294,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="1px" />
                     <TextView
+                         
                         android:background="@drawable/icon_zoom_small"
                         android:gravity="center"
                         android:textSize="40px"
@@ -303,6 +333,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="72px" />
                         <TextView
+                             
                             android:textColor="@color/first_text_color"
 
                             android:text="@string/recalue"
@@ -333,6 +364,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="72px" />
                         <TextView
+                             
                             android:id="@+id/btn_traffi_state"
                             android:text="@string/lukuagg"
                             android:gravity="center"
@@ -383,6 +415,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="72px" />
                     <TextView
+                         
                         android:text="@string/radio_navi"
                         android:textSize="22px"
                         android:textColor="@color/first_text_color"
@@ -393,7 +426,26 @@
 
 
             </FrameLayout>
-
+            <ImageView
+                android:layout_marginRight="128px"
+                android:layout_marginBottom="30px"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:src="@drawable/img_bilici"
+                android:layout_width="94px"
+                android:layout_height="14px" />
+            <TextView
+                android:id="@+id/tx_bilici_1"
+                android:gravity="center|bottom"
+                android:textSize="24px"
+                android:text="5公里"
+                android:textColor="@color/first_text_color"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="128px"
+                android:layout_marginBottom="40px"
+                android:layout_width="94px"
+                android:layout_height="wrap_content" />
         </RelativeLayout>
         <FrameLayout
             android:visibility="gone"
@@ -409,6 +461,34 @@
 
             </RelativeLayout>
         </FrameLayout>
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/ll_bilici"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_width="300px"
+        android:layout_marginRight="162px"
+        android:layout_height="300px">
+        <ImageView
+            android:layout_marginRight="128px"
+            android:layout_marginBottom="30px"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/img_bilici"
+            android:layout_width="94px"
+            android:layout_height="14px" />
+        <TextView
+            android:id="@+id/tx_bilici"
+            android:gravity="center|bottom"
+            android:textSize="24px"
+            android:text="5公里"
+            android:textColor="@color/first_text_color"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="128px"
+            android:layout_marginBottom="40px"
+            android:layout_width="94px"
+            android:layout_height="wrap_content" />
     </RelativeLayout>
 
 </RelativeLayout>

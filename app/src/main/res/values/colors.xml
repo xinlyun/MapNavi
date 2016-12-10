@@ -42,6 +42,9 @@
     <color name="mygrey">#888687</color>
     <color name="naviblue">#009cff</color>
 
+    <color name="gray_btn_bg_color">#cacaca</color>
+    <color name="gray_btn_bg_pressed_color">#cacaca</color>
+
     <color name="setting_text_true">#000000</color>
     <color name="setting_text_false">#888687</color>
     <color name="setting_text_bg_true">#888687</color>

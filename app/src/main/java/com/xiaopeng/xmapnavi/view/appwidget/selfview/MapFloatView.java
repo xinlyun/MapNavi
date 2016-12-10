@@ -31,7 +31,10 @@ public class MapFloatView extends View{
     Projection projection;
     Point mPoint0,mPoint1;
     int mStyle0,mStyle1;
-    Paint mPaint,mPaint2;
+    Paint mPaint,mPaint2,mTxPaint;
+
+    private String msg0,msg1;
+
     public MapFloatView(Context context) {
         super(context);
         init();
@@ -46,14 +49,33 @@ public class MapFloatView extends View{
         mPaint.setColor(getResources().getColor(R.color.white));
         mPaint.setStrokeWidth(2);
         mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setAntiAlias(true);
 
         mPaint2 = new Paint();
-        mPaint2.setColor(getResources().getColor(R.color.blue));
+        mPaint2.setColor(getResources().getColor(R.color.text_blue));
         mPaint2.setStrokeWidth(2);
         mPaint2.setStyle(Paint.Style.STROKE);
+        mPaint2.setAntiAlias(true);
+
+        mTxPaint = new Paint();
+        mTxPaint.setColor(getResources().getColor(R.color.text_blue));
+        mTxPaint.setStrokeWidth(2);
+        mTxPaint.setTextSize(30);
+        mTxPaint.setTextAlign(Paint.Align.CENTER);
+        mTxPaint.setAntiAlias(true);
 
 
     }
+
+    public void setFirstString(String msg){
+        msg0 = msg;
+        invalidate();
+    }
+    public void setSecondString(String msg){
+        msg1 = msg;
+        invalidate();
+    }
+
     public void initAmap(AMap aMap){
         this.projection = aMap.getProjection();
     }
@@ -90,29 +112,41 @@ public class MapFloatView extends View{
                 case LINE_TYPE_TOP:
                     rectF = new RectF();
                     rectF.set(mPoint0.x-40,mPoint0.y-115,mPoint0.x+40,mPoint0.y-85);
-                    canvas.drawRect(mPoint0.x-40,mPoint0.y-115,mPoint0.x+40,mPoint0.y-85,mPaint);
-                    canvas.drawRect(mPoint0.x-40,mPoint0.y-115,mPoint0.x+40,mPoint0.y-85,mPaint2);
+                    canvas.drawRect(mPoint0.x-84,mPoint0.y-134,mPoint0.x+84,mPoint0.y-66,mPaint);
+                    canvas.drawRect(mPoint0.x-84,mPoint0.y-134,mPoint0.x+84,mPoint0.y-66,mPaint2);
+                    if (msg0!=null) {
+                        canvas.drawText(msg0,mPoint0.x,mPoint0.y - 100+10,mTxPaint);
+                    }
                     break;
 
                 case LINE_TYPE_BOTTOM:
                     rectF = new RectF();
                     rectF.set(mPoint0.x-40,mPoint0.y+85,mPoint0.x+40,mPoint0.y+1155);
-                    canvas.drawRect(mPoint0.x-40,mPoint0.y+85,mPoint0.x+40,mPoint0.y+115,mPaint);
-                    canvas.drawRect(mPoint0.x-40,mPoint0.y+85,mPoint0.x+40,mPoint0.y+115,mPaint2);
+                    canvas.drawRect(mPoint0.x-84,mPoint0.y+66,mPoint0.x+84,mPoint0.y+134,mPaint);
+                    canvas.drawRect(mPoint0.x-84,mPoint0.y+66,mPoint0.x+84,mPoint0.y+134,mPaint2);
+                    if (msg0!=null) {
+                        canvas.drawText(msg0,mPoint0.x,mPoint0.y + 100+10,mTxPaint);
+                    }
                     break;
 
                 case LINE_TYPE_RIGHT:
                     rectF = new RectF();
                     rectF.set(mPoint0.x+60,mPoint0.y-15,mPoint0.x+140,mPoint0.y+15);
-                    canvas.drawRect(mPoint0.x+60,mPoint0.y-15,mPoint0.x+140,mPoint0.y+15,mPaint);
-                    canvas.drawRect(mPoint0.x+60,mPoint0.y-15,mPoint0.x+140,mPoint0.y+15,mPaint2);
+                    canvas.drawRect(mPoint0.x+16,mPoint0.y-34,mPoint0.x+184,mPoint0.y+34,mPaint);
+                    canvas.drawRect(mPoint0.x+16,mPoint0.y-34,mPoint0.x+184,mPoint0.y+34,mPaint2);
+                    if (msg0!=null) {
+                        canvas.drawText(msg0,mPoint0.x + 100,mPoint0.y+10,mTxPaint);
+                    }
                     break;
 
                 case LINE_TYPE_LEFT:
                     rectF = new RectF();
                     rectF.set(mPoint0.x-140,mPoint0.y-15,mPoint0.x-60,mPoint0.y+15);
-                    canvas.drawRect(mPoint0.x-140,mPoint0.y-15,mPoint0.x-60,mPoint0.y+15,mPaint);
-                    canvas.drawRect(mPoint0.x-140,mPoint0.y-15,mPoint0.x-60,mPoint0.y+15,mPaint2);
+                    canvas.drawRect(mPoint0.x-184,mPoint0.y-34,mPoint0.x-16,mPoint0.y+34,mPaint);
+                    canvas.drawRect(mPoint0.x-184,mPoint0.y-34,mPoint0.x-16,mPoint0.y+34,mPaint2);
+                    if (msg0!=null) {
+                        canvas.drawText(msg0,mPoint0.x - 100,mPoint0.y+10,mTxPaint);
+                    }
                     break;
 
                 default:
@@ -126,29 +160,41 @@ public class MapFloatView extends View{
                 case LINE_TYPE_TOP:
                     rectF = new RectF();
                     rectF.set(mPoint1.x-40,mPoint1.y-115,mPoint1.x+40,mPoint1.y-85);
-                    canvas.drawRect(mPoint1.x-40,mPoint1.y-115,mPoint1.x+40,mPoint1.y-85,mPaint);
-                    canvas.drawRect(mPoint1.x-40,mPoint1.y-115,mPoint1.x+40,mPoint1.y-85,mPaint2);
+                    canvas.drawRect(mPoint1.x-84,mPoint1.y-134,mPoint1.x+84,mPoint1.y-66,mPaint);
+                    canvas.drawRect(mPoint1.x-84,mPoint1.y-134,mPoint1.x+84,mPoint1.y-66,mPaint2);
+                    if (msg1!=null) {
+                        canvas.drawText(msg1,mPoint1.x,mPoint1.y - 100 + 10,mTxPaint);
+                    }
                     break;
 
                 case LINE_TYPE_BOTTOM:
                     rectF = new RectF();
                     rectF.set(mPoint1.x-40,mPoint1.y+85,mPoint1.x+40,mPoint1.y+115);
-                    canvas.drawRect(mPoint1.x-40,mPoint1.y+85,mPoint1.x+40,mPoint1.y+115,mPaint);
-                    canvas.drawRect(mPoint1.x-40,mPoint1.y+85,mPoint1.x+40,mPoint1.y+115,mPaint2);
+                    canvas.drawRect(mPoint1.x-84,mPoint1.y+66,mPoint1.x+84,mPoint1.y+134,mPaint);
+                    canvas.drawRect(mPoint1.x-84,mPoint1.y+66,mPoint1.x+84,mPoint1.y+134,mPaint2);
+                    if (msg1!=null) {
+                        canvas.drawText(msg1,mPoint1.x,mPoint1.y + 100 + 10,mTxPaint);
+                    }
                     break;
 
                 case LINE_TYPE_RIGHT:
                     rectF = new RectF();
                     rectF.set(mPoint1.x+60,mPoint1.y-15,mPoint1.x+140,mPoint1.y+15);
-                    canvas.drawRect(mPoint1.x+60,mPoint1.y-15,mPoint1.x+140,mPoint1.y+15,mPaint);
-                    canvas.drawRect(mPoint1.x+60,mPoint1.y-15,mPoint1.x+140,mPoint1.y+15,mPaint2);
+                    canvas.drawRect(mPoint1.x+16,mPoint1.y-34,mPoint1.x+184,mPoint1.y+34,mPaint);
+                    canvas.drawRect(mPoint1.x+16,mPoint1.y-34,mPoint1.x+184,mPoint1.y+34,mPaint2);
+                    if (msg1!=null) {
+                        canvas.drawText(msg1,mPoint1.x + 100,mPoint1.y+10,mTxPaint);
+                    }
                     break;
 
                 case LINE_TYPE_LEFT:
                     rectF = new RectF();
                     rectF.set(mPoint1.x-140,mPoint1.y-15,mPoint1.x-60,mPoint1.y+15);
-                    canvas.drawRect(mPoint1.x-140,mPoint1.y-15,mPoint1.x-60,mPoint1.y+15,mPaint);
-                    canvas.drawRect(mPoint1.x-140,mPoint1.y-15,mPoint1.x-60,mPoint1.y+15,mPaint2);
+                    canvas.drawRect(mPoint1.x-184,mPoint1.y-34,mPoint1.x-16,mPoint1.y+34,mPaint);
+                    canvas.drawRect(mPoint1.x-184,mPoint1.y-34,mPoint1.x-16,mPoint1.y+34,mPaint2);
+                    if (msg1!=null) {
+                        canvas.drawText(msg1,mPoint1.x - 100,mPoint1.y+10,mTxPaint);
+                    }
                     break;
 
                 default:

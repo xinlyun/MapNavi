@@ -68,6 +68,9 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
         mViewPager.setAdapter(new MyFragmentAdapter(getChildFragmentManager()));
         findViewById(R.id.btn_return).setOnClickListener(this);
         findViewById(R.id.office_map).setOnClickListener(this);
+
+        findViewById(R.id.second_framelayout).setOnClickListener(this);
+        findViewById(R.id.rl_out_side).setOnClickListener(this);
         mTvFirst        .setOnClickListener(this);
         mTvSecond       .setOnClickListener(this);
     }
@@ -89,6 +92,10 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
 
             case R.id.office_map:
                 mActivityInteface.startFragment(new OfflineMapFragment());
+                break;
+
+            case R.id.rl_out_side:
+                mActivityInteface.exitFragment();
                 break;
 
         }

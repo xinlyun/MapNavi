@@ -43,23 +43,47 @@
                         android:layout_width="88px"
                         android:layout_height="match_parent" />
                     <ImageView
-                        android:layout_marginTop="20px"
-                        android:layout_marginBottom="20px"
+                        android:layout_marginTop="34px"
+                        android:layout_marginBottom="34px"
                         android:background="@color/gray_btn_bg_pressed_color"
                         android:layout_width="1px"
                         android:layout_height="match_parent" />
                     <TextView
+                        android:layout_marginLeft="20px"
                         android:singleLine="true"
-                        android:textColor="@color/white"
-                        android:textSize="28px"
+                        android:textColor="@color/a3a3a3"
+                        android:textSize="24px"
                         android:text=""
                         android:id="@+id/tv_show_msg"
-                        android:gravity="center"
+                        android:gravity="left|bottom"
 
-                        android:layout_width="772px"
+                        android:layout_width="335px"
+                        android:layout_height="28px" />
+                    <TextView
+                        android:id="@+id/tv_show_shengyu"
+                        android:textColor="@color/white"
+                        android:textSize="28px"
+                        android:text="剩余1小时36分钟 256公里"
+                        android:gravity="center|right"
+                        android:layout_marginRight="262px"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent" />
 
                 </LinearLayout>
+                <ImageView
+                    android:layout_marginRight="168px"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/icon_help"
+                    android:layout_width="88px"
+                    android:layout_height="108px" />
+                <ImageView
+                    android:background="@color/gray_btn_bg_pressed_color"
+                    android:layout_marginTop="34px"
+                    android:layout_marginBottom="34px"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="256px"
+                    android:layout_width="1px"
+                    android:layout_height="match_parent" />
                 <RelativeLayout
                     android:background="#242424"
                     android:layout_alignParentRight="true"

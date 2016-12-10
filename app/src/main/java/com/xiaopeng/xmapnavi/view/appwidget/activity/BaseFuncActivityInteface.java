@@ -14,6 +14,7 @@ public interface BaseFuncActivityInteface {
     void shouldFinish();
     void startAcitivity(Class<?> cls, Bundle bundle);
     void startFragment(Fragment fragment);
+    void startFragmentReplace(Fragment fragment);
     void startFragment(Class<?> cls);
     MapView getMapView();
     void requestNaviCalue(LatLonPoint fromPoint, LatLonPoint toPoint);

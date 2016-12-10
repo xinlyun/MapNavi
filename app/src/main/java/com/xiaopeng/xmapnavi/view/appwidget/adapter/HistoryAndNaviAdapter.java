@@ -35,7 +35,7 @@ public class HistoryAndNaviAdapter extends ArrayAdapter {
     List<HistoryPosi> historyPosiList;
     LatLng localPosi;
     int style ;
-    private int index = -1;
+    private int index = 0;
     private OnClickRightItem mOnClickRightItem;
     private DateHelper dateHelper ;
     public HistoryAndNaviAdapter(Context context,List<PoiItem> poiItemList,int resource) {
@@ -53,7 +53,7 @@ public class HistoryAndNaviAdapter extends ArrayAdapter {
     public void setNewOne(List<PoiItem> poiItemList){
         this.poiItemList = poiItemList;
         style = 1;
-        this.index = -1;
+        this.index = 0;
     }
     public int getIndex(){
         return index;

@@ -55,7 +55,7 @@ public class ProgressDialog extends android.app.Dialog{
 						|| event.getX() >view.getRight()
 						|| event.getY() > view.getBottom() 
 						|| event.getY() < view.getTop()) {
-					dismiss();
+//					dismiss();
 				}
 				return false;
 			}

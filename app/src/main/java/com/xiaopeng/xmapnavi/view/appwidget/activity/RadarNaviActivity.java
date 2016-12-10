@@ -1,6 +1,7 @@
 package com.xiaopeng.xmapnavi.view.appwidget.activity;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -22,7 +23,7 @@ import java.util.List;
  * Created by linzx on 2016/11/23.
  */
 
-public class RadarNaviActivity extends Activity {
+public class RadarNaviActivity extends Activity implements BaseFuncActivityInteface{
     private MapView mapView;
     private RadarNaviFragment radarNaviFragment;
 //    private ILocationProvider mProvider;
@@ -85,5 +86,50 @@ public class RadarNaviActivity extends Activity {
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.add(R.id.tmv_search_show,radarNaviFragment);
         transaction.commit();
+    }
+
+    @Override
+    public void exitFragment() {
+        finish();
+    }
+
+    @Override
+    public void shouldFinish() {
+        finish();
+    }
+
+    @Override
+    public void startAcitivity(Class<?> cls, Bundle bundle) {
+
+    }
+
+    @Override
+    public void startFragment(Fragment fragment) {
+        //no need
+    }
+
+    @Override
+    public void startFragmentReplace(Fragment fragment) {
+        //no need
+    }
+
+    @Override
+    public void startFragment(Class<?> cls) {
+        //no need
+    }
+
+    @Override
+    public MapView getMapView() {
+        return mapView;
+    }
+
+    @Override
+    public void requestNaviCalue(LatLonPoint fromPoint, LatLonPoint toPoint) {
+//no need
+    }
+
+    @Override
+    public void showDialogwithOther() {
+
     }
 }

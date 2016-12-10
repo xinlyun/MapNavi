@@ -75,7 +75,7 @@
             android:layout_marginRight="2px"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="@dimen/second_bottom"
-            android:layout_width="108px"
+            android:layout_width="106px"
             android:layout_height="343px"
             android:paddingLeft="9px"
             android:paddingRight="9px"
@@ -126,7 +126,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="72px" />
                     <TextView
-                        android:background="@drawable/text_trans_bg"
+
                         android:textSize="22px"
                         android:gravity="center|top"
                         android:textColor="@color/first_text_color"
@@ -154,7 +154,6 @@
                         android:layout_height="72px" />
                     <TextView
                         android:id="@+id/tx_seewatch"
-                        android:background="@drawable/text_trans_bg"
                         android:textSize="22px"
                         android:gravity="center|top"
                         android:textColor="@color/first_text_color"
@@ -171,7 +170,7 @@
             android:layout_marginLeft="2px"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="@dimen/second_bottom"
-            android:layout_width="108px"
+            android:layout_width="106px"
             android:layout_height="343px"
             android:paddingLeft="9px"
             android:paddingRight="9px"
@@ -195,7 +194,6 @@
                         android:layout_height="72px" />
                     <TextView
 
-                        android:background="@drawable/text_trans_bg"
                         android:textSize="22px"
                         android:gravity="center|top"
                         android:textColor="@color/first_text_color"
@@ -222,7 +220,6 @@
                         android:layout_height="72px" />
                     <TextView
 
-                        android:background="@drawable/text_trans_bg"
                         android:textSize="22px"
                         android:gravity="center|top"
                         android:textColor="@color/first_text_color"
@@ -262,18 +259,20 @@
             </LinearLayout>
         </FrameLayout>
         <FrameLayout
+
             android:background="@drawable/shadowss"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:layout_marginBottom="@dimen/bottom_first"
             android:layout_marginRight="2px"
-            android:layout_width="108px"
+            android:layout_width="106px"
             android:paddingTop="4px"
             android:paddingLeft="9px"
             android:paddingRight="9px"
             android:paddingBottom="14px"
             android:layout_height="196px">
             <LinearLayout
+                android:gravity="center"
                 android:background="@drawable/white_backgrouad"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -284,8 +283,8 @@
                     android:id="@+id/btn_zoom_plus"
                     android:textSize="45px"
                     android:textColor="@color/black"
-                    android:layout_width="94px"
-                    android:layout_height="94px" />
+                    android:layout_width="88px"
+                    android:layout_height="88px" />
                 <ImageView
                     android:background="@color/gray_btn_bg_color"
                     android:layout_marginLeft="12px"
@@ -350,6 +349,26 @@
             android:layout_height="94px"
 
              />
+        <ImageView
+            android:layout_marginRight="128px"
+            android:layout_marginBottom="30px"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/img_bilici"
+            android:layout_width="94px"
+            android:layout_height="14px" />
+        <TextView
+            android:id="@+id/tx_bilici"
+            android:gravity="center|bottom"
+            android:textSize="24px"
+            android:text="5公里"
+            android:textColor="@color/first_text_color"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="128px"
+            android:layout_marginBottom="40px"
+            android:layout_width="94px"
+            android:layout_height="wrap_content" />
 
     </RelativeLayout>
     <FrameLayout
@@ -375,7 +394,7 @@
             <Button
                 android:background="@color/transparent"
                 android:id="@+id/btn_exit_show"
-                android:text="@string/exit"
+                android:text=""
                 android:layout_width="88px"
                 android:layout_height="88px" />
 

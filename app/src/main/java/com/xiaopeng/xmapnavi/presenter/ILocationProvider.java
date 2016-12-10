@@ -9,6 +9,7 @@ import com.amap.api.navi.model.NaviLatLng;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.poisearch.PoiResult;
+import com.xiaopeng.xmapnavi.presenter.callback.XpAiosMapListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpCollectListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
@@ -46,9 +47,10 @@ public interface ILocationProvider {
     void removeSensorListner(XpSensorListener xpSensorListener);
 
     void setOfflineMapListner(OfflineMapManager.OfflineMapDownloadListener listner);
-
+    void setAiosListener(XpAiosMapListener xpAiosMapListener);
 
     void trySearchPosi(String str);
+    boolean tryAddWayPoiCalue(NaviLatLng wayPoi);
     void calueRunWay(List<NaviLatLng> startList, List<NaviLatLng> wayList, List<NaviLatLng> endList);
     boolean tryCalueRunWay(List<NaviLatLng> endList);
     AMapNaviPath getNaviPath();
@@ -76,4 +78,7 @@ public interface ILocationProvider {
     boolean getNaviLikeStyle(int num);
 
     void reCallLocation();
+
+    void setAimState(int state);
+    int getAimState();
 }

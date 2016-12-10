@@ -30,12 +30,23 @@ public class FindForWardPoi extends Thread{
     private List<AMapNaviPath> otherPaths = new ArrayList<>();
     private List<NaviLatLng> allNaviLatLng = new ArrayList<>();
     private List<NaviLatLng> myAllNaviLatlng = new ArrayList<>();
+    private AMapNaviPath mainPath;
+//    public FindForWardPoi(AMapNaviPath myPath,List<AMapNaviPath> others){
+//        this.myPath = myPath;
+//        this.otherPaths.clear();
+//        this.otherPaths.addAll(others);
+//    }
 
-    public FindForWardPoi(AMapNaviPath myPath,List<AMapNaviPath> other){
+    public FindForWardPoi(AMapNaviPath myPath,AMapNaviPath mainPath,AMapNaviPath otherPath){
         this.myPath = myPath;
         this.otherPaths.clear();
-        this.otherPaths.addAll(other);
+        this.otherPaths.add(mainPath);
+        this.mainPath = mainPath;
+        if (otherPath!=null){
+            this.otherPaths.add(otherPath);
+        }
     }
+
     public void setOnFindPoiInPathListener(OnFindRightPoiInPath listener){
         this.listener = listener;
     }
@@ -92,14 +103,31 @@ public class FindForWardPoi extends Thread{
             LogUtils.d(TAG,"find the poi:\nindex:"+index+"\npoi:"+maxLatLng+"\nendTime:"+System.currentTimeMillis());
 
             if (listener!=null){
-                listener.OntheRightPoi(index,maxLatLng,repikLatLng);
+                int myTime = myPath.getAllTime();
+                int mainTime = mainPath.getAllTime();
+                int disTime = myTime - mainTime;
+                String msgInfo = "";
+                if (disTime<0){
+                    disTime = 0 - disTime;
+                    msgInfo = msgInfo+"快";
+                }else {
+                    msgInfo = msgInfo+"慢";
+                }
+
+                if (disTime > 60){
+                    disTime = disTime/60;
+                    msgInfo = msgInfo + disTime+"分钟";
+                }else {
+                    msgInfo = "用时接近";
+                }
+                listener.OntheRightPoi(index,maxLatLng,repikLatLng,msgInfo);
             }
         }
     };
 
 
     public interface OnFindRightPoiInPath{
-        void OntheRightPoi(int index ,NaviLatLng myLatLng,NaviLatLng reLatLng);
+        void OntheRightPoi(int index ,NaviLatLng myLatLng,NaviLatLng reLatLng,String infoText);
     }
 
 }

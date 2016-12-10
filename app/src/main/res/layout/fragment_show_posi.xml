@@ -12,52 +12,75 @@
         android:paddingLeft="9px"
         android:paddingRight="9px"
         android:paddingTop="4px"
-        android:paddingBottom="14px"
-        android:layout_width="900px"
-        android:layout_height="92px">
+        android:paddingBottom="10px"
+        android:layout_width="898px"
+        android:layout_height="86px">
         <LinearLayout
             android:id="@+id/ll_exit"
-            android:gravity="center_vertical"
-            android:background="@color/grey_bg_color"
-            android:orientation="horizontal"
+            android:background="@drawable/white_backgrouad"
+            android:padding="1px"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <ImageView
-                android:layout_width="88px"
-                android:layout_height="72px"
-                android:src="@drawable/icon_return"/>
-            <LinearLayout
-                
-                android:background="@drawable/white_backgrouad"
-                android:layout_marginRight="8px"
-                android:layout_width="match_parent"
-                android:orientation="horizontal"
-                android:layout_height="56px">
-                <TextView
-                    android:text=""
-                    android:textColor="@color/a3a3a3"
-                    android:layout_marginLeft="20px"
-                    android:gravity="center_vertical"
-                    android:textSize="30px"
-                    android:background="@color/transparent"
-                    android:id="@+id/edt_show_search"
-                    android:layout_width="600px"
-                    android:layout_height="match_parent" />
-                <ImageView
-                    android:gravity="center"
 
-                    android:layout_width="72px"
+
+        <LinearLayout
+            android:id="@+id/prepare_edit_bar"
+            android:orientation="horizontal"
+            android:background="@color/grey_bg_color"
+            android:layout_width="match_parent"
+            android:layout_height="72px">
+            <ImageView
+                android:id="@+id/btn_return"
+                android:src="@drawable/icon_return"
+                android:layout_width="88px"
+                android:layout_height="72px" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:background="@drawable/white_backgrouad"
+                android:layout_width="783px"
+                android:layout_marginTop="8px"
+                android:layout_height="56px">
+                <ImageView
+                    android:src="@drawable/icon_search_02"
+                    android:layout_width="56px"
                     android:layout_height="56px" />
-                <Button
-                    android:background="@color/blue"
+                <TextView
+                    android:gravity="center|left"
+                    android:textCursorDrawable="@null"
+                    android:background="@null"
+                    android:id="@+id/edt_show_search"
                     android:textSize="24px"
+
+                    android:textColor="@color/first_text_color"
+                    android:hint="搜索目的地"
+
+                    android:textColorHint="@color/a3a3a3"
+                    android:layout_width="609px"
+                    android:layout_height="match_parent" />
+                <Button
                     android:gravity="center"
+                    android:id="@+id/btn_search"
                     android:textColor="@color/white"
+                    android:textSize="24px"
                     android:text="@string/search"
+                    android:background="@color/text_blue"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
+
             </LinearLayout>
-            
+            <Button
+                android:id="@+id/pre_beginnavi"
+                android:text="搜索"
+                android:textSize="50px"
+                android:textColor="@color/Grey"
+                android:background="@drawable/prepare_seach_btn_false"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="37px"
+                android:layout_marginRight="37px"
+                android:layout_width="194px"
+                android:layout_height="116px" />
+
+        </LinearLayout>
         </LinearLayout>
     </FrameLayout>
     <FrameLayout
@@ -180,5 +203,65 @@
         </LinearLayout>
     </FrameLayout>
 
-
+    <ImageView
+        android:layout_marginRight="128px"
+        android:layout_marginBottom="608px"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/img_bilici"
+        android:layout_width="94px"
+        android:layout_height="14px" />
+    <TextView
+        android:id="@+id/tx_bilici"
+        android:gravity="center|bottom"
+        android:textSize="24px"
+        android:text="5公里"
+        android:textColor="@color/first_text_color"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="128px"
+        android:layout_marginBottom="618px"
+        android:layout_width="94px"
+        android:layout_height="wrap_content" />
+    <FrameLayout
+        android:background="@drawable/shadowss"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="593px"
+        android:layout_marginRight="2px"
+        android:layout_width="106px"
+        android:paddingTop="4px"
+        android:paddingLeft="9px"
+        android:paddingRight="9px"
+        android:paddingBottom="14px"
+        android:layout_height="196px">
+        <LinearLayout
+            android:gravity="center"
+            android:background="@drawable/white_backgrouad"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+            <Button
+                android:background="@drawable/icon_zoom_plus"
+                android:id="@+id/btn_zoom_plus"
+                android:textSize="45px"
+                android:textColor="@color/black"
+                android:layout_width="88px"
+                android:layout_height="88px" />
+            <ImageView
+                android:background="@color/gray_btn_bg_color"
+                android:layout_marginLeft="12px"
+                android:layout_marginRight="12px"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
+            <Button
+                android:textColor="@color/black"
+                android:textSize="45px"
+                android:background="@drawable/icon_zoom_small"
+                android:id="@+id/btn_zoom_jian"
+                android:layout_width="88px"
+                android:layout_height="88px" />
+        </LinearLayout>
+    </FrameLayout>
 </RelativeLayout>
