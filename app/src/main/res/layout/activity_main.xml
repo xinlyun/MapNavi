@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="1440px"
     android:id="@+id/root_layout"
     tools:context=".view.appwidget.activity.MainActivity">
 
@@ -10,7 +10,7 @@
         android:id="@+id/map_main"
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="1440px">
     </com.amap.api.maps.MapView>
     <com.xiaopeng.xmapnavi.view.appwidget.selfview.LineShowView
         android:id="@+id/lsv_line"
