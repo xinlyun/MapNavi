@@ -16,7 +16,7 @@ android {
     signingConfigs {
         release {
             try {
-                storeFile file('C:/Users/linzx/Documents/debug.keystore')
+                storeFile file('/home/jenkins/.jenkins/workspace/xiaopeng_app_debug.keystore')
                 storePassword KEYSTORE_PASSWORD
                 keyAlias "androiddebugkey"
                 keyPassword KEY_PASSWORD
