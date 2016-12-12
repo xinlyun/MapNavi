@@ -590,6 +590,11 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 				findViewById(R.id.tbv_show_1).setVisibility(View.VISIBLE);
 			}
 		}
+
+		@Override
+		public void onChioce() {
+			mLocationPro.reCalueInNavi();
+		}
 	};
 
 	private void beHighHeight(){

@@ -405,19 +405,21 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
     public void onClickRightItem(int posi) {
         LogUtils.d(TAG,"onClickRightItem  POSI:"+posi);
         HisItem hisItem = mHisItems.get(posi);
-        if (hisItem.type == DateHelper.TYPE_POSI){
-            List<NaviLatLng> startPoi = new ArrayList<>();
-            startPoi.add(new NaviLatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
-            List<NaviLatLng> wayPoi = new ArrayList<>();
-            List<NaviLatLng> endPoi = new ArrayList<>();
-            endPoi.add(new NaviLatLng(hisItem.posiLat,hisItem.posiLon));
-            poiLat = hisItem.posiLat;
-            poiLon = hisItem.posiLon;
-            ((MainActivity)getActivity()).setPosi(poiLat,poiLon);
-            mLocationProvider.calueRunWay(startPoi,wayPoi,endPoi);
-            mProgDialog.show();
-
-        }
+        hisItem.delete();
+        mDateHelper.getHisItem(12);
+//        if (hisItem.type == DateHelper.TYPE_POSI){
+//            List<NaviLatLng> startPoi = new ArrayList<>();
+//            startPoi.add(new NaviLatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
+//            List<NaviLatLng> wayPoi = new ArrayList<>();
+//            List<NaviLatLng> endPoi = new ArrayList<>();
+//            endPoi.add(new NaviLatLng(hisItem.posiLat,hisItem.posiLon));
+//            poiLat = hisItem.posiLat;
+//            poiLon = hisItem.posiLon;
+//            ((MainActivity)getActivity()).setPosi(poiLat,poiLon);
+//            mLocationProvider.calueRunWay(startPoi,wayPoi,endPoi);
+//            mProgDialog.show();
+//
+//        }
     }
 
     @Override

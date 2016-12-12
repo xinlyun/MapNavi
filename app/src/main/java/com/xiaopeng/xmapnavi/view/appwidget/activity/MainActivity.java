@@ -680,6 +680,12 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
     }
 
+    private void whenNorthChange(){
+
+        aMap.moveCamera(CameraUpdateFactory.changeTilt(0));
+        aMap.moveCamera(CameraUpdateFactory.changeBearing(0));
+    }
+
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
 
@@ -1403,8 +1409,8 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                     mSeeFloat = 0f;
                     if ( mLocationProvider!=null && mLocationProvider.getAmapLocation()!=null) {
 //
-                        findMyPosi();
-
+//                        findMyPosi();
+                        whenNorthChange();
 //
                         if (mLocationMarker!=null){
                             mLocationMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_seewatch_1));
@@ -1491,7 +1497,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         if (collectItems!=null) {
             LogUtils.d(TAG, "onCollectCallBack:SIZE" + collectItems.size());
         }
-        if (collectItems==null || collectItems.size()==0)return;
+//        if (collectItems==null || collectItems.size()==0)return;
         if (mCollectDialog!=null) {
             mCollectDialog.setDate(collectItems);
             mCollectDialog.show();

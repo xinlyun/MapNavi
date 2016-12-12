@@ -117,6 +117,9 @@ public class RouteNaviSettingDialog implements View.OnClickListener{
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btn_return:
+                if (mListener!=null){
+                    mListener.onChioce();
+                }
                 disMiss();
                 break;
 
@@ -220,5 +223,6 @@ public class RouteNaviSettingDialog implements View.OnClickListener{
     public interface  OnSettingDailoginShowListener{
         void onDialogShow();
         void onDialogMiss();
+        void onChioce();
     }
 }
