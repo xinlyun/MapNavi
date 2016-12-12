@@ -6,9 +6,12 @@ import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -203,6 +206,35 @@ public class Utils {
             newChars[i-pos] = name[i];
         }
         return new String(newChars);
+    }
+
+
+    public static void setImageViewMathParent(Activity context,
+                                              ImageView image, Bitmap bitmap) {
+        //获得屏幕密度
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        context.getWindowManager().getDefaultDisplay()
+                .getMetrics(displayMetrics);
+        //获得屏幕宽度和图片宽度的比例
+        float scalew = (float)displayMetrics.widthPixels
+                / (float) bitmap.getWidth();
+        //获得ImageView的参数类
+        ViewGroup.LayoutParams vgl=image.getLayoutParams();
+        //设置ImageView的宽度为屏幕的宽度
+        vgl.width=displayMetrics.widthPixels;
+        //设置ImageView的高度
+        vgl.height=(int) (bitmap.getHeight()*scalew);
+        //设置图片充满ImageView控件
+        image.setScaleType(ImageView.ScaleType.FIT_XY);
+        //等比例缩放
+        image.setAdjustViewBounds(true);
+        image.setLayoutParams(vgl);
+        image.setImageBitmap(bitmap);
+
+        if (bitmap != null && bitmap.isRecycled()) {
+            bitmap.recycle();
+        }
+
     }
 
 

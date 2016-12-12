@@ -109,6 +109,8 @@ public class HistoryAndNaviAdapter extends ArrayAdapter {
             CollectItem collectItem  = dateHelper.getCollectByName(poiItem.toString());
             if (collectItem!=null){
                 itemHolder.naviBtn.setImageResource(R.drawable.icon_collect_1);
+            }else {
+                itemHolder.naviBtn.setImageResource(R.drawable.icon_collect_2);
             }
             itemHolder.naviName.setText(""+(position+1)+"."+poiItem.toString());
             itemHolder.naviPosi.setText(poiItem.getCityName() + "  " + poiItem.getSnippet());
@@ -119,7 +121,8 @@ public class HistoryAndNaviAdapter extends ArrayAdapter {
             }else {
                 view.findViewById(R.id.back_ll).setBackground(null);
             }
-            float dis = AMapUtils.calculateLineDistance(localPosi,new LatLng(poiItem.getLatLonPoint().getLatitude(),poiItem.getLatLonPoint().getLongitude()));
+            float dis = AMapUtils.calculateLineDistance(localPosi
+                    ,new LatLng(poiItem.getLatLonPoint().getLatitude(),poiItem.getLatLonPoint().getLongitude()));
             dis = dis/1000f;
             DecimalFormat df = new DecimalFormat("0.0");
             String result = df.format(dis);

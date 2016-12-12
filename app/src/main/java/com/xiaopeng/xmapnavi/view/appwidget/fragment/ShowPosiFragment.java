@@ -263,8 +263,6 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
         super.onResume();
         LogUtils.d(TAG,"onResume");
         BugHunter.countTimeEnd(getActivity().getApplication(),BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
-
-
     }
 
     @Override

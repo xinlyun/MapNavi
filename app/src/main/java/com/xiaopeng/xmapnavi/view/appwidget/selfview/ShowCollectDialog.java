@@ -88,6 +88,7 @@ public class ShowCollectDialog implements AdapterView.OnItemClickListener,View.O
             mDialog.dismiss();
         }
     }
+
     private OnClickRightItem listener = new OnClickRightItem() {
         @Override
         public void onClickRightItem(int posi) {

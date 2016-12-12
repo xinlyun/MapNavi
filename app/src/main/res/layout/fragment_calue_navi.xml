@@ -33,12 +33,13 @@
                     android:layout_width="88px"
                     android:layout_height="72px" />
                 <GridView
+
                     android:layout_marginTop="12px"
                     android:background="@color/trans_half_white"
                     android:id="@+id/gv_show_an"
                     android:numColumns="auto_fit"
                     android:columnWidth="322px"
-                    android:layout_width="968px"
+                    android:layout_width="888px"
                     android:layout_height="150px">
 
                 </GridView>
@@ -66,9 +67,9 @@
 
                     <TextView
 
-                        android:layout_marginRight="30px"
+                        android:layout_marginRight="88px"
                         android:textColor="@color/a3a3a3"
-                        android:layout_marginLeft="30px"
+                        android:layout_marginLeft="88px"
                         android:textSize="22px"
                         android:gravity="center"
                         android:id="@+id/tv_show_msg"
@@ -95,13 +96,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
                     <ImageView
-                        android:src="@drawable/icon_navi_blue"
+                        android:src="@drawable/icon_navi_black"
                         android:layout_marginLeft="158px"
                         android:layout_width="72px"
                         android:layout_height="72px" />
                     <TextView
                         android:gravity="left|center_vertical"
-                        android:textColor="@color/text_blue"
+                        android:textColor="@color/first_text_color"
                         android:textSize="30px"
 
                         android:text="导航"
@@ -123,19 +124,24 @@
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
+
                     <ImageView
-                        android:src="@drawable/icon_navi_black"
+
+                        android:src="@drawable/icon_navi_blue"
                         android:layout_marginLeft="158px"
                         android:layout_width="72px"
-                        android:layout_height="72px" />
+                        android:layout_height="72px"
+                        android:id="@+id/imageView" />
+
                     <TextView
                         android:gravity="left|center_vertical"
                         android:textSize="30px"
-                        android:textColor="@color/first_text_color"
+                        android:textColor="@color/text_blue"
                         android:text="轻导航"
                         android:layout_weight="1"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
+                        android:layout_height="match_parent"
+                        android:id="@+id/textView" />
                 </LinearLayout>
 
 

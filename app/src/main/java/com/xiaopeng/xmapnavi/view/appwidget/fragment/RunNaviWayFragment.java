@@ -90,6 +90,8 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     //    private List<RouteOverLay> saveOverLay = new ArrayList<>();
     private LikeChangeDialog mSelectLikeDialog;
     private BaseFuncActivityInteface mActivity;
+
+
     public void setMapView(MapView mapView){
         mAmapView = mapView;
         mAMap = mAmapView.getMap();
@@ -150,10 +152,10 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     private Polyline mPoline0,mPoline1,mPoline2;
     private Marker markerFromPoi,markerEndPoi,markerWayPoi;
     private TextView mTxBilici;
-    private GeocodeSearch geocodeSearch;
+    private GeocodeSearch geocodeSearch,geocodeSearch2;
     private MarkerOptions wayPoiOptions;
     private Marker mWayPoiMarker;
-    private TextView mTxMarkTitle;
+    private TextView mTxMarkTitle,mTxMarkTitle2;
     private View mMarkInfoView,mMarkInfoView2;
     MarkerOptions options2;
     private boolean isFirst = true;
@@ -186,6 +188,10 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         isFirst = true;
         geocodeSearch = new GeocodeSearch(getActivity());
         geocodeSearch.setOnGeocodeSearchListener(mGeocodeListener);
+
+        geocodeSearch2 = new GeocodeSearch(getActivity());
+        geocodeSearch2.setOnGeocodeSearchListener(mGeocodeListener2);
+
         mAMap.clear();
         mAMap.setOnCameraChangeListener(this);
         MarkerOptions options = new MarkerOptions();
@@ -193,12 +199,14 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         options.anchor(0.5f,1f);
         options.position(new LatLng(fromPoint.getLatitude(),fromPoint.getLongitude()));
         markerFromPoi = mAMap.addMarker(options);
+        markerFromPoi.setClickable(false);
 
         MarkerOptions options1 = new MarkerOptions();
         options1.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_end_poi));
         options1.anchor(0.5f,1f);
         options1.position(new LatLng(toPoint.getLatitude(),toPoint.getLongitude()));
         markerEndPoi = mAMap.addMarker(options1);
+        markerEndPoi.setClickable(false);
 
         options2 = new MarkerOptions();
         options2.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_way_poi));
@@ -212,6 +220,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         mLocaionPro.addNaviCalueListner(this);
         mAMap.setTrafficEnabled(isTricall);
         mAMap.setOnPolylineClickListener(polylineClickListener);
+
         wayPoiOptions = new MarkerOptions();
         wayPoiOptions.anchor(0.5f,1f);
         wayPoiOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_add_way_poi));
@@ -308,12 +317,21 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
 
             NaviLatLng naviLatLng = latLngs.get(0);
+
+            RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(naviLatLng.getLatitude(),naviLatLng.getLongitude()), 200, GeocodeSearch.AMAP);
+            geocodeSearch2.getFromLocationAsyn(query);
+            mTxMarkTitle2.setText(R.string.loading_hard);
+
             if (markerWayPoi == null){
                 options2.position(new LatLng(naviLatLng.getLatitude(),naviLatLng.getLongitude()));
                 markerWayPoi = mAMap.addMarker(options2);
+                markerWayPoi.setTitle("title1");
+                markerWayPoi.setSnippet("snippet1");
+
             }else {
                 markerWayPoi.setPosition(new LatLng(naviLatLng.getLatitude(),naviLatLng.getLongitude()));
-
+                markerWayPoi.setTitle("title1");
+                markerWayPoi.setSnippet("snippet1");
 
             }
         }else {
@@ -373,14 +391,34 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         List<NaviLatLng> latLngs = paths.get(ints[0]).getWayPoint();
         if (latLngs!=null && latLngs.size()>0){
             NaviLatLng naviLatLng = latLngs.get(0);
+
+            RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(naviLatLng.getLatitude(),naviLatLng.getLongitude()), 200, GeocodeSearch.AMAP);
+            geocodeSearch2.getFromLocationAsyn(query);
+            mTxMarkTitle2.setText(R.string.loading_hard);
+
+
             if (markerWayPoi == null){
                 options2.position(new LatLng(naviLatLng.getLatitude(),naviLatLng.getLongitude()));
                 markerWayPoi = mAMap.addMarker(options2);
-                markerWayPoi .setClickable(true);
+                markerWayPoi.setTitle("title1");
+                markerWayPoi.setSnippet("snippet1");
             }else {
                 markerWayPoi.setPosition(new LatLng(naviLatLng.getLatitude(),naviLatLng.getLongitude()));
+                markerWayPoi.setTitle("title1");
+                markerWayPoi.setSnippet("snippet1");
             }
+            findViewById(R.id.img_div).setVisibility(View.GONE);
+            findViewById(R.id.btn_start_route_navi).setVisibility(View.GONE);
+        }else {
+            findViewById(R.id.img_div).setVisibility(View.VISIBLE);
+            findViewById(R.id.btn_start_route_navi).setVisibility(View.VISIBLE);
         }
+
+
+
+
+
+
 
         drawPathLine();
 
@@ -594,8 +632,12 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                 break;
 
             case R.id.btn_begin_add_way_2:
+                if (markerWayPoi !=null){
+                    markerWayPoi.remove();
+                    markerWayPoi = null;
+                }
                 mActivity.showDialogwithOther();
-                reCanLine();
+                mLocaionPro.reCalue();
                 break;
 
             default:
@@ -888,7 +930,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             if ((dis1+dis2)<0.002){
                 return i;
             }else {
-                LogUtils.d(TAG,"dis1+dis2:"+(dis1+dis2));
+//                LogUtils.d(TAG,"dis1+dis2:"+(dis1+dis2));
             }
         }
         return -1;
@@ -1085,6 +1127,36 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         }
     };
 
+
+    private GeocodeSearch.OnGeocodeSearchListener mGeocodeListener2 = new GeocodeSearch.OnGeocodeSearchListener() {
+        @Override
+        public void onRegeocodeSearched(RegeocodeResult regeocodeResult, int i) {
+            RegeocodeAddress address = regeocodeResult.getRegeocodeAddress();
+            String poiName;
+            if (address.getAois()!=null && address.getAois().size()>0) {
+                AoiItem aoiItem = address.getAois().get(0);
+
+                poiName = aoiItem.getAoiName();
+
+                mTxMarkTitle2.setText(poiName);
+
+            }else {
+
+                poiName = getUsefulInfo(address);
+                if (poiName.length()<3){
+                    poiName = getString(R.string.unknow_road);
+                }
+                mTxMarkTitle2.setText(poiName);
+            }
+
+        }
+
+        @Override
+        public void onGeocodeSearched(GeocodeResult geocodeResult, int i) {
+
+        }
+    };
+
     private String getUsefulInfo(RegeocodeAddress address){
         String msg ;
         if(address.getBuilding().length()>0){
@@ -1106,6 +1178,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     private void addWayPoi(){
         //TODO
         LatLng latLng  = mWayPoiMarker.getPosition();
+        mWayPoiMarker.hideInfoWindow();
         mWayPoiMarker.remove();
         mWayPoiMarker = null;
         boolean isTure = mLocaionPro.tryAddWayPoiCalue(new NaviLatLng(latLng.latitude,latLng.longitude));
@@ -1126,7 +1199,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
         mMarkInfoView2      = getActivity().getLayoutInflater().inflate(R.layout.layout_tip_show_2,null);
         mMarkInfoView2      .findViewById(R.id.btn_begin_add_way_2).setOnClickListener(this);
-
+        mTxMarkTitle2       = (TextView) mMarkInfoView2.findViewById(R.id.tx_tip_show);
 
     }
 
@@ -1134,20 +1207,22 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     AMap.InfoWindowAdapter infoWindowAdapter = new AMap.InfoWindowAdapter() {
         @Override
         public View getInfoWindow(Marker marker) {
-            if (marker==mWayPoiMarker) {
+            LogUtils.d(TAG,"getInfoWindow:"+marker+"\n");
+            if (marker.equals(mWayPoiMarker)) {
                 return mMarkInfoView;
-            }else if(marker == markerWayPoi){
-
+            }else if(marker.equals(markerWayPoi)){
+                return mMarkInfoView2;
             }
             return mMarkInfoView;
         }
 
         @Override
         public View getInfoContents(Marker marker) {
+            LogUtils.d(TAG,"getInfoContents:"+marker);
             if (marker==mWayPoiMarker) {
                 return mMarkInfoView;
             }else if(marker == markerWayPoi){
-
+                return mMarkInfoView2;
             }
             return mMarkInfoView;
         }
@@ -1156,11 +1231,15 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     private AMap.OnMarkerClickListener markerClickListener = new AMap.OnMarkerClickListener() {
         @Override
         public boolean onMarkerClick(Marker marker) {
-            if (marker == markerWayPoi) {
+
+            LogUtils.d(TAG,"marker0:"+marker+"\nwayPoi:"+markerWayPoi);
+//            markerWayPoi.showInfoWindow();
+            if (marker.equals(markerWayPoi)) {
                 markerWayPoi.showInfoWindow();
                 return true;
             }
-            return false;
+
+            return true;
         }
     };
 

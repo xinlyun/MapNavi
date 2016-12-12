@@ -70,7 +70,7 @@ public class MapFloatView extends View{
         mTxPaint = new Paint();
         mTxPaint.setColor(getResources().getColor(R.color.text_blue));
         mTxPaint.setStrokeWidth(2);
-        mTxPaint.setTextSize(30);
+        mTxPaint.setTextSize(24);
         mTxPaint.setTextAlign(Paint.Align.CENTER);
         mTxPaint.setAntiAlias(true);
 

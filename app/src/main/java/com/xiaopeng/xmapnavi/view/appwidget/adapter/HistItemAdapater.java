@@ -71,9 +71,11 @@ public class HistItemAdapater extends ArrayAdapter {
                     itemHolder.tvShowMsg = (TextView) view.findViewById(R.id.pre_list_posi);
 //                    itemHolder.tvDis = (TextView) view.findViewById(R.id.pre_list_dis);
                     itemHolder.llTouchNavi = (LinearLayout) view.findViewById(R.id.touch_to_navi);
+                    itemHolder.tvDelet= (TextView) view.findViewById(R.id.delete_action);
                 } else {
                     view = LayoutInflater.from(getContext()).inflate(R.layout.layout_fix_list_item_1, null);
                     itemHolder.tvShowMsg = (TextView) view.findViewById(R.id.pre_list_name);
+                    itemHolder.tvDelet = (TextView) view.findViewById(R.id.delete_action);
                 }
                 //end view
                 view.setTag(itemHolder);
@@ -88,7 +90,7 @@ public class HistItemAdapater extends ArrayAdapter {
                     DecimalFormat df = new DecimalFormat("0.0");
                     String result = df.format(dis);
 //                itemHolder.tvDis.setText(result + "KM");
-                    itemHolder.llTouchNavi.setOnClickListener(new lvButtonListener(position));
+                    itemHolder.tvDelet.setOnClickListener(new lvButtonListener(position));
 
                 } else {
                     itemHolder.tvShowMsg.setText(hisItem.msg);
@@ -128,5 +130,6 @@ public class HistItemAdapater extends ArrayAdapter {
         TextView tvShowMsg;
 //        TextView tvDis;
         LinearLayout llTouchNavi;
+        TextView tvDelet;
     }
 }

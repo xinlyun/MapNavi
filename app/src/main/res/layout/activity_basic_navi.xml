@@ -32,14 +32,8 @@
             />
     </FrameLayout>
 
-    <com.amap.api.navi.view.ZoomInIntersectionView
-        android:id="@+id/myZoomInIntersectionView"
-        android:layout_width="360px"
-        android:layout_height="360px"
-        android:layout_marginLeft="300px"
-        android:layout_marginTop="12px"
 
-        />
+
 
     <com.xiaopeng.xmapnavi.view.appwidget.selfview.CircleImageView
         android:visibility="gone"
@@ -378,7 +372,7 @@
         android:layout_marginLeft="3px"
         android:background="@drawable/shadowss"
         android:layout_width="288px"
-        android:layout_height="378px"
+        android:layout_height="390px"
 
         >
         <RelativeLayout
@@ -394,6 +388,7 @@
                 android:layout_height="290px">
                 <com.amap.api.navi.view.NextTurnTipView
                     android:id="@+id/nttv_navi"
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="140px"
 
@@ -401,6 +396,17 @@
                     >
 
                 </com.amap.api.navi.view.NextTurnTipView>
+                <ImageView
+                    android:src="@drawable/navi_icon_9"
+                    android:id="@+id/img_navi"
+                    android:scaleType="centerCrop"
+                    android:layout_width="match_parent"
+                    android:layout_height="142px"
+
+                    android:layout_centerHorizontal="true"
+                    >
+
+                </ImageView>
                 <LinearLayout
                     android:layout_marginTop="12px"
                     android:orientation="horizontal"
@@ -498,4 +504,13 @@
 
     </FrameLayout>
 
+    <com.amap.api.navi.view.ZoomInIntersectionView
+        android:id="@+id/myZoomInIntersectionView"
+        android:scaleType="fitXY"
+        android:layout_width="270px"
+        android:layout_height="202px"
+        android:layout_marginLeft="12px"
+        android:layout_marginTop="384px"
+
+        />
 </RelativeLayout>

@@ -6,6 +6,7 @@
     >
     <com.xiaopeng.xmapnavi.view.appwidget.selfview.MapFloatView
         android:id="@+id/mfv_show"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
     <LinearLayout
@@ -57,26 +58,29 @@
                         android:id="@+id/tv_show_msg"
                         android:gravity="left|bottom"
 
-                        android:layout_width="335px"
+                        android:layout_width="370px"
                         android:layout_height="28px" />
                     <TextView
+
                         android:id="@+id/tv_show_shengyu"
                         android:textColor="@color/white"
                         android:textSize="28px"
-                        android:text="剩余1小时36分钟 256公里"
+                        android:text="剩余1小时36分钟 25.6公里"
                         android:gravity="center|right"
-                        android:layout_marginRight="262px"
+                        android:layout_marginRight="192px"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
 
                 </LinearLayout>
                 <ImageView
+                    android:visibility="gone"
                     android:layout_marginRight="168px"
                     android:layout_alignParentRight="true"
                     android:src="@drawable/icon_help"
                     android:layout_width="88px"
                     android:layout_height="108px" />
                 <ImageView
+                    android:visibility="gone"
                     android:background="@color/gray_btn_bg_pressed_color"
                     android:layout_marginTop="34px"
                     android:layout_marginBottom="34px"
