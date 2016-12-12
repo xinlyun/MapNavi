@@ -906,7 +906,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
 //                    CameraUpdate update1 = CameraUpdateFactory.changeBearing((float) scall);
 //                    mAMap.animateCamera(update1,0,null);
                 LatLngBounds latLngBounds = builder.build();
-                CameraUpdate update = CameraUpdateFactory.newLatLngBounds(latLngBounds, (int) (num * 160));
+                CameraUpdate update = CameraUpdateFactory.newLatLngBounds(latLngBounds, (int) (30 + num * 160));
 
                 Message message = handlTheWatch.obtainMessage();
                 message.what = 0;
