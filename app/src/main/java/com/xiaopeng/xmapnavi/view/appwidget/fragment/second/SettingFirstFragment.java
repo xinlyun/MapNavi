@@ -86,9 +86,11 @@ public class SettingFirstFragment extends Fragment implements View.OnClickListen
             if (booleens[i]){
                 imageViews[i].setImageResource(R.drawable.icon_like_02);
                 textViews[i].setTextColor(getResources().getColor(R.color.text_blue));
+                textViews[i].setBackgroundResource(R.drawable.button_like_bg_2);
             }else {
                 imageViews[i].setImageResource(R.drawable.icon_like_01);
                 textViews[i].setTextColor(getResources().getColor(R.color.first_text_color));
+                textViews[i].setBackgroundResource(R.drawable.button_like_bg_1);
             }
         }
     }
@@ -97,14 +99,19 @@ public class SettingFirstFragment extends Fragment implements View.OnClickListen
         if (mLocationPro.getBroadCastMode()== BroadcastMode.CONCISE){
             imageViews[4].setImageResource(R.drawable.icon_like_02);
             textViews[4].setTextColor(getResources().getColor(R.color.text_blue));
+            textViews[4].setBackgroundResource(R.drawable.button_like_bg_2);
+
             imageViews[5].setImageResource(R.drawable.icon_like_01);
             textViews[5].setTextColor(getResources().getColor(R.color.first_text_color));
-
+            textViews[5].setBackgroundResource(R.drawable.button_like_bg_1);
         }else {
             imageViews[5].setImageResource(R.drawable.icon_like_02);
             textViews[5].setTextColor(getResources().getColor(R.color.text_blue));
+            textViews[5].setBackgroundResource(R.drawable.button_like_bg_2);
+
             imageViews[4].setImageResource(R.drawable.icon_like_01);
             textViews[4].setTextColor(getResources().getColor(R.color.first_text_color));
+            textViews[4].setBackgroundResource(R.drawable.button_like_bg_1);
         }
     }
 
@@ -116,7 +123,8 @@ public class SettingFirstFragment extends Fragment implements View.OnClickListen
                 imageViews[8].setImageResource(R.drawable.icon_like_01);
                 textViews[6].setTextColor(getResources().getColor(R.color.first_text_color));
                 textViews[8].setTextColor(getResources().getColor(R.color.first_text_color));
-
+                textViews[6].setBackgroundResource(R.drawable.button_like_bg_1);
+                textViews[8].setBackgroundResource(R.drawable.button_like_bg_1);
                 break;
 
             case AimLessMode.CAMERA_DETECTED:
@@ -124,6 +132,8 @@ public class SettingFirstFragment extends Fragment implements View.OnClickListen
                 imageViews[8].setImageResource(R.drawable.icon_like_02);
                 textViews[6].setTextColor(getResources().getColor(R.color.first_text_color));
                 textViews[8].setTextColor(getResources().getColor(R.color.text_blue));
+                textViews[6].setBackgroundResource(R.drawable.button_like_bg_1);
+                textViews[8].setBackgroundResource(R.drawable.button_like_bg_2);
                 break;
 
             case AimLessMode.SPECIALROAD_DETECTED:
@@ -131,6 +141,8 @@ public class SettingFirstFragment extends Fragment implements View.OnClickListen
                 imageViews[8].setImageResource(R.drawable.icon_like_01);
                 textViews[6].setTextColor(getResources().getColor(R.color.text_blue));
                 textViews[8].setTextColor(getResources().getColor(R.color.first_text_color));
+                textViews[6].setBackgroundResource(R.drawable.button_like_bg_2);
+                textViews[8].setBackgroundResource(R.drawable.button_like_bg_1);
                 break;
 
             case AimLessMode.CAMERA_AND_SPECIALROAD_DETECTED:
@@ -138,6 +150,8 @@ public class SettingFirstFragment extends Fragment implements View.OnClickListen
                 imageViews[8].setImageResource(R.drawable.icon_like_02);
                 textViews[6].setTextColor(getResources().getColor(R.color.text_blue));
                 textViews[8].setTextColor(getResources().getColor(R.color.text_blue));
+                textViews[6].setBackgroundResource(R.drawable.button_like_bg_2);
+                textViews[8].setBackgroundResource(R.drawable.button_like_bg_2);
                 break;
         }
     }

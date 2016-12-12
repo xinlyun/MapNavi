@@ -303,13 +303,22 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
         List<NaviLatLng> latLngs = paths.get(ints[0]).getWayPoint();
         if (latLngs!=null && latLngs.size()>0){
+            findViewById(R.id.img_div).setVisibility(View.GONE);
+            findViewById(R.id.btn_start_route_navi).setVisibility(View.GONE);
+
+
             NaviLatLng naviLatLng = latLngs.get(0);
             if (markerWayPoi == null){
                 options2.position(new LatLng(naviLatLng.getLatitude(),naviLatLng.getLongitude()));
                 markerWayPoi = mAMap.addMarker(options2);
             }else {
                 markerWayPoi.setPosition(new LatLng(naviLatLng.getLatitude(),naviLatLng.getLongitude()));
+
+
             }
+        }else {
+            findViewById(R.id.img_div).setVisibility(View.VISIBLE);
+            findViewById(R.id.btn_start_route_navi).setVisibility(View.VISIBLE);
         }
 
 

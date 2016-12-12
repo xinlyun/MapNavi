@@ -73,20 +73,22 @@
                     android:layout_width="match_parent"
                     android:layout_height="1px" />
                 <LinearLayout
-                    android:layout_marginLeft="142px"
+                    android:layout_marginLeft="102px"
                     android:orientation="vertical"
-                    android:layout_width="158px"
+                    android:layout_width="238px"
                     android:layout_height="match_parent">
                     <TextView
                         android:id="@+id/tx_first_view"
                         android:textColor="@color/text_blue"
                         android:gravity="center"
                         android:textSize="30px"
-                        android:layout_marginTop="50px"
+                        android:paddingTop="49px"
                         android:text="@string/map_setting"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="80px" />
                     <ImageView
+                        android:layout_marginLeft="40px"
+                        android:layout_marginRight="40px"
                         android:id="@+id/iv_first_view"
                         android:layout_marginTop="3px"
                         android:background="@color/text_blue"
@@ -96,20 +98,22 @@
 
                 <LinearLayout
                     android:layout_alignParentRight="true"
-                    android:layout_marginRight="142px"
+                    android:layout_marginRight="102px"
                     android:orientation="vertical"
-                    android:layout_width="158px"
+                    android:layout_width="238px"
                     android:layout_height="match_parent">
                     <TextView
                         android:id="@+id/tx_second_view"
                         android:textColor="@color/first_text_color"
                         android:gravity="center"
                         android:textSize="30px"
-                        android:layout_marginTop="50px"
+                        android:paddingTop="48px"
                         android:text="@string/collect_like"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="80px" />
                     <ImageView
+                        android:layout_marginLeft="40px"
+                        android:layout_marginRight="40px"
                         android:id="@+id/iv_second_view"
                         android:layout_marginTop="3px"
                         android:background="@color/transparent"
