@@ -154,7 +154,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     private MarkerOptions wayPoiOptions;
     private Marker mWayPoiMarker;
     private TextView mTxMarkTitle;
-    private View mMarkInfoView;
+    private View mMarkInfoView,mMarkInfoView2;
     MarkerOptions options2;
     private boolean isFirst = true;
     @Override
@@ -593,6 +593,11 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                 mActivity.startFragment(searchCollectFragment);
                 break;
 
+            case R.id.btn_begin_add_way_2:
+                mActivity.showDialogwithOther();
+                reCanLine();
+                break;
+
             default:
                 break;
 
@@ -864,7 +869,6 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         LogUtils.d(TAG,"reCanLine");
         wayPois.clear();
         for (LatLng marker:markers){
-//            LatLng latLng = marker.getPosition();
             LatLng latLng = marker;
             NaviLatLng naviLatLng = new NaviLatLng(latLng.latitude,latLng.longitude);
             wayPois.add(naviLatLng);
@@ -1120,6 +1124,8 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         mMarkInfoView       .findViewById(R.id.btn_begin_add_way).setOnClickListener(this);
         mMarkInfoView.findViewById(R.id.btn_little_begin_navi).setOnClickListener(this);
 
+        mMarkInfoView2      = getActivity().getLayoutInflater().inflate(R.layout.layout_tip_show_2,null);
+        mMarkInfoView2      .findViewById(R.id.btn_begin_add_way_2).setOnClickListener(this);
 
 
     }

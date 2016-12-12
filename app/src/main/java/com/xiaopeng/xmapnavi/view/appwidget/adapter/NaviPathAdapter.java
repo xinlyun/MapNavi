@@ -112,7 +112,7 @@ public class NaviPathAdapter extends ArrayAdapter{
         if (index == position){
             view.setBackgroundResource(R.drawable.img_ques_bg);
         }else {
-            view.setBackgroundResource(R.drawable.text_trans_bg);
+            view.setBackground(null);
         }
         itemHolder.tvShowType.setText(typeStrs[position]);
 

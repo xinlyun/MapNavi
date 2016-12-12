@@ -81,4 +81,7 @@ public interface ILocationProvider {
 
     void setAimState(int state);
     int getAimState();
+
+    void muteLaught();
+    void unmuteLaught();
 }

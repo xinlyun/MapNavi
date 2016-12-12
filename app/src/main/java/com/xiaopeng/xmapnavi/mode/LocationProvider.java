@@ -24,6 +24,7 @@ import com.aispeech.aios.common.property.MapProperty;
 import com.aispeech.aios.sdk.AIOSForCarSDK;
 import com.aispeech.aios.sdk.listener.AIOSMapListener;
 import com.aispeech.aios.sdk.manager.AIOSMapManager;
+import com.aispeech.aios.sdk.manager.AIOSSettingManager;
 import com.amap.api.maps.offlinemap.OfflineMapManager;
 import com.amap.api.navi.TBTEngine;
 import com.amap.api.navi.enums.BroadcastMode;
@@ -386,10 +387,12 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         xpMap.setCancelNaviSupported(true);
         xpMap.setOverviewSupported(true);
         xpMap.setZoomSupported(true);
-//        xpMap.setSupportedRoutePlanningStrategy(MapProperty.SupportedRoutePlanningStrategy.DRIVING_AVOID_CONGESTION ,
-//                MapProperty.SupportedRoutePlanningStrategy.DRIVING_SAVE_MONEY);
-        AIOSMapManager.getInstance().setLocalMapInfo(xpMap,true);
+        xpMap.setSupportedRoutePlanningStrategy(MapProperty.SupportedRoutePlanningStrategy.DRIVING_AVOID_CONGESTION ,
+                MapProperty.SupportedRoutePlanningStrategy.DRIVING_SAVE_MONEY);
+        AIOSMapManager.getInstance().setLocalMapInfo(xpMap,false);
         AIOSMapManager.getInstance().registerMapListener(mapAiosListener);
+
+        AIOSSettingManager.getInstance().setDefaultMap("com.xiaopeng.xmapnavi");
     }
 
     private void initBroadCast(){
@@ -909,6 +912,16 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public int getAimState() {
         return AIM_STATE;
+    }
+
+    @Override
+    public void muteLaught() {
+        aMapNavi.removeAMapNaviListener(ttsManager);
+    }
+
+    @Override
+    public void unmuteLaught() {
+        aMapNavi.addAMapNaviListener(ttsManager);
     }
 
 

@@ -7,6 +7,7 @@ import android.graphics.Point;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.amap.api.maps.AMap;
@@ -21,6 +22,7 @@ import com.xiaopeng.xmapnavi.R;
  */
 
 public class MapFloatView extends View{
+    private static final String TAG ="MapFloatView";
     private static final int LINE_TYPE_TOP=0 ;
     private static final int LINE_TYPE_BOTTOM=1 ;
     private static final int LINE_TYPE_LEFT=2 ;
@@ -34,6 +36,14 @@ public class MapFloatView extends View{
     Paint mPaint,mPaint2,mTxPaint;
 
     private String msg0,msg1;
+
+    private int posiby0x,posiby0y,posiby1x,posiby1y;
+
+    private XpFloatViewTouchListener mListner;
+
+    public void setFloatViewTouchListener(XpFloatViewTouchListener listner){
+        mListner = listner;
+    }
 
     public MapFloatView(Context context) {
         super(context);
@@ -112,41 +122,50 @@ public class MapFloatView extends View{
                 case LINE_TYPE_TOP:
                     rectF = new RectF();
                     rectF.set(mPoint0.x-40,mPoint0.y-115,mPoint0.x+40,mPoint0.y-85);
-                    canvas.drawRect(mPoint0.x-84,mPoint0.y-134,mPoint0.x+84,mPoint0.y-66,mPaint);
-                    canvas.drawRect(mPoint0.x-84,mPoint0.y-134,mPoint0.x+84,mPoint0.y-66,mPaint2);
+                    canvas.drawRect(mPoint0.x-78,mPoint0.y-128,mPoint0.x+78,mPoint0.y-72,mPaint);
+                    canvas.drawRect(mPoint0.x-78,mPoint0.y-128,mPoint0.x+78,mPoint0.y-72,mPaint2);
                     if (msg0!=null) {
                         canvas.drawText(msg0,mPoint0.x,mPoint0.y - 100+10,mTxPaint);
                     }
+                    posiby0x = mPoint0.x-84;
+                    posiby0y = mPoint0.y-134;
+
                     break;
 
                 case LINE_TYPE_BOTTOM:
                     rectF = new RectF();
                     rectF.set(mPoint0.x-40,mPoint0.y+85,mPoint0.x+40,mPoint0.y+1155);
-                    canvas.drawRect(mPoint0.x-84,mPoint0.y+66,mPoint0.x+84,mPoint0.y+134,mPaint);
-                    canvas.drawRect(mPoint0.x-84,mPoint0.y+66,mPoint0.x+84,mPoint0.y+134,mPaint2);
+                    canvas.drawRect(mPoint0.x-78,mPoint0.y+72,mPoint0.x+78,mPoint0.y+128,mPaint);
+                    canvas.drawRect(mPoint0.x-78,mPoint0.y+72,mPoint0.x+78,mPoint0.y+128,mPaint2);
                     if (msg0!=null) {
                         canvas.drawText(msg0,mPoint0.x,mPoint0.y + 100+10,mTxPaint);
                     }
+                    posiby0x = mPoint0.x-84;
+                    posiby0y = mPoint0.y+66;
                     break;
 
                 case LINE_TYPE_RIGHT:
                     rectF = new RectF();
                     rectF.set(mPoint0.x+60,mPoint0.y-15,mPoint0.x+140,mPoint0.y+15);
-                    canvas.drawRect(mPoint0.x+16,mPoint0.y-34,mPoint0.x+184,mPoint0.y+34,mPaint);
-                    canvas.drawRect(mPoint0.x+16,mPoint0.y-34,mPoint0.x+184,mPoint0.y+34,mPaint2);
+                    canvas.drawRect(mPoint0.x+22,mPoint0.y-28,mPoint0.x+178,mPoint0.y+28,mPaint);
+                    canvas.drawRect(mPoint0.x+22,mPoint0.y-28,mPoint0.x+178,mPoint0.y+28,mPaint2);
                     if (msg0!=null) {
                         canvas.drawText(msg0,mPoint0.x + 100,mPoint0.y+10,mTxPaint);
                     }
+                    posiby0x = mPoint0.x+16;
+                    posiby0y = mPoint0.y-34;
                     break;
 
                 case LINE_TYPE_LEFT:
                     rectF = new RectF();
                     rectF.set(mPoint0.x-140,mPoint0.y-15,mPoint0.x-60,mPoint0.y+15);
-                    canvas.drawRect(mPoint0.x-184,mPoint0.y-34,mPoint0.x-16,mPoint0.y+34,mPaint);
-                    canvas.drawRect(mPoint0.x-184,mPoint0.y-34,mPoint0.x-16,mPoint0.y+34,mPaint2);
+                    canvas.drawRect(mPoint0.x-178,mPoint0.y-28,mPoint0.x-22,mPoint0.y+28,mPaint);
+                    canvas.drawRect(mPoint0.x-178,mPoint0.y-28,mPoint0.x-22,mPoint0.y+28,mPaint2);
                     if (msg0!=null) {
                         canvas.drawText(msg0,mPoint0.x - 100,mPoint0.y+10,mTxPaint);
                     }
+                    posiby0x = mPoint0.x-184;
+                    posiby0y = mPoint0.y-34;
                     break;
 
                 default:
@@ -160,46 +179,88 @@ public class MapFloatView extends View{
                 case LINE_TYPE_TOP:
                     rectF = new RectF();
                     rectF.set(mPoint1.x-40,mPoint1.y-115,mPoint1.x+40,mPoint1.y-85);
-                    canvas.drawRect(mPoint1.x-84,mPoint1.y-134,mPoint1.x+84,mPoint1.y-66,mPaint);
-                    canvas.drawRect(mPoint1.x-84,mPoint1.y-134,mPoint1.x+84,mPoint1.y-66,mPaint2);
+                    canvas.drawRect(mPoint1.x-78,mPoint1.y-128,mPoint1.x+78,mPoint1.y-72,mPaint);
+                    canvas.drawRect(mPoint1.x-78,mPoint1.y-128,mPoint1.x+78,mPoint1.y-72,mPaint2);
                     if (msg1!=null) {
                         canvas.drawText(msg1,mPoint1.x,mPoint1.y - 100 + 10,mTxPaint);
                     }
+                    posiby1x = mPoint1.x-84;
+                    posiby1y = mPoint1.y-134;
+
                     break;
 
                 case LINE_TYPE_BOTTOM:
                     rectF = new RectF();
                     rectF.set(mPoint1.x-40,mPoint1.y+85,mPoint1.x+40,mPoint1.y+115);
-                    canvas.drawRect(mPoint1.x-84,mPoint1.y+66,mPoint1.x+84,mPoint1.y+134,mPaint);
-                    canvas.drawRect(mPoint1.x-84,mPoint1.y+66,mPoint1.x+84,mPoint1.y+134,mPaint2);
+                    canvas.drawRect(mPoint1.x-78,mPoint1.y+72,mPoint1.x+78,mPoint1.y+128,mPaint);
+                    canvas.drawRect(mPoint1.x-78,mPoint1.y+72,mPoint1.x+78,mPoint1.y+128,mPaint2);
                     if (msg1!=null) {
                         canvas.drawText(msg1,mPoint1.x,mPoint1.y + 100 + 10,mTxPaint);
                     }
+                    posiby1x = mPoint1.x-84;
+                    posiby1y = mPoint1.y+66;
                     break;
 
                 case LINE_TYPE_RIGHT:
                     rectF = new RectF();
                     rectF.set(mPoint1.x+60,mPoint1.y-15,mPoint1.x+140,mPoint1.y+15);
-                    canvas.drawRect(mPoint1.x+16,mPoint1.y-34,mPoint1.x+184,mPoint1.y+34,mPaint);
-                    canvas.drawRect(mPoint1.x+16,mPoint1.y-34,mPoint1.x+184,mPoint1.y+34,mPaint2);
+                    canvas.drawRect(mPoint1.x+22,mPoint1.y-28,mPoint1.x+178,mPoint1.y+28,mPaint);
+                    canvas.drawRect(mPoint1.x+22,mPoint1.y-28,mPoint1.x+178,mPoint1.y+28,mPaint2);
                     if (msg1!=null) {
                         canvas.drawText(msg1,mPoint1.x + 100,mPoint1.y+10,mTxPaint);
                     }
+                    posiby1x = mPoint1.x+16;
+                    posiby1y = mPoint1.y-34;
                     break;
 
                 case LINE_TYPE_LEFT:
                     rectF = new RectF();
                     rectF.set(mPoint1.x-140,mPoint1.y-15,mPoint1.x-60,mPoint1.y+15);
-                    canvas.drawRect(mPoint1.x-184,mPoint1.y-34,mPoint1.x-16,mPoint1.y+34,mPaint);
-                    canvas.drawRect(mPoint1.x-184,mPoint1.y-34,mPoint1.x-16,mPoint1.y+34,mPaint2);
+                    canvas.drawRect(mPoint1.x-178,mPoint1.y-28,mPoint1.x-22,mPoint1.y+28,mPaint);
+                    canvas.drawRect(mPoint1.x-178,mPoint1.y-28,mPoint1.x-22,mPoint1.y+28,mPaint2);
                     if (msg1!=null) {
                         canvas.drawText(msg1,mPoint1.x - 100,mPoint1.y+10,mTxPaint);
                     }
+                    posiby1x = mPoint1.x-184;
+                    posiby1y = mPoint1.y-34;
                     break;
 
                 default:
                     break;
             }
         }
+    }
+
+
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        if (event.getAction() == MotionEvent.ACTION_DOWN){
+
+            float posix = event.getX();
+            float posiy = event.getY();
+            LogUtils.d(TAG,"onTouch:\nx:"+posix+"\ny:"+posiy+"\nposiby0x:"+posiby0x+"\nposiby0y:"+posiby0y+"\nposiby1x:"+posiby1x+"\nposiby1y:"+posiby1y);
+            if (posix>posiby0x && posix<posiby0x + 168 && posiy>posiby0y && posiy<posiby0y+68) {
+                if (mListner!=null){
+                    mListner.touchOne(0);
+                }
+                return true;
+            }
+
+            if (posix>posiby1x && posix<posiby1x + 168 && posiy>posiby1y && posiy<posiby1y+68) {
+                if (mListner!=null){
+                    mListner.touchOne(1);
+                }
+                return true;
+            }
+
+        }
+        return super.onTouchEvent(event);
+    }
+
+    public interface XpFloatViewTouchListener{
+        void touchOne(int clickOne);
     }
 }
