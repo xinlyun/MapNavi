@@ -348,7 +348,10 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         if (ints.length>1) {
             AMapNaviPath path0 = mPaths.get(ints[0]);
             AMapNaviPath path1 = mPaths.get(ints[1]);
-            AMapNaviPath path2 = mPaths.get(ints[2]);
+            AMapNaviPath path2 = null;
+            if (ints.length == 3) {
+                path2 = mPaths.get(ints[2]);
+            }
             if (mPoline0!=null){
                 mPoline0.remove();
                 mPoline0 = null;
@@ -367,10 +370,9 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
                 mPoline2.remove();
                 mPoline2 = null;
             }
-            mPoline2 = drawPolyLine(path2);
-
-
-
+            if (path2!=null) {
+                mPoline2 = drawPolyLine(path2);
+            }
         }
         changeRoute();
     }

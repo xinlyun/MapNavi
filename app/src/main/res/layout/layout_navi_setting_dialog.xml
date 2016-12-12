@@ -26,114 +26,149 @@
                 android:layout_width="88px"
                 android:layout_height="72px" />
             <LinearLayout
-                android:layout_marginTop="72px"
+                android:gravity="center_vertical"
+                android:layout_marginTop="64px"
                 android:orientation="horizontal"
-                android:layout_marginLeft="100px"
-                android:layout_width="match_parent"
-                android:layout_height="40px">
 
+                android:layout_width="match_parent"
+                android:layout_height="56px">
+                <TextView
+                    android:text="路线偏好:"
+                    android:textSize="24px"
+                    android:textColor="@color/first_text_color"
+                    android:layout_marginLeft="106px"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
 
                 <ImageView
+                    android:visibility="gone"
                     android:id="@+id/iv_icon_0"
                     android:src="@drawable/icon_like_01"
                     android:layout_width="56px"
                     android:layout_height="match_parent" />
                 <TextView
+                    android:layout_marginLeft="30px"
                     android:id="@+id/btn_select_0"
                     android:gravity="center"
                     android:text="@string/congestion"
+                    android:background="@drawable/button_like_bg_1"
                     style="@style/base_text_style_24.black"
-                    android:layout_width="wrap_content"
+                    android:layout_width="148px"
                     android:layout_height="match_parent" />
                 <ImageView
                     android:layout_marginLeft="20px"
                     android:background="@color/gray_btn_bg_pressed_color"
+                    android:visibility="gone"
                     android:layout_width="1px"
                     android:layout_height="match_parent" />
                 <ImageView
+                    android:visibility="gone"
                     android:id="@+id/iv_icon_1"
                     android:src="@drawable/icon_like_01"
                     android:layout_width="56px"
                     android:layout_height="match_parent" />
                 <TextView
+                    android:layout_marginLeft="30px"
+                    android:background="@drawable/button_like_bg_1"
                     android:id="@+id/btn_select_1"
                     android:gravity="center"
                     android:text="@string/cost"
                     style="@style/base_text_style_24.black"
-                    android:layout_width="wrap_content"
+                    android:layout_width="148px"
                     android:layout_height="match_parent" />
                 <ImageView
+                    android:visibility="gone"
                     android:layout_marginLeft="20px"
                     android:background="@color/gray_btn_bg_pressed_color"
                     android:layout_width="1px"
                     android:layout_height="match_parent" />
                 <ImageView
+                    android:visibility="gone"
                     android:id="@+id/iv_icon_2"
                     android:src="@drawable/icon_like_01"
                     android:layout_width="56px"
                     android:layout_height="match_parent" />
                 <TextView
+                    android:layout_marginLeft="30px"
+                    android:background="@drawable/button_like_bg_1"
                     android:id="@+id/btn_select_2"
                     android:gravity="center"
                     android:text="@string/hightspeed"
                     style="@style/base_text_style_24.black"
-                    android:layout_width="wrap_content"
+                    android:layout_width="148px"
                     android:layout_height="match_parent" />
                 <ImageView
+                    android:visibility="gone"
                     android:layout_marginLeft="20px"
                     android:background="@color/gray_btn_bg_pressed_color"
                     android:layout_width="1px"
                     android:layout_height="match_parent" />
                 <ImageView
+                    android:visibility="gone"
                     android:id="@+id/iv_icon_3"
                     android:src="@drawable/icon_like_01"
                     android:layout_width="56px"
                     android:layout_height="match_parent" />
                 <TextView
+                    android:background="@drawable/button_like_bg_1"
                     android:id="@+id/btn_select_3"
                     android:gravity="center"
                     android:text="@string/avoidhightspeed"
+                    android:layout_marginLeft="30px"
                     style="@style/base_text_style_24.black"
-                    android:layout_width="wrap_content"
+                    android:layout_width="148px"
                     android:layout_height="match_parent" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_marginTop="184px"
+                android:layout_marginTop="176px"
                 android:orientation="horizontal"
-                android:layout_marginLeft="100px"
+                android:gravity="center_vertical"
                 android:layout_width="match_parent"
-                android:layout_height="40px">
-
+                android:layout_height="56px">
+                <TextView
+                    android:layout_marginLeft="106px"
+                    android:textColor="@color/first_text_color"
+                    android:textSize="24px"
+                    android:text="播报模式:"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
                 <ImageView
+                    android:visibility="gone"
                     android:id="@+id/iv_icon_4"
                     android:src="@drawable/icon_like_01"
                     android:layout_width="56px"
                     android:layout_height="match_parent" />
                 <TextView
+                    android:layout_marginLeft="30px"
+                    android:background="@drawable/button_like_bg_1"
                     android:id="@+id/btn_select_4"
                     android:gravity="center"
                     android:text="@string/say_more"
                     style="@style/base_text_style_24.black"
-                    android:layout_width="wrap_content"
+                    android:layout_width="148px"
                     android:layout_height="match_parent" />
                 <ImageView
+                    android:visibility="gone"
                     android:layout_marginLeft="20px"
                     android:background="@color/gray_btn_bg_pressed_color"
                     android:layout_width="1px"
                     android:layout_height="match_parent" />
                 <ImageView
+                    android:visibility="gone"
                     android:id="@+id/iv_icon_5"
                     android:src="@drawable/icon_like_01"
                     android:layout_width="56px"
                     android:layout_height="match_parent" />
                 <TextView
+                    android:background="@drawable/button_like_bg_1"
+                    android:layout_marginLeft="30px"
                     android:id="@+id/btn_select_5"
                     android:gravity="center"
                     android:text="@string/say_low"
                     style="@style/base_text_style_24.black"
-                    android:layout_width="wrap_content"
+                    android:layout_width="148px"
                     android:layout_height="match_parent" />
 
             </LinearLayout>

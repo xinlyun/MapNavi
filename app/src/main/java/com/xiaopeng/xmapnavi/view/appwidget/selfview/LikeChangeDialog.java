@@ -116,9 +116,11 @@ public class LikeChangeDialog implements View.OnClickListener{
             if (biStyle){
                 imageViews[i].setImageResource(R.drawable.icon_like_02);
                 textViews[i].setTextColor(mContext.getResources().getColor(R.color.text_blue));
+                textViews[i].setBackgroundResource(R.drawable.button_like_bg_2);
             }else {
                 imageViews[i].setImageResource(R.drawable.icon_like_01);
                 textViews[i].setTextColor(mContext.getResources().getColor(R.color.first_text_color));
+                textViews[i].setBackgroundResource(R.drawable.button_like_bg_1);
             }
         }
     }

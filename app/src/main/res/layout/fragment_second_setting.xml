@@ -7,7 +7,7 @@
     <LinearLayout
         android:id="@+id/first_ll"
         android:gravity="center_vertical"
-
+        android:background="@drawable/text_trans_bg"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="108px">
@@ -37,6 +37,7 @@
         android:layout_height="1px" />
 
     <LinearLayout
+        android:background="@drawable/text_trans_bg"
         android:gravity="center_vertical"
         android:id="@+id/second_ll"
         android:orientation="horizontal"

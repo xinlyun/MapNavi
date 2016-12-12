@@ -56,7 +56,7 @@
                     android:layout_marginTop="40px"
                     android:textSize="36px"
                     android:text="21.6公里"
-                    android:textColor="@color/text_blue"
+                    android:textColor="@color/first_text_color"
                     android:id="@+id/tv_poi_dis"
                     android:gravity="center"
                     android:singleLine="true"

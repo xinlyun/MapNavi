@@ -83,9 +83,11 @@ public class RouteNaviSettingDialog implements View.OnClickListener{
             if (booleen[i]){
                 imageViews[i].setImageResource(R.drawable.icon_like_02);
                 textViews[i].setTextColor(mContext.getResources().getColor(R.color.text_blue));
+                textViews[i].setBackgroundResource(R.drawable.button_like_bg_2);
             }else {
                 imageViews[i].setImageResource(R.drawable.icon_like_01);
                 textViews[i].setTextColor(mContext.getResources().getColor(R.color.first_text_color));
+                textViews[i].setBackgroundResource(R.drawable.button_like_bg_1);
             }
         }
     }
@@ -95,15 +97,19 @@ public class RouteNaviSettingDialog implements View.OnClickListener{
         if (mode== BroadcastMode.CONCISE){
             imageViews[4].setImageResource(R.drawable.icon_like_02);
             textViews[4].setTextColor(mContext.getResources().getColor(R.color.text_blue));
+            textViews[4].setBackgroundResource(R.drawable.button_like_bg_2);
 
             imageViews[5].setImageResource(R.drawable.icon_like_01);
             textViews[5].setTextColor(mContext.getResources().getColor(R.color.first_text_color));
+            textViews[5].setBackgroundResource(R.drawable.button_like_bg_1);
         }else {
             imageViews[5].setImageResource(R.drawable.icon_like_02);
             textViews[5].setTextColor(mContext.getResources().getColor(R.color.text_blue));
+            textViews[5].setBackgroundResource(R.drawable.button_like_bg_2);
 
             imageViews[4].setImageResource(R.drawable.icon_like_01);
             textViews[4].setTextColor(mContext.getResources().getColor(R.color.first_text_color));
+            textViews[4].setBackgroundResource(R.drawable.button_like_bg_1);
         }
     }
 

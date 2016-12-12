@@ -242,8 +242,9 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             >
-            <Button
-                android:background="@drawable/icon_zoom_plus"
+            <ImageView
+                android:background="@drawable/text_trans_bg"
+                android:src="@drawable/icon_zoom_plus"
                 android:id="@+id/btn_zoom_plus"
                 android:textSize="45px"
                 android:textColor="@color/black"
@@ -255,10 +256,11 @@
                 android:layout_marginRight="12px"
                 android:layout_width="match_parent"
                 android:layout_height="1px" />
-            <Button
+            <ImageView
+                android:background="@drawable/text_trans_bg"
                 android:textColor="@color/black"
                 android:textSize="45px"
-                android:background="@drawable/icon_zoom_small"
+                android:src="@drawable/icon_zoom_small"
                 android:id="@+id/btn_zoom_jian"
                 android:layout_width="88px"
                 android:layout_height="88px" />

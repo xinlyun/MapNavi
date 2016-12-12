@@ -381,6 +381,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     }
 
     private void initAiosListener(){
+        LogUtils.d(TAG,"initAiosListener");
         MapInfo xpMap = new MapInfo("小鹏地图","com.xiaopeng.xmapnavi");
         xpMap.setCancelNaviSupported(true);
         xpMap.setOverviewSupported(true);

@@ -61,7 +61,7 @@
             >
             <ImageView
 
-                android:background="@drawable/white_backgrouad"
+                android:background="@drawable/click_one_bg"
                 android:src="@drawable/icon_locationing"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -278,9 +278,10 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 >
-                <Button
-                    android:background="@drawable/icon_zoom_plus"
+                <ImageView
+                    android:src="@drawable/icon_zoom_plus"
                     android:id="@+id/btn_zoom_plus"
+                    android:background="@drawable/text_trans_bg"
                     android:textSize="45px"
                     android:textColor="@color/black"
                     android:layout_width="88px"
@@ -291,10 +292,11 @@
                     android:layout_marginRight="12px"
                     android:layout_width="match_parent"
                     android:layout_height="1px" />
-                <Button
+                <ImageView
+                    android:src="@drawable/icon_zoom_small"
                     android:textColor="@color/black"
                     android:textSize="45px"
-                    android:background="@drawable/icon_zoom_small"
+                    android:background="@drawable/text_trans_bg"
                     android:id="@+id/btn_zoom_jian"
                     android:layout_width="94px"
                     android:layout_height="94px" />
