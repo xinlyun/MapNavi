@@ -1143,7 +1143,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                 Projection projection = aMap.getProjection();
                 Point pM = projection.toScreenLocation(mLatlon);
 //            Point pT = projection.toScreenLocation(cameraPosition.target);
-                LogUtils.d(TAG, "upDateLineTo:\nx:" + pM.x + "\ny:" + pM.y);
+//                LogUtils.d(TAG, "upDateLineTo:\nx:" + pM.x + "\ny:" + pM.y);
                 mLsv.setPoint(pM);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1734,4 +1734,10 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             findMyPosi();
         }
     };
+
+    private void readIntent(Intent intent){
+
+    }
+
+
 }
