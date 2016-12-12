@@ -44,6 +44,7 @@ import com.xiaopeng.xmapnavi.mode.LocationProvider;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
 import com.xiaopeng.xmapnavi.presenter.callback.XpAiosMapListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviInfoListener;
+import com.xiaopeng.xmapnavi.utils.Utils;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.CircleImageView;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.MTrafficBarView;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.MTrafficBarView2;
@@ -89,6 +90,14 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 
 	private TextView mTxBilici,mTxBilici1;
 	private RelativeLayout mRLBilici;
+	private ImageView mImgNavi;
+	private int[] imgId = {
+			R.drawable.navi_icon_9,R.drawable.navi_icon_9,R.drawable.navi_icon_2,R.drawable.navi_icon_3
+			,R.drawable.navi_icon_4,R.drawable.navi_icon_5,R.drawable.navi_icon_6,R.drawable.navi_icon_7,R.drawable.navi_icon_8
+			,R.drawable.navi_icon_9,R.drawable.navi_icon_10,R.drawable.navi_icon_11,R.drawable.navi_icon_12
+			,R.drawable.navi_icon_13,R.drawable.navi_icon_14,R.drawable.navi_icon_15,R.drawable.navi_icon_16
+	};
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -125,9 +134,9 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		mNaviAmap.setOnCameraChangeListener(this);
 		boolean gps=getIntent().getBooleanExtra("gps", true);
 		if(gps){
-			mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
+//			mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
 
-//			mLocationPro.startNavi(AMapNavi.GPSNaviMode);
+			mLocationPro.startNavi(AMapNavi.GPSNaviMode);
 		}else{
 			mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
 		}
@@ -160,6 +169,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		mTxBilici		= (TextView) findViewById(R.id.tx_bilici);
 		mTxBilici1		= (TextView) findViewById(R.id.tx_bilici_1);
 		mRLBilici		= (RelativeLayout) findViewById(R.id.ll_bilici);
+		mImgNavi		= (ImageView) findViewById(R.id.img_navi);
 		findViewById(R.id.btn_exit).setOnClickListener(this);
 		findViewById(R.id.btn_rader_nave).setOnClickListener(this);
 		findViewById(R.id.btn_recalue).setOnClickListener(this);
@@ -262,6 +272,12 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 
 	@Override
 	public void onNaviInfoUpdate(NaviInfo naviinfo) {
+		int iconType = naviinfo.getIconType();
+		if (iconType>imgId.length-1){
+			mImgNavi.setImageResource(R.drawable.navi_icon_9);
+		}else {
+			mImgNavi.setImageResource(imgId[iconType]);
+		}
 		int length = naviinfo.getCurStepRetainDistance();
 		if (length>1000){
 			StringBuffer stringBuffer = new StringBuffer();
@@ -323,8 +339,10 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 
 	@Override
 	public void showCross(AMapNaviCross aMapNaviCross) {
+//		Utils.setImageViewMathParent(this,mZoomInIntersectionView,aMapNaviCross.getBitmap());
 		mZoomInIntersectionView.setImageBitmap(aMapNaviCross.getBitmap());
 		mZoomInIntersectionView.setVisibility(View.VISIBLE);
+
 	}
 
 	@Override

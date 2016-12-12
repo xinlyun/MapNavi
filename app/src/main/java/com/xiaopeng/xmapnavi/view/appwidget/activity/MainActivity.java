@@ -559,7 +559,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                     case MotionEvent.ACTION_UP:
                         // 离开屏幕
                         startTimerSomeTimeLater();
-                        findMyPoiDeley.sendEmptyMessageDelayed(0,10 * 1001);
+                        findMyPoiDeley.sendEmptyMessageDelayed(0,30 * 1001);
                         updateScale();
                         break;
 
@@ -580,11 +580,11 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             try {
-                if ((System.currentTimeMillis() - saveTouchTime) >=  10 * 1000) {
+                if ((System.currentTimeMillis() - saveTouchTime) >=  30 * 1000) {
                     if (mFragments.size()==0) {
                         findMyPosi();
                     }else {
-                        findMyPoiDeley.sendEmptyMessageDelayed(0,10 * 1001);
+                        findMyPoiDeley.sendEmptyMessageDelayed(0,30 * 1001);
                     }
                 }
             }catch (Exception e){

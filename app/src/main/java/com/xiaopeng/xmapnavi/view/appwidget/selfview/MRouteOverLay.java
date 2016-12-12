@@ -33,6 +33,8 @@ import com.amap.api.navi.model.AMapNaviStep;
 import com.amap.api.navi.model.AMapTrafficStatus;
 import com.amap.api.navi.model.NaviLatLng;
 import com.amap.api.navi.model.RouteOverlayOptions;
+import com.xiaopeng.xmapnavi.R;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -153,11 +155,15 @@ public class MRouteOverLay {
         }
 
         this.arrowOnRoute = BitmapDescriptorFactory.fromAsset("custtexture_aolr.png");
-        this.smoothTraffic = BitmapDescriptorFactory.fromAsset("custtexture_green.png");
+//        this.smoothTraffic = BitmapDescriptorFactory.fromAsset("custtexture_green.png");
+        this.smoothTraffic = BitmapDescriptorFactory.fromResource(R.drawable.custtexture_green_new);
         this.unknownTraffic = BitmapDescriptorFactory.fromAsset("custtexture_no.png");
-        this.slowTraffic = BitmapDescriptorFactory.fromAsset("custtexture_slow.png");
-        this.jamTraffic = BitmapDescriptorFactory.fromAsset("custtexture_bad.png");
-        this.veryJamTraffic = BitmapDescriptorFactory.fromAsset("custtexture_grayred.png");
+//        this.slowTraffic = BitmapDescriptorFactory.fromAsset("custtexture_slow.png");
+        this.slowTraffic = BitmapDescriptorFactory.fromResource(R.drawable.mcusttexture_green_2);
+//        this.jamTraffic = BitmapDescriptorFactory.fromAsset("custtexture_bad.png");
+//        this.veryJamTraffic = BitmapDescriptorFactory.fromAsset("custtexture_grayred.png");
+        this.jamTraffic = BitmapDescriptorFactory.fromResource(R.drawable.mcusttexture_green_3);
+        this.veryJamTraffic = BitmapDescriptorFactory.fromResource(R.drawable.mcusttexture_green_3);
     }
 
     public void addToMap() {

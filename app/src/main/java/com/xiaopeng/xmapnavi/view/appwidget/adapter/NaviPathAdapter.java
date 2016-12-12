@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -103,6 +104,7 @@ public class NaviPathAdapter extends ArrayAdapter{
             itemHolder.tvShowType = (TextView) view .findViewById(R.id.tv_type_show);
             itemHolder.tvShowMsg = (TextView) view.findViewById(R.id.tv_msg_show);
             itemHolder.tvShowDis = (TextView) view.findViewById(R.id.tv_type_show_2);
+            itemHolder.imageView = (ImageView) view.findViewById(R.id.img_bg);
             view.setTag(itemHolder);
         }else {
             view = convertView;
@@ -110,9 +112,11 @@ public class NaviPathAdapter extends ArrayAdapter{
         }
 
         if (index == position){
-            view.setBackgroundResource(R.drawable.img_ques_bg);
+//            view.setBackgroundResource(R.drawable.img_ques_bg);
+            itemHolder.imageView.setImageResource(R.drawable.img_ques_bg);
         }else {
-            view.setBackground(null);
+//            view.setBackground(null);
+            itemHolder.imageView.setImageBitmap(null);
         }
         itemHolder.tvShowType.setText(typeStrs[position]);
 
@@ -167,5 +171,6 @@ public class NaviPathAdapter extends ArrayAdapter{
 
     class ItemHolder{
         TextView tvShowType,tvShowMsg,tvShowDis;
+        ImageView imageView;
     }
 }
