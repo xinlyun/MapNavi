@@ -131,7 +131,7 @@
                 android:layout_width="56px"
                 android:layout_height="match_parent" />
             <TextView
-                android:background="@drawable/button_like_bg_1"
+                android:background="@drawable/button_like_bg_0"
                 android:id="@+id/btn_select_4"
                 android:gravity="center"
                 android:text="@string/say_more"
@@ -151,7 +151,7 @@
                 android:layout_width="56px"
                 android:layout_height="match_parent" />
             <TextView
-                android:background="@drawable/button_like_bg_1"
+                android:background="@drawable/button_like_bg_0"
                 android:id="@+id/btn_select_5"
                 android:gravity="center"
                 android:text="@string/say_low"

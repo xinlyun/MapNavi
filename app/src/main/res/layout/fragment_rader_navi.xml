@@ -9,18 +9,37 @@
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+    <FrameLayout
+        android:background="@drawable/shadowss"
+        android:paddingTop="4px"
+        android:paddingBottom="14px"
+        android:paddingLeft="9px"
+        android:paddingRight="9px"
+        android:layout_marginTop="128px"
+        android:layout_marginLeft="3px"
+        android:layout_width="106px"
+        android:layout_height="106px">
+        <ImageView
+
+            android:id="@+id/iv_broadcast"
+            android:src="@drawable/icon_broad_false"
+            android:background="@drawable/white_backgrouad"
+            android:layout_width="88px"
+            android:layout_height="88px" />
+    </FrameLayout>
+
     <LinearLayout
         android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="match_parent">
         <FrameLayout
             android:layout_marginTop="8px"
             android:background="@drawable/shadowss"
-            android:layout_marginLeft="10px"
+            android:layout_marginLeft="3px"
             android:paddingTop="4px"
             android:paddingBottom="14px"
             android:paddingLeft="9px"
             android:paddingRight="9px"
-            android:layout_marginRight="10px"
+            android:layout_marginRight="3px"
             android:layout_width="match_parent"
             android:layout_height="126px">
             <RelativeLayout
@@ -49,17 +68,39 @@
                         android:background="@color/gray_btn_bg_pressed_color"
                         android:layout_width="1px"
                         android:layout_height="match_parent" />
-                    <TextView
-                        android:layout_marginLeft="20px"
-                        android:singleLine="true"
-                        android:textColor="@color/a3a3a3"
-                        android:textSize="24px"
-                        android:text=""
-                        android:id="@+id/tv_show_msg"
-                        android:gravity="left|bottom"
-
+                    <LinearLayout
+                        android:gravity="center_vertical"
                         android:layout_width="370px"
-                        android:layout_height="28px" />
+                        android:layout_height="match_parent">
+                        <TextView
+                            android:layout_marginLeft="20px"
+                            android:singleLine="true"
+                            android:textColor="@color/a3a3a3"
+                            android:textSize="24px"
+                            android:text="125米后"
+                            android:id="@+id/tv_show_msg"
+                            android:gravity="left|bottom"
+
+                            android:layout_width="wrap_content"
+                            android:layout_height="28px" />
+                        <ImageView
+                            android:id="@+id/iv_show_navi_icon"
+                            android:layout_width="64px"
+                            android:layout_height="64px" />
+                        <TextView
+
+
+                            android:singleLine="true"
+                            android:textColor="@color/a3a3a3"
+                            android:textSize="24px"
+                            android:text="进入无名道路"
+                            android:id="@+id/tv_show_other"
+                            android:gravity="left|bottom"
+
+                            android:layout_width="wrap_content"
+                            android:layout_height="28px" />
+                    </LinearLayout>
+
                     <TextView
 
                         android:id="@+id/tv_show_shengyu"

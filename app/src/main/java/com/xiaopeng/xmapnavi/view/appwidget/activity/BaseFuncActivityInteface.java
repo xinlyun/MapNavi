@@ -19,4 +19,10 @@ public interface BaseFuncActivityInteface {
     MapView getMapView();
     void requestNaviCalue(LatLonPoint fromPoint, LatLonPoint toPoint);
     void showDialogwithOther();
+
+    void forShowDeleyDialog();
+    void dismissDeleyDialog();
+
+
+
 }

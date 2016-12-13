@@ -29,7 +29,7 @@
             <LinearLayout
                 android:id="@+id/prepare_edit_bar"
                 android:orientation="horizontal"
-                android:background="@color/grey_bg_color"
+                android:background="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="72px">
                 <ImageView
@@ -88,10 +88,9 @@
                 android:layout_height="1px" />
             <LinearLayout
                 android:orientation="horizontal"
-
                 android:layout_width="match_parent"
                 android:gravity="center_vertical"
-                android:layout_height="127px">
+                android:layout_height="110px">
                 <LinearLayout
                     android:background="@drawable/text_trans_bg"
                     android:id="@+id/btn_go_collect"
@@ -101,7 +100,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
                     <ImageView
-                        android:src="@drawable/icon_collect"
+                        android:src="@drawable/icon_collect_1"
                         android:layout_width="72px"
                         android:layout_marginLeft="124px"
                         android:layout_height="72px" />

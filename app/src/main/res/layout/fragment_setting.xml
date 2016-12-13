@@ -85,7 +85,7 @@
                         android:paddingTop="49px"
                         android:text="@string/map_setting"
                         android:layout_width="match_parent"
-                        android:layout_height="80px" />
+                        android:layout_height="84px" />
                     <ImageView
                         android:layout_marginLeft="40px"
                         android:layout_marginRight="40px"
@@ -110,7 +110,7 @@
                         android:paddingTop="48px"
                         android:text="@string/collect_like"
                         android:layout_width="match_parent"
-                        android:layout_height="80px" />
+                        android:layout_height="84px" />
                     <ImageView
                         android:layout_marginLeft="40px"
                         android:layout_marginRight="40px"

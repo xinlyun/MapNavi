@@ -33,14 +33,16 @@
                     android:layout_width="88px"
                     android:layout_height="72px" />
                 <GridView
-
+                    android:columnWidth="440px"
+                    android:listSelector="@color/alpha_00"
                     android:layout_marginTop="12px"
                     android:background="@color/trans_half_white"
                     android:id="@+id/gv_show_an"
                     android:numColumns="auto_fit"
-                    android:columnWidth="322px"
-                    android:layout_width="888px"
-                    android:layout_height="150px">
+                    android:layout_width="880px"
+                    android:layout_height="150px"
+
+                    >
 
                 </GridView>
             </LinearLayout>
@@ -84,19 +86,18 @@
             </LinearLayout>
 
             <LinearLayout
-
+                android:gravity="center_horizontal"
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="80px">
                 <LinearLayout
                     android:background="@drawable/text_trans_bg"
                     android:id="@+id/btn_start_navi"
-                    android:layout_weight="1"
                     android:orientation="horizontal"
-                    android:layout_width="match_parent"
+                    android:layout_width="528px"
                     android:layout_height="match_parent">
                     <ImageView
-                        android:src="@drawable/icon_navi_black"
+                        android:src="@drawable/icon_navi_smaill_icon_0"
                         android:layout_marginLeft="158px"
                         android:layout_width="72px"
                         android:layout_height="72px" />
@@ -118,16 +119,16 @@
                     android:layout_width="1px"
                     android:layout_height="match_parent" />
                 <LinearLayout
+
                     android:background="@drawable/text_trans_bg"
                     android:id="@+id/btn_start_route_navi"
-                    android:layout_weight="1"
                     android:orientation="horizontal"
-                    android:layout_width="match_parent"
+                    android:layout_width="528px"
                     android:layout_height="match_parent">
 
                     <ImageView
 
-                        android:src="@drawable/icon_navi_blue"
+                        android:src="@drawable/icon_navi_smaill_icon"
                         android:layout_marginLeft="158px"
                         android:layout_width="72px"
                         android:layout_height="72px"

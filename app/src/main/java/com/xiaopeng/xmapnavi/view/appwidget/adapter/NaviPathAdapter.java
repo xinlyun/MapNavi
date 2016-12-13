@@ -10,9 +10,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.amap.api.navi.model.AMapNaviPath;
+import com.amap.api.navi.model.AMapNaviStep;
 import com.xiaopeng.xmapnavi.R;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.zip.Inflater;
 
 /**
@@ -28,9 +30,9 @@ public class NaviPathAdapter extends ArrayAdapter{
     private Context mContext;
     public NaviPathAdapter(Context context, int resource) {
 
-            super(context, resource);
-            viewHashMap = new HashMap<>();
-            mContext = context;
+        super(context, resource);
+        viewHashMap = new HashMap<>();
+        mContext = context;
 
 
     }
@@ -48,10 +50,14 @@ public class NaviPathAdapter extends ArrayAdapter{
         viewHashMap.putAll(hashMap);
         typeStrs = new String[hashMap.size()];
         for (int i = 0 ;i<hashMap.size();i++){
-            typeStrs[i] = "方案"+(i+1);
+            typeStrs[i] = "常规路线";
         }
         try {
-            int wasInt = getMustWayLength(hashMap, ints);
+            int wasInt = getMustTrafiiWay(hashMap, ints);
+            typeStrs[wasInt] = "红灯最少";
+            wasInt = getMustCastWay(hashMap, ints);
+            typeStrs[wasInt] = "收费最少";
+            wasInt = getMustWayLength(hashMap, ints);
             typeStrs[wasInt] = "路程最短";
             wasInt = getMustFastWay(hashMap, ints);
             typeStrs[wasInt] = "用时最短";
@@ -83,6 +89,39 @@ public class NaviPathAdapter extends ArrayAdapter{
         return k;
     }
 
+    private int getMustCastWay(HashMap<Integer,AMapNaviPath> hashMap,int[] ints){
+        int k = 0;
+        int cast = hashMap.get(ints[0]).getTollCost();
+        for (int i = 1 ;i<hashMap.size();i++){
+            if ( cast > hashMap.get(ints[i]).getTollCost()){
+                cast = hashMap.get(ints[i]).getAllLength();
+                k = i;
+            }
+        }
+        return k;
+    }
+
+    private int getMustTrafiiWay(HashMap<Integer,AMapNaviPath> hashMap,int[] ints){
+        int k = 0;
+        int cast = getTrafficLightNum(hashMap.get(ints[0]));
+        for (int i = 1 ;i<hashMap.size();i++){
+            if ( cast > hashMap.get(ints[i]).getTollCost()){
+                cast = hashMap.get(ints[i]).getAllLength();
+                k = i;
+            }
+        }
+        return k;
+    }
+    private int getTrafficLightNum(AMapNaviPath path){
+        List<AMapNaviStep> steps =path.getSteps();
+        int count = 0;
+        for (AMapNaviStep step:steps){
+            count = count + step.getTrafficLightNumber();
+        }
+        return count;
+    }
+
+
 
     @Override
     public int getCount() {
@@ -100,7 +139,11 @@ public class NaviPathAdapter extends ArrayAdapter{
         ItemHolder itemHolder = new ItemHolder();
         AMapNaviPath path = viewHashMap.get(ints[position]);
         if (convertView == null) {
-            view = LayoutInflater.from(getContext()).inflate(R.layout.layout_gradview_item,null);
+            if (viewHashMap.size()>1) {
+                view = LayoutInflater.from(getContext()).inflate(R.layout.layout_gradview_item, null);
+            }else {
+                view = LayoutInflater.from(getContext()).inflate(R.layout.layout_gradview_item_big, null);
+            }
             itemHolder.tvShowType = (TextView) view .findViewById(R.id.tv_type_show);
             itemHolder.tvShowMsg = (TextView) view.findViewById(R.id.tv_msg_show);
             itemHolder.tvShowDis = (TextView) view.findViewById(R.id.tv_type_show_2);
@@ -113,10 +156,11 @@ public class NaviPathAdapter extends ArrayAdapter{
 
         if (index == position){
 //            view.setBackgroundResource(R.drawable.img_ques_bg);
+            view.setBackgroundResource(R.drawable.bg_navi_click);
             itemHolder.imageView.setImageResource(R.drawable.img_ques_bg);
         }else {
-//            view.setBackground(null);
-            itemHolder.imageView.setImageBitmap(null);
+            view.setBackgroundResource(R.drawable.bg_navi_click);
+            itemHolder.imageView.setImageResource(R.drawable.bg_navi_click);
         }
         itemHolder.tvShowType.setText(typeStrs[position]);
 
@@ -131,7 +175,7 @@ public class NaviPathAdapter extends ArrayAdapter{
         if (min ==  0){
             minStr = "";
         }else {
-            minStr  = ""+min+"分";
+            minStr  = ""+min+"分钟";
         }
         secStr = ""+path.getAllTime()/60+"秒";
         String timeString = hourStr+minStr;

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-
+    android:layout_width="440px"
+    android:minWidth="326px"
     android:layout_height="150px">
     <ImageView
         android:id="@+id/img_bg"
@@ -16,15 +16,17 @@
 
         android:layout_height="150px">
         <TextView
-            android:textSize="24px"
+            android:textSize="22px"
             android:layout_marginTop="18px"
             android:textColor="@color/a3a3a3"
             android:id="@+id/tv_type_show"
             android:gravity="center"
+            android:text="用时最少"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <TextView
-            android:layout_marginTop="8px"
+            android:text="40分钟"
+            android:layout_marginTop="2px"
             android:textSize="36px"
             android:textColor="@color/black"
             android:id="@+id/tv_msg_show"
@@ -33,10 +35,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <TextView
-            android:textSize="24px"
-            android:textColor="@color/gray_btn_bg_pressed_color"
+            android:text="30公里77米"
+            android:textSize="22px"
+            android:textColor="@color/a3a3a3"
             android:id="@+id/tv_type_show_2"
-            android:layout_marginTop="8px"
+            android:layout_marginTop="2px"
             android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

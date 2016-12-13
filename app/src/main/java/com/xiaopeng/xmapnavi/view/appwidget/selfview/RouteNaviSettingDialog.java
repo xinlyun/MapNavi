@@ -101,7 +101,7 @@ public class RouteNaviSettingDialog implements View.OnClickListener{
 
             imageViews[5].setImageResource(R.drawable.icon_like_01);
             textViews[5].setTextColor(mContext.getResources().getColor(R.color.first_text_color));
-            textViews[5].setBackgroundResource(R.drawable.button_like_bg_1);
+            textViews[5].setBackgroundResource(R.drawable.button_like_bg_0);
         }else {
             imageViews[5].setImageResource(R.drawable.icon_like_02);
             textViews[5].setTextColor(mContext.getResources().getColor(R.color.text_blue));
@@ -109,7 +109,7 @@ public class RouteNaviSettingDialog implements View.OnClickListener{
 
             imageViews[4].setImageResource(R.drawable.icon_like_01);
             textViews[4].setTextColor(mContext.getResources().getColor(R.color.first_text_color));
-            textViews[4].setBackgroundResource(R.drawable.button_like_bg_1);
+            textViews[4].setBackgroundResource(R.drawable.button_like_bg_0);
         }
     }
 

@@ -211,11 +211,11 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
             ShowSearchPoiFragment fragment = new ShowSearchPoiFragment();
             fragment.setRequestCode(requestCode);
             fragment.setSearchStr(searchStr);
-            if (requestCode != WAY_POI_CODE) {
-                mActivity.startFragment(fragment);
-            }else {
+//            if (requestCode != WAY_POI_CODE) {
+//                mActivity.startFragment(fragment);
+//            }else {
                 mActivity.startFragmentReplace(fragment);
-            }
+//            }
 
 //            mFrameLayout0.setVisibility(View.GONE);
 //            mFrameLayout1.setVisibility(View.VISIBLE);
@@ -360,6 +360,7 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
             showHide();
         }
     };
+
     private AdapterView.OnItemClickListener mItemClickListner2 = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -370,7 +371,7 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
 
     private void readyToSearch(String str){
         searchStr = str;
-        if (str.length() < 3){
+        if (str.length() < 1){
             Toast.makeText(getActivity(),R.string.please_sure_text,Toast.LENGTH_SHORT).show();
         }else {
             mEtSearch.setText(str);

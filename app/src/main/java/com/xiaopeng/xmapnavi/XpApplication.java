@@ -35,7 +35,7 @@ public class XpApplication extends Application {
 //                .setFontAttrId(R.attr.fontPath)
 //                .build()
 //        );
-        setTypeface();
+//        setTypeface();
         try {
             CrashReport.initCrashReport(XpApplication.this, "ae6efa93c1", true);
 //            LeakCanary.install(this);

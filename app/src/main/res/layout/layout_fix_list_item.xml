@@ -27,13 +27,14 @@
                 android:layout_width="88px"
                 android:layout_height="88px" />
             <LinearLayout
-
+                android:gravity="center"
                 android:orientation="vertical"
                 android:layout_width="619px"
                 android:layout_height="match_parent">
                 <TextView
+                    android:text="广州东站"
                     android:singleLine="true"
-                    android:layout_marginTop="28px"
+
                     android:textColor="@color/first_text_color"
                     android:id="@+id/pre_list_name"
 
@@ -41,8 +42,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
                 <TextView
+                    android:text=""
                     android:singleLine="true"
-                    android:layout_marginTop="10px"
+                    android:layout_marginTop="4px"
                     android:textColor="@color/a3a3a3"
                     android:textSize="24px"
                     android:id="@+id/pre_list_posi"

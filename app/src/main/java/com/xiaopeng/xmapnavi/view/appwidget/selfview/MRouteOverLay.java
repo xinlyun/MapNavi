@@ -148,7 +148,7 @@ public class MRouteOverLay {
         try {
             this.aMap = var1;
             this.mAMapNaviPath = var2;
-            this.normalRoute = BitmapDescriptorFactory.fromAsset("custtexture.png");
+            this.normalRoute = BitmapDescriptorFactory.fromResource(R.drawable.custtexture_green_new);
         } catch (Throwable var4) {
             ed.a(var4);
             gu.b(var4, "RouteOverLay", "init(AMap amap, AMapNaviPath aMapNaviPath)");
@@ -157,13 +157,13 @@ public class MRouteOverLay {
         this.arrowOnRoute = BitmapDescriptorFactory.fromAsset("custtexture_aolr.png");
 //        this.smoothTraffic = BitmapDescriptorFactory.fromAsset("custtexture_green.png");
         this.smoothTraffic = BitmapDescriptorFactory.fromResource(R.drawable.custtexture_green_new);
-        this.unknownTraffic = BitmapDescriptorFactory.fromAsset("custtexture_no.png");
+        this.unknownTraffic = BitmapDescriptorFactory.fromResource(R.drawable.custtexture_green_new);
 //        this.slowTraffic = BitmapDescriptorFactory.fromAsset("custtexture_slow.png");
         this.slowTraffic = BitmapDescriptorFactory.fromResource(R.drawable.mcusttexture_green_2);
 //        this.jamTraffic = BitmapDescriptorFactory.fromAsset("custtexture_bad.png");
 //        this.veryJamTraffic = BitmapDescriptorFactory.fromAsset("custtexture_grayred.png");
         this.jamTraffic = BitmapDescriptorFactory.fromResource(R.drawable.mcusttexture_green_3);
-        this.veryJamTraffic = BitmapDescriptorFactory.fromResource(R.drawable.mcusttexture_green_3);
+        this.veryJamTraffic = BitmapDescriptorFactory.fromResource(R.drawable.mcusttexture_green_4);
     }
 
     public void addToMap() {

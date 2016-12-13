@@ -32,7 +32,7 @@ public class SimplePoiAdapter extends ArrayAdapter {
     List<PoiItem> poiItemList;
     List<HistoryPosi> historyPosiList;
     LatLng localPosi;
-    int style ;
+    int style = 1 ;
     private int index = -1;
     private OnClickRightItem mOnClickRightItem;
 
@@ -44,7 +44,7 @@ public class SimplePoiAdapter extends ArrayAdapter {
     public SimplePoiAdapter(Context context, int resource,List<HistoryPosi> historyPosiList) {
         super(context, resource);
         this.historyPosiList = historyPosiList;
-        style = 0;
+        style = 1;
     }
     public void setNewOne(List<PoiItem> poiItemList){
         this.poiItemList = poiItemList;

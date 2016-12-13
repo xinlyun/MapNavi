@@ -85,12 +85,12 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     private LatLonPoint fromPoint,toPoint;
     private NaviPathAdapter adapter;
     private List<NaviLatLng> startPoi = new ArrayList<>(),endPoi=new ArrayList<>(),wayPois  = new ArrayList<>();
-    private RouteOverLay mRouteOverLay;
+//    private RouteOverLay mRouteOverLay;
     private boolean isTouch = false;
     //    private List<RouteOverLay> saveOverLay = new ArrayList<>();
     private LikeChangeDialog mSelectLikeDialog;
     private BaseFuncActivityInteface mActivity;
-
+    CameraUpdate watchUpdate;
 
     public void setMapView(MapView mapView){
         mAmapView = mapView;
@@ -101,7 +101,6 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
     public void setPosiFromTo(LatLonPoint fromPoint, LatLonPoint toPoint){
         LogUtils.d(TAG,"setPosiFromTo:"+"from:"+fromPoint+"\nto:"+toPoint);
-
         this.fromPoint = fromPoint;
         this.toPoint = toPoint;
         startPoi.clear();
@@ -159,6 +158,10 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     private View mMarkInfoView,mMarkInfoView2;
     MarkerOptions options2;
     private boolean isFirst = true;
+
+    private HashMap<Integer,RouteOverLay> routeMap = new HashMap<>();
+    private List<RouteOverLay> routeOverLays = new ArrayList<>();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         BugHunter.countTimeStart(BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
@@ -218,7 +221,15 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         mAMap.setOnMarkerClickListener(markerClickListener);
 
         mLocaionPro.addNaviCalueListner(this);
-        mAMap.setTrafficEnabled(isTricall);
+        isTricall = mAMap.isTrafficEnabled();
+        if (mIvLKicon!=null) {
+            if (isTricall) {
+                mIvLKicon.setImageResource(R.drawable.icon_lukuang_01);
+            }else {
+                mIvLKicon.setImageResource(R.drawable.icon_lukuang_02);
+            }
+        }
+//        mAMap.setTrafficEnabled(isTricall);
         mAMap.setOnPolylineClickListener(polylineClickListener);
 
         wayPoiOptions = new MarkerOptions();
@@ -283,7 +294,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     public void onStop() {
         super.onStop();
 //
-
+        isFirst = true;
         mLocaionPro.removeNaviCalueListner(this);
 //        mAMap.setOnMapTouchListener(null);
 //        if (mAMap!=null) {
@@ -382,6 +393,12 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
 
     private void drawAgain(){
+        for (RouteOverLay overLay:routeOverLays){
+            overLay.removeFromMap();
+        }
+        routeOverLays.clear();
+        routeMap.clear();
+
 
         paths = mLocaionPro.getNaviPaths();
         ints = mLocaionPro.getPathsInts();
@@ -413,20 +430,13 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             findViewById(R.id.img_div).setVisibility(View.VISIBLE);
             findViewById(R.id.btn_start_route_navi).setVisibility(View.VISIBLE);
         }
-
-
-
-
-
-
-
         drawPathLine();
-
         if (paths != null  && ints != null){
 //            if (!isTouch) {
             int routeID = ints[0];
-            AMapNaviPath path = paths.get(routeID);
-            drawRoutes(routeID,path);
+            routeIndex = 0;
+//            AMapNaviPath path = paths.get(routeID);
+//            drawRoutes(routeID,path);
 
             mLocaionPro.selectRouteId(routeID);
 
@@ -439,29 +449,38 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                         mGvShowNaviPaths.setAdapter(adapter);
                         mGvShowNaviPaths.setNumColumns(ints.length);
                         mGvShowNaviPaths.setOnItemClickListener(mClickPathItemListner);
+                        for (int i = 0; i < ints.length; i++) {
+                            AMapNaviPath path = paths.get(ints[i]);
+                            if (path != null) {
+                                RouteOverLay routeOverLay = drawRoutes(ints[i], path);
+                                routeOverLays.add(routeOverLay);
+                                routeMap.put(ints[i],routeOverLay);
+                            }
+                        }
+                        changeRoute();
                     }catch (Exception e){
                         e.printStackTrace();
                     }
                 }
             },400);
 
-            mAmapView.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        LogUtils.d(TAG,"ready to changeRoute \nfrom:"+fromPoint+"\n toPoint："+toPoint);
-                        LatLngBounds bounds = LatLngBounds.builder().include(new LatLng(fromPoint.getLatitude(), fromPoint.getLongitude()))
-                                .include(new LatLng(toPoint.getLatitude(), toPoint.getLongitude())).build();
-
-                        mAMap.setOnMapTouchListener(RunNaviWayFragment.this);
-
-                        changeRoute();
-
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
-                }
-            },800);
+//            mAmapView.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        LogUtils.d(TAG,"ready to changeRoute \nfrom:"+fromPoint+"\n toPoint："+toPoint);
+//                        LatLngBounds bounds = LatLngBounds.builder().include(new LatLng(fromPoint.getLatitude(), fromPoint.getLongitude()))
+//                                .include(new LatLng(toPoint.getLatitude(), toPoint.getLongitude())).build();
+//
+//                        mAMap.setOnMapTouchListener(RunNaviWayFragment.this);
+//
+//                        changeRoute();
+//
+//                    }catch (Exception e){
+//                        e.printStackTrace();
+//                    }
+//                }
+//            },800);
 
 
 //            }else {
@@ -479,7 +498,10 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             /**
              * 单路径不需要进行路径选择，直接传入－1即可
              */
-            drawRoutes(-1, path);
+            RouteOverLay routeOverLay = drawRoutes(-1, path);
+            ints = new int[]{-1};
+            routeMap.put(-1,routeOverLay);
+            routeOverLays.add(routeOverLay);
         }
 
 
@@ -495,16 +517,19 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         /**
          * 计算出来的路径只有一条
          */
-
-
-
-
-
-
         int  routeID = ints[routeIndex];
         AMapNaviPath path = paths.get(routeID);
 
-        drawRoutes(routeID,path);
+//        drawRoutes(routeID,path);
+        for (int i = 0;i<ints.length;i++){
+            int id = ints[i];
+            RouteOverLay routeOverLay = routeMap.get(id);
+            if (id == routeID){
+                routeOverLay.setTransparency(1.0f);
+            }else {
+                routeOverLay.setTransparency(0.0f);
+            }
+        }
         //必须告诉AMapNavi 你最后选择的哪条路
         mLocaionPro.selectRouteId(routeID);
 
@@ -527,13 +552,13 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         return count;
     }
 
-    private void drawRoutes(int routeId, AMapNaviPath path) {
+    private RouteOverLay drawRoutes(int routeId, AMapNaviPath path) {
         LogUtils.d(TAG,"drawRoutes id:"+routeId);
         calculateSuccess = true;
-        if (mRouteOverLay!=null){
-            mRouteOverLay.removeFromMap();
-            mRouteOverLay = null;
-        }
+//        if (mRouteOverLay!=null){
+//            mRouteOverLay.removeFromMap();
+//            mRouteOverLay = null;
+//        }
         mAMap.moveCamera(CameraUpdateFactory.changeTilt(0));
         RouteOverLay routeOverLay = new RouteOverLay(mAMap, path, getActivity());
         routeOverLay.setStartPointBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.nothing_poi));
@@ -546,7 +571,9 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         routeOverLay.setTrafficLine(true);
         routeOverLay.setZindex(zindex);
         routeOverLay.addToMap();
-        mRouteOverLay = routeOverLay;
+        routeOverLay.setTransparency(0.0f);
+        return routeOverLay;
+//        mRouteOverLay = routeOverLay;
 
     }
 
@@ -564,6 +591,8 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.btn_start_navi:
+                isFirst = true;
+                watchUpdate = null;
                 Intent intent = new Intent(getActivity(),RouteNaviActivity.class);
                 intent.putExtra("gps", true);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -571,6 +600,8 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                 break;
             case R.id.btn_start_route_navi:
                 mAMap.clear();
+                isFirst = true;
+                watchUpdate = null;
                 RadarNaviFragment radarNaviFragment = new RadarNaviFragment();
                 radarNaviFragment.setMapView(mActivity.getMapView());
                 radarNaviFragment.setToPoint(toPoint);
@@ -648,7 +679,51 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
     private void watchAll(){
         LogUtils.d(TAG,"watchAll");
-        new WatchSee().start();
+        if (mAMap!=null && watchUpdate!=null){
+            LogUtils.d(TAG,"watchAll0");
+            mAMap.animateCamera(watchUpdate,mCancelableCallBack);
+            mAmapView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (isFirst){
+                        isFirst = false;
+                        LogUtils.d(TAG,"staie first time to show Paths");
+                        mActivity.forShowDeleyDialog();
+                        if (paths==null){
+                            paths = mLocaionPro.getNaviPaths();
+                        }
+                        if (ints == null){
+                            ints = mLocaionPro.getPathsInts();
+                        }
+                        drawPathLine();
+
+                        if (paths != null && paths.size() > 1 && ints != null){
+                            for (int i = 0; i < ints.length; i++) {
+                                AMapNaviPath path = paths.get(ints[i]);
+                                if (path != null) {
+                                    RouteOverLay routeOverLay = drawRoutes(ints[i], path);
+                                    routeOverLays.add(routeOverLay);
+                                    routeMap.put(ints[i],routeOverLay);
+                                }
+                            }
+                            changeRoute();
+                        } else {
+                            AMapNaviPath path = mLocaionPro.getNaviPath();
+                            /**
+                             * 单路径不需要进行路径选择，直接传入－1即可
+                             */
+                            drawRoutes(-1, path);
+                        }
+                        mActivity.dismissDeleyDialog();
+
+                    }
+                }
+            },1000);
+
+        }else {
+            LogUtils.d(TAG,"watchAll1");
+            new WatchSee().start();
+        }
     }
 
     @Override
@@ -690,29 +765,50 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                 int[] ints = mLocaionPro.getPathsInts();
 
                 LatLngBounds.Builder builder = LatLngBounds.builder();
-                NaviLatLng startPoi = pathHashMap.get(ints[0]).getStartPoint();
-                NaviLatLng endPoi = pathHashMap.get(ints[0]).getEndPoint();
-                float disF = disMwithLat(startPoi,endPoi);
-                float disK = disMwithLon(startPoi,endPoi);
-                double alllenght = Math.sqrt(disF*disF + disK*disK);
-                double num = disF/alllenght;
-                double scall =Math.toDegrees(Math.atan(disF/disK));
-                LogUtils.d(TAG,"scall:"+scall);
-                for (int i =0 ;i < ints.length;i++){
-                    AMapNaviPath path = pathHashMap.get(ints[i]);
-                    for(NaviLatLng latLng : path.getCoordList()){
-                        builder.include(new LatLng(latLng.getLatitude(),latLng.getLongitude()));
+                AMapNaviPath pathx = pathHashMap.get(ints[0]);
+                if (pathx.getAllLength() < 100 * 1000) {
+                    NaviLatLng startPoi = pathHashMap.get(ints[0]).getStartPoint();
+                    NaviLatLng endPoi = pathHashMap.get(ints[0]).getEndPoint();
+                    float disF = disMwithLat(startPoi, endPoi);
+                    float disK = disMwithLon(startPoi, endPoi);
+                    double alllenght = Math.sqrt(disF * disF + disK * disK);
+                    double num = disF / alllenght;
+                    double scall = Math.toDegrees(Math.atan(disF / disK));
+                    LogUtils.d(TAG, "scall:" + scall);
+                    for (int i = 0; i < ints.length; i++) {
+                        AMapNaviPath path = pathHashMap.get(ints[i]);
+                        for (NaviLatLng latLng : path.getCoordList()) {
+                            builder.include(new LatLng(latLng.getLatitude(), latLng.getLongitude()));
+                        }
                     }
-                }
 //                    CameraUpdate update1 = CameraUpdateFactory.changeBearing((float) scall);
 //                    mAMap.animateCamera(update1,0,null);
-                LatLngBounds latLngBounds = builder.build();
-                CameraUpdate update = CameraUpdateFactory.newLatLngBounds(latLngBounds, (int) (100 + num * 235));
+                    LatLngBounds latLngBounds = builder.build();
+                    CameraUpdate update = CameraUpdateFactory.newLatLngBounds(latLngBounds, (int) (100 + num * 235));
+                    Message message = handlTheWatch.obtainMessage();
+                    message.what = 0;
+                    message.obj = update;
+                    handlTheWatch.sendMessage(message);
+                }else {
+                    NaviLatLng startPoi = pathx.getStartPoint();
+                    NaviLatLng endPoi = pathx.getEndPoint();
+                    float disF = disMwithLat(startPoi, endPoi);
+                    float disK = disMwithLon(startPoi, endPoi);
+                    double alllenght = Math.sqrt(disF * disF + disK * disK);
+                    double num = disF / alllenght;
 
-                Message message = handlTheWatch.obtainMessage();
-                message.what = 0;
-                message.obj = update;
-                handlTheWatch.sendMessage(message);
+                    builder.include(new LatLng(startPoi.getLatitude(),startPoi.getLongitude()));
+                    builder.include(new LatLng(endPoi.getLatitude(),endPoi.getLongitude()));
+                    LatLngBounds latLngBounds = builder.build();
+                    CameraUpdate update = CameraUpdateFactory.newLatLngBounds(latLngBounds, (int) (100 + num * 235) );
+                    Message message = handlTheWatch.obtainMessage();
+                    message.what = 0;
+                    message.obj = update;
+                    handlTheWatch.sendMessage(message);
+                }
+
+
+
 
             }catch (Exception e){
                 e.printStackTrace();
@@ -726,12 +822,15 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             super.handleMessage(msg);
             LogUtils.d(TAG,"handlTheWatch");
             CameraUpdate update = (CameraUpdate) msg.obj;
+            watchUpdate = update;
             mAMap.animateCamera(update,mCancelableCallBack);
             mAmapView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     if (isFirst){
+                        isFirst = false;
                         LogUtils.d(TAG,"staie first time to show Paths");
+                        mActivity.forShowDeleyDialog();
                         if (paths==null){
                             paths = mLocaionPro.getNaviPaths();
                         }
@@ -744,9 +843,12 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                             for (int i = 0; i < ints.length; i++) {
                                 AMapNaviPath path = paths.get(ints[i]);
                                 if (path != null) {
-                                    drawRoutes(ints[i], path);
+                                    RouteOverLay routeOverLay = drawRoutes(ints[i], path);
+                                    routeOverLays.add(routeOverLay);
+                                    routeMap.put(ints[i],routeOverLay);
                                 }
                             }
+                            changeRoute();
                         } else {
                             AMapNaviPath path = mLocaionPro.getNaviPath();
                             /**
@@ -754,7 +856,8 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                              */
                             drawRoutes(-1, path);
                         }
-                        isFirst = false;
+                        mActivity.dismissDeleyDialog();
+
                     }
                 }
             },1000);
@@ -764,32 +867,46 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     private AMap.CancelableCallback mCancelableCallBack = new AMap.CancelableCallback() {
         @Override
         public void onFinish() {
-            LogUtils.d(TAG,"onFinish COMPLETE:isFirst:"+isFirst);
-            if (isFirst){
-                if (paths==null){
-                    paths = mLocaionPro.getNaviPaths();
-                }
-                if (ints == null){
-                    ints = mLocaionPro.getPathsInts();
-                }
-                drawPathLine();
 
-                if (paths != null && paths.size() > 1 && ints != null){
-                    for (int i = 0; i < ints.length; i++) {
-                        AMapNaviPath path = paths.get(ints[i]);
-                        if (path != null) {
-                            drawRoutes(ints[i], path);
+//            mAmapView.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+                    LogUtils.d(TAG,"onFinish COMPLETE:isFirst:"+isFirst);
+                    if (isFirst){
+                        isFirst = false;
+                        mActivity.forShowDeleyDialog();
+                        if (paths==null){
+                            paths = mLocaionPro.getNaviPaths();
                         }
+                        if (ints == null){
+                            ints = mLocaionPro.getPathsInts();
+                        }
+                        drawPathLine();
+
+                        if (paths != null && paths.size() > 1 && ints != null){
+                            for (int i = 0; i < ints.length; i++) {
+                                AMapNaviPath path = paths.get(ints[i]);
+                                if (path != null) {
+                                    RouteOverLay routeOverLay = drawRoutes(ints[i], path);
+                                    routeOverLays.add(routeOverLay);
+                                    routeMap.put(ints[i],routeOverLay);
+                                }
+
+                            }
+                            changeRoute();
+                        } else {
+                            AMapNaviPath path = mLocaionPro.getNaviPath();
+                            /**
+                             * 单路径不需要进行路径选择，直接传入－1即可
+                             */
+                            drawRoutes(-1, path);
+                        }
+                        mActivity.dismissDeleyDialog();
+
                     }
-                } else {
-                    AMapNaviPath path = mLocaionPro.getNaviPath();
-                    /**
-                     * 单路径不需要进行路径选择，直接传入－1即可
-                     */
-                    drawRoutes(-1, path);
-                }
-                isFirst = false;
-            }
+//                }
+//            },300);
+
         }
 
         @Override
@@ -972,9 +1089,12 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     @Override
     public void onCalculateMultipleRoutesSuccess(int[] ints) {
         LogUtils.d(TAG,"onCalculateMultipleRoutesSuccess");
+        watchUpdate = null;
         this.ints = ints;
+        mActivity.forShowDeleyDialog();
         drawAgain();
         mProgDialog.dismiss();
+        mActivity.dismissDeleyDialog();
     }
 
     @Override

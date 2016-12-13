@@ -196,8 +196,8 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
 
             case R.id.btn_search:
                 showHide();
-                if (mEtvSearch.getText().length()<3){
-                    Toast.makeText(getActivity(),"请输入正确内容",Toast.LENGTH_SHORT).show();
+                if (mEtvSearch.getText().length()<1){
+                    Toast.makeText(getActivity(),"请先输入文字",Toast.LENGTH_SHORT).show();
                 }else {
                     String msg = mEtvSearch.getText().toString();
                     readyToSearch(msg);
@@ -214,7 +214,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
     }
 
     private void readyToSearch(String str){
-        if (str.length() < 3){
+        if (str.length() < 1){
             Toast.makeText(getActivity(),R.string.please_sure_text,Toast.LENGTH_SHORT).show();
         }else {
             mProgDialog.show();

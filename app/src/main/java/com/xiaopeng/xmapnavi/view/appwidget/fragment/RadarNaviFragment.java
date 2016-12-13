@@ -85,6 +85,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     private MapFloatView mMapFloatView;
     private Marker mLineMarker0, mLineMarker1;
     private Marker mMarker0, mMarker1;
+    private ImageView mIvShowNaviInfo,mIvBroadCast;
 
     private static final int LINE_TYPE_TOP = 0;
     private static final int LINE_TYPE_BOTTOM = 1;
@@ -92,6 +93,14 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     private static final int LINE_TYPE_RIGHT = 3;
     private static final int[] ANGLE_STYLE = {
             0, 180, 90, 270
+    };
+
+    private int[] imgId = {
+            R.drawable.navi_icon_9_small,R.drawable.navi_icon_9_small,R.drawable.navi_icon_2_small,R.drawable.navi_icon_3_small
+            ,R.drawable.navi_icon_4_small,R.drawable.navi_icon_5_small,R.drawable.navi_icon_6_small,R.drawable.navi_icon_7_small
+            ,R.drawable.navi_icon_8_small
+            ,R.drawable.navi_icon_9_small,R.drawable.navi_icon_10_small,R.drawable.navi_icon_11_small,R.drawable.navi_icon_12_small
+            ,R.drawable.navi_icon_13_small,R.drawable.navi_icon_14_small,R.drawable.navi_icon_15_small,R.drawable.navi_icon_16_small
     };
 
     private TextView mTxShowShengyu;
@@ -123,7 +132,8 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
      */
 //    private SparseArray<RouteOverLay> routeOverlays = new SparseArray<RouteOverLay>();
     private RouteOverLay mRouteOverlay;
-    private TextView mTvShowMsg;
+    private TextView mTvShowMsg,mTvShowRoad;
+
     private Marker mLocationMarker;
     private boolean isFirst = true;
     private boolean isTriffice = false;
@@ -132,7 +142,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
 
     private int remebTime = 0;
     private int remebLenght = 0;
-
+    private boolean isBroadCast = false;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         BugHunter.countTimeStart(BugHunter.TIME_TYPE_START, TAG, BugHunter.SWITCH_TYPE_START_COOL);
@@ -187,10 +197,14 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
 
     void initView() {
         mTvShowMsg = (TextView) findViewById(R.id.tv_show_msg);
+        mTvShowRoad = (TextView) findViewById(R.id.tv_show_other);
         mMapFloatView = (MapFloatView) findViewById(R.id.mfv_show);
         mMapFloatView.initAmap(mAmap);
         mIvLukuang = (ImageView) findViewById(R.id.iv_lukuang);
         mTxShowShengyu = (TextView) findViewById(R.id.tv_show_shengyu);
+        mIvShowNaviInfo = (ImageView) findViewById(R.id.iv_show_navi_icon);
+        mIvBroadCast = (ImageView) findViewById(R.id.iv_broadcast);
+        mIvBroadCast.setOnClickListener(this);
         findViewById(R.id.btn_see_all).setOnClickListener(this);
         findViewById(R.id.btn_exit).setOnClickListener(this);
         findViewById(R.id.btn_lukuang).setOnClickListener(this);
@@ -259,6 +273,14 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
             this.onCalculateMultipleRoutesSuccess(mLocationPro.getPathsInts());
 //            beginFirst();
 
+        }
+        isTriffice = mAmap.isTrafficEnabled();
+        if (mIvLukuang!=null) {
+            if (isTriffice) {
+                mIvLukuang.setImageResource(R.drawable.icon_lukuang_01);
+            } else {
+                mIvLukuang.setImageResource(R.drawable.icon_lukuang_02);
+            }
         }
         mAmap.setTrafficEnabled(isTriffice);
 
@@ -466,12 +488,10 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
                 int id = ints[i];
                 if (id == routeID){
                     MRouteOverLay routeOverLay = routeOverLays.get(id);
-                    routeOverLay.setTransparency(0f);
-                    routeOverLay.setZindex(0);
+                    routeOverLay.setTransparency(1f);
                 }else {
                     MRouteOverLay routeOverLay = routeOverLays.get(id);
                     routeOverLay.setTransparency(1f);
-                    routeOverLay.setZindex(0);
                 }
             }
 
@@ -496,8 +516,9 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     }
 
     private void drawApath(AMapNaviPath path){
+        RouteOverLay onlySaveOverlay = null;
         if (mRouteOverlay!=null){
-            mRouteOverlay.removeFromMap();
+            onlySaveOverlay = mRouteOverlay;
             mRouteOverlay = null;
         }
         RouteOverLay routeOverLay = new RouteOverLay(mAmap, path, getActivity());
@@ -509,11 +530,14 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         markerFromPoi.setPosition(new LatLng(path.getStartPoint().getLatitude(), path.getStartPoint().getLongitude()));
         markerEndPoi.setPosition(new LatLng(path.getEndPoint().getLatitude(), path.getEndPoint().getLongitude()));
 
-        routeOverLay.setZindex(3);
+        routeOverLay.setZindex(2);
         routeOverLay.setTransparency(1f);
         routeOverLay.setTrafficLine(true);
         routeOverLay.addToMap();
         mRouteOverlay = routeOverLay;
+        if (onlySaveOverlay!=null){
+            onlySaveOverlay.removeFromMap();
+        }
     }
 
 
@@ -581,7 +605,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         markerEndPoi.setPosition(new LatLng(path.getEndPoint().getLatitude(), path.getEndPoint().getLongitude()));
 
         routeOverLay.setZindex(1);
-        routeOverLay.setTransparency(1f);
+        routeOverLay.setTransparency(0.95f);
         routeOverLay.setTrafficLine(true);
         routeOverLay.addToMap();
         return routeOverLay;
@@ -592,12 +616,23 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     @Override
     public void onNaviInfoUpdate(NaviInfo naviInfo) {
         if (naviInfo != null) {
+            int naviType = naviInfo.getIconType();
+            if (naviType > imgId.length-1){
+                mIvShowNaviInfo.setImageResource(R.drawable.navi_icon_9_small);
+            }else {
+                mIvShowNaviInfo.setImageResource(imgId[naviType]);
+            }
+
             remebLenght = naviInfo.getPathRetainDistance();
             remebTime   = naviInfo.getPathRetainTime();
 
-            String str = "" + naviInfo.getCurStepRetainDistance() + "米后" + "进入" + naviInfo.getNextRoadName();
+            String str = "" + naviInfo.getCurStepRetainDistance() + "米后" ;
+            String str2 = "进入" + naviInfo.getNextRoadName();
             if (mTvShowMsg != null) {
                 mTvShowMsg.setText(str);
+            }
+            if (mTvShowRoad !=null){
+                mTvShowRoad.setText(str2);
             }
             String timeL;
             int allTime = naviInfo.getPathRetainTime();
@@ -674,6 +709,17 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
                 }
                 break;
 
+            case R.id.iv_broadcast:
+                isBroadCast = !isBroadCast;
+                if (isBroadCast){
+                    mLocationPro.unmuteLaught();
+                    mIvBroadCast.setImageResource(R.drawable.icon_broad_true);
+                }else {
+                    mLocationPro.muteLaught();
+                    mIvBroadCast.setImageResource(R.drawable.icon_broad_false);
+                }
+
+                break;
 
             default:
                 break;

@@ -369,14 +369,14 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
                 break;
 
             case R.id.ll_exit:
-                if (requestCode!=WAY_POI_CODE) {
-                    mActivity.exitFragment();
-                }else {
+//                if (requestCode!=WAY_POI_CODE) {
+//                    mActivity.exitFragment();
+//                }else {
                     SearchCollectFragment searchCollectFragment = new SearchCollectFragment();
                     searchCollectFragment.setMapView(mActivity.getMapView());
                     searchCollectFragment.setRequestCode(requestCode);
                     mActivity.startFragmentReplace(searchCollectFragment);
-                }
+//                }
                 break;
 
             case R.id.btn_start_navi:
