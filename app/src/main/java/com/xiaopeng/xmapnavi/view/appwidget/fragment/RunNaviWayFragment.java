@@ -1024,13 +1024,16 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         int[] ints1 = mLocaionPro.getPathsInts();
         AMapNaviPath path0 =  paths.get(ints1[0]);
         mPoline0 = drawPolyLine(path0);
+        mPoline0.setZIndex(0);
         if (paths.size()>1) {
             AMapNaviPath path1 = paths.get(ints1[1]);
             mPoline1 = drawPolyLine(path1);
+            mPoline1.setZIndex(0);
         }
         if (paths.size()>2){
             AMapNaviPath path2 = paths.get(ints1[2]);
             mPoline2 = drawPolyLine(path2);
+            mPoline2.setZIndex(0);
         }
     }
 
