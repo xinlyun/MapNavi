@@ -109,7 +109,7 @@ public class SimplePoiAdapter extends ArrayAdapter {
             itemHolder.naviBtn.setOnClickListener(new lvButtonListener(position));
             if (position == index){
 //                android:background="@color/trans_white_lrc"
-                view.findViewById(R.id.back_ll).setBackgroundColor(getContext().getResources().getColor(R.color.grey_bg_color));
+                view.findViewById(R.id.back_ll).setBackgroundColor(getContext().getResources().getColor(R.color.grey_bg_color_0));
             }else {
                 view.findViewById(R.id.back_ll).setBackground(null);
             }

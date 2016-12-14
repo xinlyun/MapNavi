@@ -17,10 +17,11 @@
             android:layout_marginLeft="40px"
             android:orientation="vertical"
             android:layout_width="729px"
+            android:gravity="center"
             android:layout_height="match_parent">
             <TextView
                 android:singleLine="true"
-                android:layout_marginTop="28px"
+
                 android:textColor="@color/first_text_color"
                 android:id="@+id/pre_list_name"
 
@@ -30,7 +31,7 @@
             <TextView
                 android:layout_marginLeft="26px"
                 android:singleLine="true"
-                android:layout_marginTop="10px"
+                android:layout_marginTop="8px"
                 android:textColor="@color/a3a3a3"
                 android:textSize="24px"
                 android:id="@+id/pre_list_posi"
