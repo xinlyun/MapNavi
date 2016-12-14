@@ -954,8 +954,12 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
     private void startCalueNavi(){
         LogUtils.d(TAG,"startCalueNavi");
-        mProgDialog.show();
-        mCollectDialog.dismiss();
+        if (mProgDialog!=null) {
+            mProgDialog.show();
+        }
+        if (mCollectDialog!=null) {
+            mCollectDialog.dismiss();
+        }
 
         mLocationProvider.removeNaviCalueListner(this);
         mLocationProvider.addNaviCalueListner(this);
@@ -963,6 +967,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         startPoi.add(new NaviLatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
         List<NaviLatLng> wayPoi = new ArrayList<>();
         List<NaviLatLng> endPoi = new ArrayList<>();
+        if (mLatLng == null)return;
         endPoi.add(new NaviLatLng(mLatLng.latitude,mLatLng.longitude));
         mLocationProvider.calueRunWay(startPoi,wayPoi,endPoi);
     }
