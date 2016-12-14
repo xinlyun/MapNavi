@@ -242,7 +242,17 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             wayPoiOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_add_way_poi));
 
             mAMap.setInfoWindowAdapter(infoWindowAdapter);
-            readNaviMsg();
+            mAmapView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    try{
+                        readNaviMsg();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            },100);
+
         }catch (Exception e){
             e.printStackTrace();
         }
