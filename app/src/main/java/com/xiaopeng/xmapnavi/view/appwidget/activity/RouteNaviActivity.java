@@ -190,7 +190,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		findViewById(R.id.btn_goto_again).setOnClickListener(this);
 		findViewById(R.id.btn_lukuang).setOnClickListener(this);
 		findViewById(R.id.btn_see_watch).setOnClickListener(this);
-		findViewById(R.id.navi_map_view).setOnClickListener(this);
+		findViewById(R.id.navi_map_view_0).setOnClickListener(this);
 		mTrafficBarView.setTrafficListener(trafficBarListener);
 		mSettingDialog 	= new RouteNaviSettingDialog(this);
 		mSettingDialog	.setOnDialogListener(dialogListener);
@@ -485,6 +485,8 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 				changeTriffical();
 				break;
 
+			case R.id.navi_map_view_0:
+				//fill down
 			case R.id.navi_map_view:
 				LogUtils.d(TAG,"onClick:navi_map_view");
 				mAMapNaviView.displayOverview();
