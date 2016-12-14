@@ -48,9 +48,14 @@ public class TipItemAdapter extends ArrayAdapter {
             view = convertView;
             itemHolder = (ItemHolder) view.getTag();
         }
+
         itemHolder.tvShowName.setText(tip.getName());
         itemHolder.tvShowMsg.setText(tip.getAddress());
-
+        if (tip.getAddress()==null || "".equals(tip.getAddress())){
+            itemHolder.tvShowMsg.setVisibility(View.GONE);
+        }else {
+            itemHolder.tvShowMsg.setVisibility(View.VISIBLE);
+        }
         return view;
     }
 
