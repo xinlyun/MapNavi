@@ -78,6 +78,19 @@ public class MRouteOverLay {
         this.init(var1, var2);
     }
 
+    public boolean isPolyLineInIt(Polyline polyline){
+        if (guideLink!=null && polyline.equals(guideLink))return true;
+        if (mDefaultPolyline!=null && polyline.equals(mDefaultPolyline))return true;
+        for (Polyline pp:mCustomPolylines){
+            if (pp.equals(polyline))return true;
+        }
+        for (Polyline p2:mTrafficColorfulPolylines){
+            if (p2.equals(polyline))return true;
+        }
+        return false;
+    }
+
+
     public float getWidth() {
         return this.mWidth;
     }
@@ -155,13 +168,9 @@ public class MRouteOverLay {
         }
 
         this.arrowOnRoute = BitmapDescriptorFactory.fromAsset("custtexture_aolr.png");
-//        this.smoothTraffic = BitmapDescriptorFactory.fromAsset("custtexture_green.png");
         this.smoothTraffic = BitmapDescriptorFactory.fromResource(R.drawable.custtexture_green_new);
         this.unknownTraffic = BitmapDescriptorFactory.fromResource(R.drawable.custtexture_green_new);
-//        this.slowTraffic = BitmapDescriptorFactory.fromAsset("custtexture_slow.png");
         this.slowTraffic = BitmapDescriptorFactory.fromResource(R.drawable.mcusttexture_green_2);
-//        this.jamTraffic = BitmapDescriptorFactory.fromAsset("custtexture_bad.png");
-//        this.veryJamTraffic = BitmapDescriptorFactory.fromAsset("custtexture_grayred.png");
         this.jamTraffic = BitmapDescriptorFactory.fromResource(R.drawable.mcusttexture_green_3);
         this.veryJamTraffic = BitmapDescriptorFactory.fromResource(R.drawable.mcusttexture_green_4);
     }

@@ -385,41 +385,47 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         if (mPaths != null) {
             LogUtils.d(TAG, "onCalculateMultipleRoutesSuccess getPath size:" + mPaths.size());
         }
-        if (ints.length > 1) {
-            AMapNaviPath path0 = mPaths.get(ints[0]);
-            AMapNaviPath path1 = mPaths.get(ints[1]);
-            AMapNaviPath path2 = null;
-            if (ints.length == 3) {
-                path2 = mPaths.get(ints[2]);
-            }
-            if (mPoline0 != null) {
-                mPoline0.remove();
-                mPoline0 = null;
-
-            }
-            mPoline0 = drawPolyLine(path0);
-            mPoline0.setZIndex(0);
-
-            if (mPoline1 != null) {
-                mPoline1.remove();
-                mPoline1 = null;
-            }
-            mPoline1 = drawPolyLine(path1);
-            mPoline1.setZIndex(0);
-
-            if (mPoline2 != null) {
-                mPoline2.remove();
-                mPoline2 = null;
-            }
-            if (path2 != null) {
-                mPoline2 = drawPolyLine(path2);
-                mPoline2.setZIndex(0);
-            }
-        }
+//        if (ints.length > 1) {
+//            AMapNaviPath path0 = mPaths.get(ints[0]);
+//            AMapNaviPath path1 = mPaths.get(ints[1]);
+//            AMapNaviPath path2 = null;
+//            if (ints.length == 3) {
+//                path2 = mPaths.get(ints[2]);
+//            }
+//            if (mPoline0 != null) {
+//                mPoline0.remove();
+//                mPoline0 = null;
+//
+//            }
+//            mPoline0 = drawPolyLine(path0);
+//            mPoline0.setZIndex(0);
+//
+//            if (mPoline1 != null) {
+//                mPoline1.remove();
+//                mPoline1 = null;
+//            }
+//            mPoline1 = drawPolyLine(path1);
+//            mPoline1.setZIndex(0);
+//
+//            if (mPoline2 != null) {
+//                mPoline2.remove();
+//                mPoline2 = null;
+//            }
+//            if (path2 != null) {
+//                mPoline2 = drawPolyLine(path2);
+//                mPoline2.setZIndex(0);
+//            }
+//        }
         watchAll();
         drawAllPathLine();
 
         changeRoute();
+        mMapFloatView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                watchAll();
+            }
+        },1000);
     }
 
     private void drawInfoLine() {
@@ -484,16 +490,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
             /**
              * 把用户选择的那条路的权值弄高，使路线高亮显示的同时，重合路段不会变的透明
              **/
-            for (int i =0;i<ints.length;i++){
-                int id = ints[i];
-                if (id == routeID){
-                    MRouteOverLay routeOverLay = routeOverLays.get(id);
-                    routeOverLay.setTransparency(1f);
-                }else {
-                    MRouteOverLay routeOverLay = routeOverLays.get(id);
-                    routeOverLay.setTransparency(1f);
-                }
-            }
+
 
 //            routeOverLay.setZindex(zindex+1);
 
@@ -945,9 +942,13 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
                 LogUtils.d(TAG, "scall:" + scall);
                 for (int i = 0; i < ints.length; i++) {
                     AMapNaviPath path = pathHashMap.get(ints[i]);
-                    for (NaviLatLng latLng : path.getCoordList()) {
-                        builder.include(new LatLng(latLng.getLatitude(), latLng.getLongitude()));
-                    }
+                    LatLngBounds buoundd = path.getBoundsForPath();
+                    builder.include(buoundd.northeast);
+                    builder.include(buoundd.southwest);
+
+//                    for (NaviLatLng latLng : path.getCoordList()) {
+//                        builder.include(new LatLng(latLng.getLatitude(), latLng.getLongitude()));
+//                    }
                 }
 //                    CameraUpdate update1 = CameraUpdateFactory.changeBearing((float) scall);
 //                    mAMap.animateCamera(update1,0,null);
@@ -978,19 +979,26 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         @Override
         public void onPolylineClick(Polyline polyline) {
             LogUtils.d(TAG, "\n touch one:" + polyline + "\n first:" + mPoline0 + "\n first1:" + mPoline1 + "\n first2:" + mPoline2);
-            if (polyline.equals(mPoline0)) {
-                if (mLocationPro.getPathsInts()[0] != routeID) {
-                    routeID = mLocationPro.getPathsInts()[0];
-                    changeRoute();
-                }
-            } else if (polyline.equals(mPoline1)) {
-                if (mLocationPro.getPathsInts()[1] != routeID) {
-                    routeID = mLocationPro.getPathsInts()[1];
-                    changeRoute();
-                }
-            } else if (polyline.equals(mPoline2)) {
-                if (mLocationPro.getPathsInts()[2] != routeID) {
-                    routeID = mLocationPro.getPathsInts()[2];
+//            if (polyline.equals(mPoline0)) {
+//                if (mLocationPro.getPathsInts()[0] != routeID) {
+//                    routeID = mLocationPro.getPathsInts()[0];
+//                    changeRoute();
+//                }
+//            } else if (polyline.equals(mPoline1)) {
+//                if (mLocationPro.getPathsInts()[1] != routeID) {
+//                    routeID = mLocationPro.getPathsInts()[1];
+//                    changeRoute();
+//                }
+//            } else if (polyline.equals(mPoline2)) {
+//                if (mLocationPro.getPathsInts()[2] != routeID) {
+//                    routeID = mLocationPro.getPathsInts()[2];
+//                    changeRoute();
+//                }
+//            }
+            for (int i = 0;i<ints.length;i++){
+                MRouteOverLay routeOverLay = routeOverLays.get(ints[i]);
+                if (routeOverLay.isPolyLineInIt(polyline)){
+                    routeID = ints[i];
                     changeRoute();
                 }
             }

@@ -1026,7 +1026,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             reInit();
             initMarker();
             mLsv.setVisibility(View.VISIBLE);
-            findMyPosi();
+
             mLsv.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -1041,6 +1041,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             }else {
                 mIvShowTraffic.setImageResource(R.drawable.icon_lukuang_02);
             }
+            findMyPosi();
         }else {
             mFragments.remove(mFragments.size()-1);
             FragmentManager manager = getFragmentManager();
