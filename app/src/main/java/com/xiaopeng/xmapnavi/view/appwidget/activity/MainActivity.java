@@ -291,8 +291,9 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         mMarkerPoi.setSnippet("snippet");
         mMarkerPoi.setPositionByPixels(width2,height2);
         mMarkerPoi.setAnchor(0.5f,1f);
-        mMarkerPoi.setVisible(false);
         mMarkerPoi.setInfoWindowEnable(true);
+        mMarkerPoi.setVisible(false);
+
         scaleAnimation.setDuration(540);
         mapView.getMap().setOnMarkerClickListener(MainActivity.this);
         geocodeSearch = new GeocodeSearch(MainActivity.this);
@@ -311,14 +312,6 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         mLocationMarker.setVisible(false);
         mLocationMarker.setFlat(true);
 
-//        mLocationMarker1 = aMap.addMarker(new MarkerOptions()
-//                .icon(BitmapDescriptorFactory
-//                        .fromResource(R.drawable.icon_seewatch_0))
-//                .draggable(false)
-//        );
-//        mLocationMarker1.setAnchor(0.5f,0.5f);
-//        mLocationMarker1.setVisible(false);
-//        mLocationMarker1.setFlat(true);
 
         mLocationProvider.reCallLocation();
         try{
@@ -327,6 +320,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             e.printStackTrace();
         }
     }
+
 
 
     @Override
@@ -343,9 +337,6 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
         mLocationProvider    = LocationProvider.getInstence(this);
 
-//        mLocationProvider   .addSearchListner(this);
-
-//        mapView.setVisibility(View.VISIBLE);
         mCollectDateHelper.getWhereItems();
 
         mSensorManager.registerListener(mySensorEventListener,
@@ -409,6 +400,8 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
     private void init() {
         if (aMap == null) {
             aMap = mapView.getMap();
+            aMap.setCustomMapStylePath("/sdcard/style2.json");
+            aMap.setMapCustomEnable(false);
             CameraUpdate update = CameraUpdateFactory.newCameraPosition(new CameraPosition(
                     new LatLng(mLocationProvider.getAmapLocation().getLatitude(), mLocationProvider.getAmapLocation().getLongitude())
 //                    新的中心点坐标
@@ -568,6 +561,8 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         mTxMarkTitle        = (TextView) mMarkInfoView.findViewById(R.id.tx_tip_show);
         mTxMarkTitle        .setOnClickListener(this);
         mMarkInfoView.findViewById(R.id.btn_little_begin_navi).setOnClickListener(this);
+
+
     }
 
 
@@ -1017,6 +1012,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             return;
         }
         if (mFragments.size()==1) {
+            aMap.clear();
             FragmentManager manager = getFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
             transaction.remove(mFragments.remove(mFragments.size() - 1));
@@ -1042,6 +1038,9 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
                 mIvShowTraffic.setImageResource(R.drawable.icon_lukuang_02);
             }
             findMyPosi();
+
+
+
         }else {
             mFragments.remove(mFragments.size()-1);
             FragmentManager manager = getFragmentManager();
@@ -1050,6 +1049,13 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             transaction.replace(R.id.ll_show_fragment,tFragment);
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             transaction.commit();
+        }
+        if (mFragments.size() > 0) {
+            Fragment fragment = mFragments.get(mFragments.size() - 1);
+            if (!(fragment instanceof RunNaviWayFragment || fragment instanceof RadarNaviFragment)) {
+                aMap.setCustomMapStylePath("/sdcard/style_json.json");
+                aMap.setMapCustomEnable(aMap.isTrafficEnabled());
+            }
         }
 
     }
@@ -1075,8 +1081,19 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             aMap.moveCamera(update1);
         }
 
+
+
         aMap.setMyLocationEnabled(false);
         aMap.clear();
+
+        if (fragment instanceof RadarNaviFragment || fragment instanceof RunNaviWayFragment){
+//            aMap.setCustomMapStylePath("/sdcard/style2.json");
+            aMap.setCustomMapStylePath("/sdcard/style_json.json");
+
+        }else {
+
+        }
+
         mLsv.setVisibility(View.GONE);
         mDownLayout1.setVisibility(View.GONE);
         mFragments.add(fragment);
@@ -1252,14 +1269,12 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         if (marker!=null) {
             marker.setVisible(true);
         }
-
-        if (mMarkerPoi !=null) {
+        if (mMarkerPoi!=null ) {
+//            mMarkerPoi.hideInfoWindow();
             mMarkerPoi.setVisible(false);
         }
 
-        if (mMarkerPoi!=null) {
-            mMarkerPoi.hideInfoWindow();
-        }
+//
     }
 
     @Override
@@ -1272,6 +1287,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         geocodeSearch.getFromLocationAsyn(query);
 
         if (!equalNavLat(cameraPosition.target,new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude())) ){
+
             mMarkerPoi.setAnimation(scaleAnimation);
             mMarkerPoi.setVisible(true);
             mMarkerPoi.startAnimation();
@@ -1372,6 +1388,10 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
         }else {
             mTvPoiDis.setText(""+dis+getString(R.string.mile));
         }
+
+
+
+        mMarkerPoi.setInfoWindowEnable(true);
         mMarkerPoi.showInfoWindow();
 
 
@@ -1466,8 +1486,10 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
             isTraff = !isTraff;
             aMap.setTrafficEnabled(isTraff);
             if (isTraff){
+                aMap.setMapCustomEnable(true);
                 mIvShowTraffic.setImageResource(R.drawable.icon_lukuang_01);
             }else {
+                aMap.setMapCustomEnable(false);
                 mIvShowTraffic.setImageResource(R.drawable.icon_lukuang_02);
             }
         }
@@ -1720,7 +1742,6 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,L
 
     private void updateScale(){
         float pixel = aMap.getScalePerPixel();
-        LogUtils.d(TAG,"updateScale:"+pixel);
         int mi = (int) (pixel*94);
         if (mi<1000) {
             if (mi>100){

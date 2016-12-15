@@ -23,7 +23,6 @@ import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
-import com.amap.api.maps.overlay.WalkRouteOverlay;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.route.BusRouteResult;
 import com.amap.api.services.route.DrivePath;
@@ -309,13 +308,13 @@ public class RouteActivity extends Activity implements OnMapClickListener,
 					mWalkRouteResult = result;
 					final WalkPath walkPath = mWalkRouteResult.getPaths()
 							.get(0);
-					WalkRouteOverlay walkRouteOverlay = new WalkRouteOverlay(
-							this, aMap, walkPath,
-							mWalkRouteResult.getStartPos(),
-							mWalkRouteResult.getTargetPos());
-					walkRouteOverlay.removeFromMap();
-					walkRouteOverlay.addToMap();
-					walkRouteOverlay.zoomToSpan();
+//					WalkRouteOverlay walkRouteOverlay = new WalkRouteOverlay(
+//							this, aMap, walkPath,
+//							mWalkRouteResult.getStartPos(),
+//							mWalkRouteResult.getTargetPos());
+//					walkRouteOverlay.removeFromMap();
+//					walkRouteOverlay.addToMap();
+//					walkRouteOverlay.zoomToSpan();
 					mBottomLayout.setVisibility(View.VISIBLE);
 					int dis = (int) walkPath.getDistance();
 					int dur = (int) walkPath.getDuration();

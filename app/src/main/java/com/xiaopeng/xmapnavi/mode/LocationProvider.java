@@ -28,6 +28,7 @@ import com.aispeech.aios.sdk.manager.AIOSSettingManager;
 import com.amap.api.maps.offlinemap.OfflineMapManager;
 import com.amap.api.navi.TBTEngine;
 import com.amap.api.navi.enums.BroadcastMode;
+import com.amap.api.navi.model.AMapNaviStaticInfo;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 
 import android.support.annotation.NonNull;
@@ -514,6 +515,11 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public void onArriveDestination(NaviStaticInfo naviStaticInfo) {
+        LogUtils.d(NAVI_TAG,"onArriveDestination");
+    }
+
+    @Override
+    public void onArriveDestination(AMapNaviStaticInfo aMapNaviStaticInfo) {
         LogUtils.d(NAVI_TAG,"onArriveDestination");
     }
 

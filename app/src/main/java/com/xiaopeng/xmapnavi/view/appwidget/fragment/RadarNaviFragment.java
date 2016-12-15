@@ -173,15 +173,16 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     public void onPause() {
         super.onPause();
         mMapView.onPause();
+        mAmap.setMapCustomEnable(false);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         mMapView.onResume();
-        mAmap.setMapType(AMap.MAP_TYPE_NAVI);
+//        mAmap.setMapType(AMap.MAP_TYPE_NAVI);
         BugHunter.countTimeEnd(getActivity().getApplication(), BugHunter.TIME_TYPE_START, TAG, BugHunter.SWITCH_TYPE_START_COOL);
-
+        mAmap.setMapCustomEnable(true);
     }
 
     @Nullable

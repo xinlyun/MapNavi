@@ -24,5 +24,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:24.0.0'
     compile files('libs/Msc.jar')
     compile files('libs/Volley.jar')
-    compile files('libs/AMap3DMap_4.0.1_AMapNavi_1.9.2_AMapSearch_3.5.0_AMapLocation_3.0.0_20160927.jar')
+    compile files('libs/AMap3DMap_4.1.3_AMapNavi_1.9.4_AMapSearch_3.6.1_AMapLocation_3.2.0_20161208.jar')
 }

@@ -17,7 +17,7 @@ import com.amap.api.maps.AMap.OnMarkerClickListener;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
-import com.amap.api.maps.overlay.BusRouteOverlay;
+//import com.amap.api.maps.overlay.BusRouteOverlay;
 import com.amap.api.services.route.BusPath;
 import com.amap.api.services.route.BusRouteResult;
 import com.xiaopeng.amaplib.R;
@@ -33,7 +33,7 @@ public class BusRouteDetailActivity extends Activity implements OnMapLoadedListe
 	private ListView mBusSegmentList;
 	private BusSegmentListAdapter mBusSegmentListAdapter;
 	private LinearLayout mBusMap, mBuspathview;
-	private BusRouteOverlay mBusrouteOverlay;
+//	private BusRouteOverlay mBusrouteOverlay;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -99,19 +99,19 @@ public class BusRouteDetailActivity extends Activity implements OnMapLoadedListe
 		mBusMap.setVisibility(View.GONE);
 		mapView.setVisibility(View.VISIBLE);
 		aMap.clear();// 清理地图上的所有覆盖物
-		mBusrouteOverlay = new BusRouteOverlay(this, aMap,
-				mBuspath, mBusRouteResult.getStartPos(),
-				mBusRouteResult.getTargetPos());
-		mBusrouteOverlay.removeFromMap();
+//		mBusrouteOverlay = new BusRouteOverlay(this, aMap,
+//				mBuspath, mBusRouteResult.getStartPos(),
+//				mBusRouteResult.getTargetPos());
+//		mBusrouteOverlay.removeFromMap();
 
 	}
 
 	@Override
 	public void onMapLoaded() {
-		if (mBusrouteOverlay != null) {
-			mBusrouteOverlay.addToMap();
-			mBusrouteOverlay.zoomToSpan();
-		}
+//		if (mBusrouteOverlay != null) {
+//			mBusrouteOverlay.addToMap();
+//			mBusrouteOverlay.zoomToSpan();
+//		}
 	}
 
 	@Override

@@ -14,6 +14,7 @@ import com.amap.api.navi.model.AMapLaneInfo;
 import com.amap.api.navi.model.AMapNaviCross;
 import com.amap.api.navi.model.AMapNaviInfo;
 import com.amap.api.navi.model.AMapNaviLocation;
+import com.amap.api.navi.model.AMapNaviStaticInfo;
 import com.amap.api.navi.model.AMapNaviTrafficFacilityInfo;
 import com.amap.api.navi.model.AimLessModeCongestionInfo;
 import com.amap.api.navi.model.AimLessModeStat;
@@ -128,6 +129,11 @@ public class BaseActivity extends Activity implements AMapNaviListener, AMapNavi
     @Override
     public void onArriveDestination(NaviStaticInfo naviStaticInfo) {
         //到达目的地，有统计信息回调
+    }
+
+    @Override
+    public void onArriveDestination(AMapNaviStaticInfo aMapNaviStaticInfo) {
+
     }
 
     @Override

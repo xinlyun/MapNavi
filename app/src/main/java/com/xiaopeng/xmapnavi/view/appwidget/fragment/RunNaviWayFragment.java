@@ -262,6 +262,17 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     public void onResume() {
         super.onResume();
         BugHunter.countTimeEnd(getActivity().getApplication(),BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
+//        mAMap.setMapType(AMap.MAP_TYPE_NAVI);
+
+        mAMap.setMapCustomEnable(true);
+        mAMap.setMapTextZIndex(0);
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mAMap.setMapCustomEnable(false);
     }
 
     private void initView(){
@@ -568,7 +579,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             }
             //必须告诉AMapNavi 你最后选择的哪条路
             mLocaionPro.selectRouteId(routeID);
-
+            adapter.setIndex(routeIndex);
 
             int traListhNum = getTrafficLightNum(path);
             int cost = path.getTollCost();
