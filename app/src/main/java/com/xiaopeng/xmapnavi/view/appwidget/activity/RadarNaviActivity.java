@@ -142,4 +142,9 @@ public class RadarNaviActivity extends Activity implements BaseFuncActivityIntef
     public void dismissDeleyDialog() {
 
     }
+
+    @Override
+    public void showCollectDialog() {
+
+    }
 }

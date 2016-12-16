@@ -335,7 +335,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
                             endPoi.add(new NaviLatLng(hisItem.posiLat,hisItem.posiLon));
                             poiLat = hisItem.posiLat;
                             poiLon = hisItem.posiLon;
-                            ((MainActivity)getActivity()).setPosi(poiLat,poiLon);
+//                            ((MainActivity)getActivity()).setPosi(poiLat,poiLon);
                             mLocationProvider.calueRunWay(startPoi,wayPoi,endPoi);
                             mProgDialog.show();
                         }

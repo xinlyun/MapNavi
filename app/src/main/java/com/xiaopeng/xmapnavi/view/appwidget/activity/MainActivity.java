@@ -28,6 +28,7 @@ import com.amap.api.maps.AMapOptions;
 import com.amap.api.maps.Projection;
 import com.amap.api.maps.model.Circle;
 import com.amap.api.maps.model.Poi;
+import com.amap.api.navi.model.AMapNaviPath;
 import com.gc.materialdesign.widgets.ProgressDialog;
 import com.wangjie.shadowviewhelper.ShadowProperty;
 import com.wangjie.shadowviewhelper.ShadowViewHelper;
@@ -99,6 +100,7 @@ import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
 import com.xiaopeng.xmapnavi.presenter.callback.XpWhereListener;
 import com.xiaopeng.xmapnavi.utils.Utils;
+import com.xiaopeng.xmapnavi.view.appwidget.fragment.MainFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.RadarNaviFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.RunNaviWayFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.SearchCollectFragment;
@@ -127,11 +129,12 @@ import okhttp3.internal.Util;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class MainActivity extends Activity implements BaseFuncActivityInteface,XpNaviCalueListener
-
+        , XpCollectListener
+        ,ShowCollectDialog.CollectDialogListener
 
 {
     public static final String TAG = "MainActivity";
-
+    private DateHelper mCollectDateHelper;
     private MapView mapView;
     private AMap aMap;
     //    private TipPopWindow mTipWindow;
@@ -147,21 +150,27 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
     private ProgressDialog mProgDialog,mProgDialog2;
 
     private ILocationProvider mLocationProvider;
-
+    private ShowCollectDialog mCollectDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         BugHunter.countTimeStart(BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
         super.onCreate(savedInstanceState);
+        mFragments = new ArrayList<>();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         setContentView(R.layout.activity_main);
+        startFragment(new MainFragment());
+        mapView = (MapView) findViewById(R.id.map_main);
         screenHeight = this.getWindowManager().getDefaultDisplay().getHeight();
         //阀值设置为屏幕高度的1/5
         keyHeight = screenHeight/5;
-        mFragments = new ArrayList<>();
-        LocationProvider.getInstence(this);
+
+        mLocationProvider = LocationProvider.getInstence(this);
         startService(new Intent(this, LocationProService.class));
         initView();
         mLocationProvider   .addNaviCalueListner(this);
+        mCollectDateHelper = new DateHelper();
+        mCollectDateHelper.setOnCollectListener(this);
+
     }
 
 
@@ -171,11 +180,22 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
     @Override
     protected void onStart() {
         super.onStart();
-        if (mapView==null) {
-            mapView = (MapView) findViewById(R.id.map_main);
-            mapView.onCreate(null);// 此方法必须重写
+        if (aMap==null) {
 
+            mapView.onCreate(null);// 此方法必须重写
+            aMap = mapView.getMap();
         }
+        mapView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (mCollectDialog==null) {
+                    mCollectDialog = new ShowCollectDialog(MainActivity.this);
+                    mCollectDialog.setCollectDialogListener(MainActivity.this);
+                }
+
+            }
+        },1000);
+
         mLocationProvider    = LocationProvider.getInstence(this);
     }
 
@@ -289,35 +309,6 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if(event.getKeyCode() == KeyEvent.KEYCODE_ENTER){
@@ -327,12 +318,6 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
         return super.dispatchKeyEvent(event);
     }
 
-
-
-
-
-
-
     @Override
     public void exitFragment(){
         if (mFragments.size()==0){
@@ -340,15 +325,14 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
             return;
         }
         if (mFragments.size()==1) {
-            aMap.clear();
+            if (aMap!=null) {
+                aMap.clear();
+            }
             FragmentManager manager = getFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
             transaction.remove(mFragments.remove(mFragments.size() - 1));
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
             transaction.commit();
-
-
-
 
         }else {
             mFragments.remove(mFragments.size()-1);
@@ -362,8 +346,10 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
         if (mFragments.size() > 0) {
             Fragment fragment = mFragments.get(mFragments.size() - 1);
             if (!(fragment instanceof RunNaviWayFragment || fragment instanceof RadarNaviFragment)) {
-                aMap.setCustomMapStylePath("/sdcard/style_json.json");
-                aMap.setMapCustomEnable(aMap.isTrafficEnabled());
+                if (aMap!=null) {
+                    aMap.setCustomMapStylePath("/sdcard/style_json.json");
+                    aMap.setMapCustomEnable(aMap.isTrafficEnabled());
+                }
             }
         }
 
@@ -385,19 +371,25 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
 
     @Override
     public void startFragment(Fragment fragment) {
-        if (mFragments.size()==0){
+        if (mFragments.size()==1){
             CameraUpdate update1 = CameraUpdateFactory.changeBearing(0);
-            aMap.moveCamera(update1);
+            if (aMap!=null) {
+                aMap.moveCamera(update1);
+            }
         }
 
 
 
-        aMap.setMyLocationEnabled(false);
-        aMap.clear();
+        if (aMap!=null) {
+            aMap.setMyLocationEnabled(false);
+            aMap.clear();
+        }
 
         if (fragment instanceof RadarNaviFragment || fragment instanceof RunNaviWayFragment){
 //            aMap.setCustomMapStylePath("/sdcard/style2.json");
-            aMap.setCustomMapStylePath("/sdcard/style_json.json");
+            if (aMap!=null) {
+                aMap.setCustomMapStylePath("/sdcard/style_json.json");
+            }
 
         }else {
 
@@ -442,9 +434,24 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
 
     @Override
     public void requestNaviCalue(LatLonPoint fromPoint, LatLonPoint toPoint) {
-        this.fromPoint = fromPoint;
-        this.toPoint = toPoint;
-        beginCalueNavi();
+//        this.fromPoint = fromPoint;
+//        this.toPoint = toPoint;
+//        beginCalueNavi();
+        if (fromPoint!=null && toPoint!=null){
+            List<NaviLatLng> startList = new ArrayList<>();
+            List<NaviLatLng> wayList = new ArrayList<>();
+            List<NaviLatLng> endList = new ArrayList<>();
+            startList.add(new NaviLatLng(fromPoint.getLatitude(),fromPoint.getLongitude()));
+            endList.clear();
+            endList.add(new NaviLatLng(toPoint.getLatitude(),toPoint.getLongitude()));
+//            mProgDialog.show();
+            showDialogwithOther();
+            mLocationProvider.calueRunWay(startList,wayList,endList);
+        }
+    }
+    @Override
+    public void showCollectDialog(){
+        mCollectDateHelper.getCollectItems();
     }
 
     @Override
@@ -511,6 +518,15 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
                 }
             }
         },2000);
+        double lat =0,lon =0;
+        HashMap<Integer,AMapNaviPath> pathHashMap = mLocationProvider.getNaviPaths();
+        if (pathHashMap!=null && pathHashMap.size()>0){
+            NaviLatLng naviLatLng = pathHashMap.get(ints[0]).getEndPoint();
+            lat = naviLatLng.getLatitude();
+            lon = naviLatLng.getLongitude();
+        }
+
+
         if (mFragments.size()>0){
             Fragment fragment = mFragments.get(mFragments.size()-1);
             if (fragment instanceof RunNaviWayFragment ||
@@ -519,10 +535,10 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
                             fragment instanceof ShowSearchPoiFragment){
 
             }else {
-                haveCalueNaviSucceful(ints, mLatLng.latitude, mLatLng.longitude);
+                haveCalueNaviSucceful(ints, lat, lon);
             }
         }else {
-            haveCalueNaviSucceful(ints, mLatLng.latitude, mLatLng.longitude);
+            haveCalueNaviSucceful(ints, lat, lon);
         }
     }
 
@@ -603,7 +619,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
 
         @Override
         public void onOverview(@NonNull String s) {
-            findMyPosi();
+//            findMyPosi();
         }
 
         @Override
@@ -623,13 +639,34 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
 
         @Override
         public void onLocate(@NonNull String s) {
-            findMyPosi();
+//            findMyPosi();
         }
     };
 
 
+    @Override
+    public void onCollectCallBack(List<CollectItem> collectItems) {
+        if (collectItems!=null) {
+            LogUtils.d(TAG, "onCollectCallBack:SIZE" + collectItems.size());
+        }
+//        if (collectItems==null || collectItems.size()==0)return;
+        if (mCollectDialog!=null) {
+            mCollectDialog.setDate(collectItems);
+            mCollectDialog.show();
+        }
+    }
 
+    @Override
+    public void onClickCollectItem(int position, CollectItem item) {
+        //TODO
+        LogUtils.d(TAG,"onClickCollectItem:"+item.pName);
+        mCollectDialog.dismiss();
+        if (item!=null) {
 
-
-
+            List<NaviLatLng> endWay = new ArrayList<>();
+            endWay.add(new NaviLatLng(item.posLat,item.posLon));
+            mLocationProvider.tryCalueRunWay(endWay);
+            showDialogwithOther();
+        }
+    }
 }

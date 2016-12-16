@@ -79,8 +79,8 @@ import java.util.TimerTask;
  * Created by linzx on 2016/12/15.
  */
 
-public class MainFragment extends Fragment implements AMap.InfoWindowAdapter , XpCollectListener
-        ,ShowCollectDialog.CollectDialogListener,View.OnClickListener
+public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
+        ,View.OnClickListener
         ,XpSearchListner,AMap.OnMarkerDragListener
         ,AMap.OnCameraChangeListener, AMap.OnMarkerClickListener
         ,GeocodeSearch.OnGeocodeSearchListener,LocationSource,XpLocationListener {
@@ -140,7 +140,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter , X
     private DateHelper mCollectDateHelper;
     private String poiName,poiDesc;
 
-    private ShowCollectDialog mCollectDialog;
+
 
     private WherePoi mHome,mComplete;
     private int height = 0 ;
@@ -173,7 +173,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter , X
         mActivity = (BaseFuncActivityInteface) getActivity();
 
         mCollectDateHelper = new DateHelper();
-        mCollectDateHelper.setOnCollectListener(this);
         mCollectDateHelper.setOnWhereListener(mWhereListener);
         mShadowPro = new ShadowProperty()
                 .setShadowColor(0x77000000)
@@ -186,7 +185,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter , X
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_calue_navi,container,false);
+        rootView = inflater.inflate(R.layout.fragment_main,container,false);
         SEEWATCH_TEXT = new String[]{
                 getResources().getString(R.string.watch_north),
                 getResources().getString(R.string.watch_follow),
@@ -197,14 +196,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter , X
 
 
 
-        mReleavieView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mCollectDialog = new ShowCollectDialog(getActivity());
-                mCollectDialog .setCollectDialogListener(MainFragment.this);
 
-            }
-        },3000);
 
 
         mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
@@ -282,27 +274,9 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter , X
         return mMarkInfoView;
     }
 
-    @Override
-    public void onCollectCallBack(List<CollectItem> collectItems) {
-        if (collectItems!=null) {
-            LogUtils.d(TAG, "onCollectCallBack:SIZE" + collectItems.size());
-        }
-//        if (collectItems==null || collectItems.size()==0)return;
-        if (mCollectDialog!=null) {
-            mCollectDialog.setDate(collectItems);
-            mCollectDialog.show();
-        }
-    }
 
-    @Override
-    public void onClickCollectItem(int position, CollectItem item) {
-        //TODO
-        LogUtils.d(TAG,"onClickCollectItem:"+item.pName);
-        if (item!=null) {
-            mLatLng = new LatLng(item.posLat, item.posLon);
-            startCalueNavi();
-        }
-    }
+
+
 
     @Override
     public void onClick(View view) {
@@ -758,6 +732,12 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter , X
             mapView = mActivity.getMapView();
             init();
         }
+        mapView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mLsv.setVisibility(View.VISIBLE);
+            }
+        },2000);
 
         mSensorManager.registerListener(mySensorEventListener,
                 mOrientation, SensorManager.SENSOR_DELAY_NORMAL);
@@ -1020,12 +1000,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter , X
             mPolyline = mAmap.addPolyline(polylineOptions);
             setMapInteractiveListener();
 
-            mapView.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mLsv.setVisibility(View.VISIBLE);
-                }
-            },2000);
+
             initMarker();
         }
 
@@ -1120,21 +1095,13 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter , X
 
 
     private void openCollect(){
-        mCollectDateHelper.getCollectItems();
+        mActivity.showCollectDialog();
     }
 
 
     private void startCalueNavi(){
         LogUtils.d(TAG,"startCalueNavi");
-//        if (mProgDialog!=null) {
-//            mProgDialog.show();
-//        }
         mActivity.showDialogwithOther();
-        if (mCollectDialog!=null) {
-            mCollectDialog.dismiss();
-        }
-
-
         List<NaviLatLng> startPoi = new ArrayList<>();
         startPoi.add(new NaviLatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
         List<NaviLatLng> wayPoi = new ArrayList<>();
