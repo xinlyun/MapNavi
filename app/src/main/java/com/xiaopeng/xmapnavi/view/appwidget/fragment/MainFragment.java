@@ -173,6 +173,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
     private MarkerOptions mMarkerOptions;
     private LinearLayout mInfoLayout;
+    private Handler findMyPoiDeley;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -192,6 +193,20 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_main,container,false);
+        findMyPoiDeley = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+                try {
+                    if ((System.currentTimeMillis() - saveTouchTime) >=  30 * 1000) {
+                        findMyPosi();
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        };
+
         SEEWATCH_TEXT = new String[]{
                 getResources().getString(R.string.watch_north),
                 getResources().getString(R.string.watch_follow),
@@ -933,6 +948,11 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         showWatchWay();
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        findMyPoiDeley.removeCallbacksAndMessages(null);
+    }
 
     /**
      * 取消timer任务
@@ -943,6 +963,8 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
             needFollowTimer = null;
         }
     }
+
+
 
     /**
      * 如果地图在静止的情况下
@@ -961,20 +983,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
     }
 
 
-    private Handler findMyPoiDeley = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            try {
-                if ((System.currentTimeMillis() - saveTouchTime) >=  30 * 1000) {
-                        findMyPosi();
-//                        findMyPoiDeley.sendEmptyMessageDelayed(0,30 * 1001);
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-    };
+
 
 
     /**

@@ -451,6 +451,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         if (aMapLocation != null) {
             if (aMapLocation != null
                     && aMapLocation.getErrorCode() == 0) {
+                String errText = "定位成功," + aMapLocation.getAddress()+ ": \n lat:" + aMapLocation.getLatitude()+"\n lon :"+aMapLocation.getLongitude();
+                LogUtils.e("AmapErr",errText);
                 mAmapLocation = aMapLocation;
                 if (System.currentTimeMillis() - timeSave > (60 * 1000)){
                     timeSave = System.currentTimeMillis();
@@ -672,9 +674,9 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private AMapLocationClientOption getDefaultOption(){
         AMapLocationClientOption mOption = new AMapLocationClientOption();
         mOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);//可选，设置定位模式，可选的模式有高精度、仅设备、仅网络。默认为高精度模式
-        mOption.setGpsFirst(true);//可选，设置是否gps优先，只在高精度模式下有效。默认关闭
+        mOption.setGpsFirst(false);//可选，设置是否gps优先，只在高精度模式下有效。默认关闭
         mOption.setHttpTimeOut(30 *1000);//可选，设置网络请求超时时间。默认为30秒。在仅设备模式下无效
-        mOption.setInterval(2 * 1000);//可选，设置定位间隔。默认为2秒
+        mOption.setInterval(5 * 1000);//可选，设置定位间隔。默认为2秒
         mOption.setNeedAddress(true);//可选，设置是否返回逆地理地址信息。默认是ture
         mOption.setOnceLocation(false);//可选，设置是否单次定位。默认是false
         mOption.setOnceLocationLatest(false);//可选，设置是否等待wifi刷新，默认为false.如果设置为true,会自动变为单次定位，持续定位时不要使用
@@ -690,7 +692,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         saveSearchStr = str;
         String cityCode = "";
         if (mAmapLocation != null){
-            cityCode = mAmapLocation.getCityCode();
+            cityCode = mAmapLocation.getCity();
         }
         PoiSearch.Query query  = new PoiSearch.Query(str, "", cityCode);
         query.setPageSize(QUEST_PAGE_SIZE); //设置10 页
