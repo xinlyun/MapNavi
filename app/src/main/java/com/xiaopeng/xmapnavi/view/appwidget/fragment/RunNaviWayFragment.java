@@ -170,7 +170,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         BugHunter.countTimeStart(BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
         mActivity = (BaseFuncActivityInteface) getActivity();
         super.onCreate(savedInstanceState);
-        mLocaionPro = LocationProvider.getInstence(getActivity());
+
         mOptions = new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_way_poi));
         bi = BitmapFactory.decodeResource(getActivity().getResources(),R.drawable.title_back_00);
         isFirst = true;
@@ -179,6 +179,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mLocaionPro = LocationProvider.getInstence(getActivity());
         rootView = inflater.inflate(R.layout.fragment_calue_navi,container,false);
         initView();
         return rootView;
@@ -425,6 +426,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
 
     private void drawAgain(){
+        if (mLocaionPro==null)return;
         for (RouteOverLay overLay:routeOverLays){
             overLay.removeFromMap();
         }
@@ -557,6 +559,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
 
     public void changeRoute() {
+        if (mLocaionPro==null)return;
         try {
             if (!calculateSuccess) {
                 Toast.makeText(getActivity(), "请先算路", Toast.LENGTH_SHORT).show();
@@ -772,6 +775,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                 mAmapView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        if (mLocaionPro==null)return;
                         if (isFirst && isStart) {
                             isFirst = false;
                             LogUtils.d(TAG, "staie first time to show Paths");
@@ -841,6 +845,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onMapLongClick(LatLng latLng) {
+        if (mLocaionPro==null)return;
         if(mWayPoiMarker==null){
             wayPoiOptions.position(latLng);
             mWayPoiMarker = mAMap.addMarker(wayPoiOptions);
@@ -860,6 +865,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         public void run() {
             super.run();
             try {
+                if (mLocaionPro==null)return;
                 LogUtils.d(TAG,"ready to changeRoute \nfrom:"+fromPoint+"\n toPoint："+toPoint);
                 HashMap<Integer,AMapNaviPath> pathHashMap = mLocaionPro.getNaviPaths();
                 int[] ints = mLocaionPro.getPathsInts();
@@ -927,6 +933,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             mAmapView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    if (mLocaionPro==null)return;
                     if (isFirst&& isStart){
                         isFirst = false;
                         LogUtils.d(TAG,"staie first time to show Paths");
@@ -1058,6 +1065,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onDestroyView() {
+        mLocaionPro = null;
         super.onDestroyView();
     }
 
@@ -1230,6 +1238,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onChioceNaviStyle(boolean congestion, boolean avHighSpeed, boolean avCost, boolean highSpeed) {
+        if (mLocaionPro==null)return;
         mLocaionPro.setNaviStyle(congestion,avHighSpeed,avCost,highSpeed);
         reCanLine();
         mProgDialog.show();
