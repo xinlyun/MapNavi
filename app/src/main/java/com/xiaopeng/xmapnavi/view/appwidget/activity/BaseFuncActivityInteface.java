@@ -23,7 +23,7 @@ public interface BaseFuncActivityInteface {
     void forShowDeleyDialog();
     void dismissDeleyDialog();
     void showCollectDialog();
-
+    int getFragmentNum();
 
 
 }

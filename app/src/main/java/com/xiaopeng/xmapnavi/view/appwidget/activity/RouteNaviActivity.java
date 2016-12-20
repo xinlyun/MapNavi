@@ -12,6 +12,7 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -112,7 +113,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_basic_navi);
-
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		saveBundle = savedInstanceState;
 		mLocationPro = LocationProvider.getInstence(this);
 
@@ -154,8 +155,12 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		mTmap.onSaveInstanceState(outState);
-		mAMapNaviView.onSaveInstanceState(outState);
+		if (mTmap!=null) {
+			mTmap.onSaveInstanceState(outState);
+		}
+		if (mAMapNaviView!=null) {
+			mAMapNaviView.onSaveInstanceState(outState);
+		}
 
 	}
 

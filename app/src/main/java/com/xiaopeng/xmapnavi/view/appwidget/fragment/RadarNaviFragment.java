@@ -337,6 +337,8 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
 
     }
 
+
+
     private void reCalue() {
         LogUtils.d(TAG, "reCalueInNavi: fromPoint:" + fromPoint
         );
@@ -460,8 +462,8 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
 
             AMapNaviPath path = mLocationPro.getNaviPaths().get(routeID);
             toPoint = new LatLonPoint(path.getEndPoint().getLatitude(),path.getEndPoint().getLongitude());
-            drawApath(path);
             mLocationPro.selectRouteId(routeID);
+            drawApath(path);
             mLocationPro.startNavi(AMapNavi.GPSNaviMode);
         } catch (Exception e) {
             e.printStackTrace();
@@ -540,7 +542,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
 
     private MRouteOverLay drawRoutes(int routeId, AMapNaviPath path) {
         LogUtils.d(TAG, "drawRoutes id:" + routeId);
-
+        mLocationPro.selectRouteId(routeId);
         mAmap.moveCamera(CameraUpdateFactory.changeTilt(0));
         MRouteOverLay routeOverLay = new MRouteOverLay(mAmap, path, getActivity());
 

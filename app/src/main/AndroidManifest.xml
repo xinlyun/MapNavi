@@ -19,7 +19,6 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"></uses-permission>
 
-
     <application
         android:name=".XpApplication"
         android:allowBackup="true"
@@ -44,6 +43,7 @@
             android:theme="@style/MyTheme"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan|stateHidden"
+            android:screenOrientation="portrait"
             >
 
             <!--android:windowSoftInputMode="stateAlwaysHidden|adjustResize"-->
@@ -56,15 +56,16 @@
         <!--android:theme="@style/Theme.Swipe.Back.Second"-->
         <activity android:name=".view.appwidget.activity.RouteNaviActivity"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             >
         </activity>
         <activity android:name=".view.appwidget.activity.RadarNaviActivity"
-
+            android:screenOrientation="portrait"
             >
 
         </activity>
         <activity android:name=".view.appwidget.activity.SearchCollectActivity"
-
+            android:screenOrientation="portrait"
             >
 
         </activity>

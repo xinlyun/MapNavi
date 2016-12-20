@@ -158,6 +158,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
         mFragments = new ArrayList<>();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         setContentView(R.layout.activity_main);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         startFragment(new MainFragment());
         mapView = (MapView) findViewById(R.id.map_main);
         screenHeight = this.getWindowManager().getDefaultDisplay().getHeight();
@@ -455,6 +456,13 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
     }
 
     @Override
+    public int getFragmentNum() {
+        return mFragments.size();
+    }
+
+
+
+    @Override
     public void showDialogwithOther() {
         if (mProgDialog!=null){
             mProgDialog.show();
@@ -669,4 +677,6 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
             showDialogwithOther();
         }
     }
+
+
 }

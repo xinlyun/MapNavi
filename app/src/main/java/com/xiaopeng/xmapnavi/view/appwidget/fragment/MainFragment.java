@@ -20,14 +20,17 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.AMapOptions;
 import com.amap.api.maps.AMapUtils;
 import com.amap.api.maps.CameraUpdate;
 import com.amap.api.maps.CameraUpdateFactory;
+import com.amap.api.maps.CustomRenderer;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.Projection;
@@ -37,9 +40,11 @@ import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.maps.model.MyTrafficStyle;
 import com.amap.api.maps.model.Poi;
 import com.amap.api.maps.model.Polyline;
 import com.amap.api.maps.model.PolylineOptions;
+import com.amap.api.maps.model.TextOptions;
 import com.amap.api.maps.model.animation.ScaleAnimation;
 import com.amap.api.navi.model.AMapNaviLocation;
 import com.amap.api.navi.model.NaviLatLng;
@@ -166,7 +171,8 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
     private int height2 = 720;
     float saveA = 0;
 
-
+    private MarkerOptions mMarkerOptions;
+    private LinearLayout mInfoLayout;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -219,6 +225,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         mTvPoiStr           = (TextView) findViewById(R.id.tv_poi_str);
         mTvPoiDis           = (TextView) findViewById(R.id.tv_poi_dis);
         mTxBilici           = (TextView) findViewById(R.id.tx_bilici);
+        mInfoLayout         = (LinearLayout) findViewById(R.id.layout_info);
         findViewById(R.id.d3_setting).setOnClickListener(this);
         findViewById(R.id.d3_lukuang).setOnClickListener(this);
         findViewById(R.id.btn_begin_navi).setOnClickListener(this);
@@ -235,7 +242,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         mLoveBtn        = (Button) findViewById(R.id.btn_collect);
 
         initMarkInfo();
-
     }
 
     @Override
@@ -253,10 +259,10 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
     }
 
     private void initMarkInfo(){
-        mMarkInfoView       = getActivity().getLayoutInflater().inflate(R.layout.layout_tip_show,null);
-        mTxMarkTitle        = (TextView) mMarkInfoView.findViewById(R.id.tx_tip_show);
+//        mMarkInfoView       = getActivity().getLayoutInflater().inflate(R.layout.layout_tip_show,null);
+        mTxMarkTitle        = (TextView) findViewById(R.id.tx_tip_show);
         mTxMarkTitle        .setOnClickListener(this);
-        mMarkInfoView.findViewById(R.id.btn_little_begin_navi).setOnClickListener(this);
+        findViewById(R.id.btn_little_begin_navi).setOnClickListener(this);
 
 
     }
@@ -309,6 +315,8 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
             case R.id.btn_zoom_plus:
                 saveTouchTime = System.currentTimeMillis();
+                startTimerSomeTimeLater();
+                findMyPoiDeley.sendEmptyMessageDelayed(0,30 * 1001);
                 if (mAmap!=null) {
                     mAmap.animateCamera(CameraUpdateFactory.zoomIn());
                 }
@@ -317,6 +325,8 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
             case R.id.btn_zoom_jian:
                 saveTouchTime = System.currentTimeMillis();
+                startTimerSomeTimeLater();
+                findMyPoiDeley.sendEmptyMessageDelayed(0,30 * 1001);
                 if (mAmap!=null) {
                     mAmap.animateCamera(CameraUpdateFactory.zoomOut());
                 }
@@ -393,9 +403,13 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         if (mMarkerPoi!=null ) {
             if (mMarkerPoi.isInfoWindowShown()) {
                 mMarkerPoi.hideInfoWindow();
+
             }
             mMarkerPoi.setVisible(false);
 
+        }
+        if (mInfoLayout!=null && mInfoLayout.getVisibility() == View.VISIBLE){
+            mInfoLayout.setVisibility(View.GONE);
         }
 
 //
@@ -422,6 +436,12 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
         }
         updateScale();
+
+
+        LogUtils.d(TAG,"MarkerPoi is Show?:"+mMarkerPoi.isInfoWindowShown());
+//        mMarkerPoi.showInfoWindow();
+
+
     }
 
     @Override
@@ -492,10 +512,12 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
             mTvPoiDis.setText(""+dis+getString(R.string.mile));
         }
 
+        if (mMarkerPoi!=null && mMarkerPoi.isVisible()) {
+            if (mInfoLayout != null && mInfoLayout.getVisibility() == View.GONE) {
+                mInfoLayout.setVisibility(View.VISIBLE);
+            }
+        }
 
-
-        mMarkerPoi.setInfoWindowEnable(true);
-        mMarkerPoi.showInfoWindow();
 
 
 
@@ -660,13 +682,15 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         marker.setPositionByPixels(width2,height2);
         marker.setAnchor(0.5f,0.5f);
 
-        mMarkerPoi = mAmap.addMarker(new MarkerOptions()
+        mMarkerOptions = new MarkerOptions()
                 .icon(BitmapDescriptorFactory
                         .fromResource(R.drawable.pre_list_img2))
-                .draggable(true));
+                .title("标题")
+                .snippet("详细信息")
+                .draggable(true);
 
-        mMarkerPoi.setTitle("title");
-        mMarkerPoi.setSnippet("snippet");
+        mMarkerPoi = mAmap.addMarker(mMarkerOptions);
+        mMarkerPoi.setAutoOverturnInfoWindow(true);
         mMarkerPoi.setPositionByPixels(width2,height2);
         mMarkerPoi.setAnchor(0.5f,1f);
         mMarkerPoi.setInfoWindowEnable(true);
@@ -960,6 +984,8 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         if (mAmap == null) {
             mAmap = mapView.getMap();
             mAmap.setCustomMapStylePath("/sdcard/style2.json");
+            mAmap.setMapTextZIndex(0);
+
             mAmap.setMapCustomEnable(false);
             CameraUpdate update = CameraUpdateFactory.newCameraPosition(new CameraPosition(
                     new LatLng(mLocationProvider.getAmapLocation().getLatitude(), mLocationProvider.getAmapLocation().getLongitude())
@@ -969,7 +995,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                     0  ////偏航角 0~360° (正北方为0)
             ));
             mAmap.moveCamera(update);
-//            aMap.setMapType(AMap.MAP_TYPE_NAVI);
+//            mAmap.setMapType(AMap.MAP_TYPE_NAVI);
             mAmap.setTrafficEnabled(isTraff);
             mAmap.setInfoWindowAdapter(this);
             mAmap.setOnPOIClickListener(mPoiClickListener);
@@ -1168,13 +1194,23 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         if (mAmap!=null) {
             isTraff = !isTraff;
             mAmap.setTrafficEnabled(isTraff);
+
             if (isTraff){
+                mAmap.setMapType(AMap.MAP_TYPE_NAVI);
                 mAmap.setMapCustomEnable(true);
+                mapView.getMap().setMaskLayerParams(500,500,500,500,500,500);
                 mIvShowTraffic.setImageResource(R.drawable.icon_lukuang_01);
+                mAmap.showIndoorMap(false);
+                mAmap.showBuildings(false);
             }else {
+                mAmap.setMapType(AMap.MAP_TYPE_NAVI);
                 mAmap.setMapCustomEnable(false);
+
+                mapView.getMap().setMaskLayerParams(500,500,500,500,500,500);
                 mIvShowTraffic.setImageResource(R.drawable.icon_lukuang_02);
             }
+
+            mAmap.setMapTextZIndex(0);
         }
     }
 

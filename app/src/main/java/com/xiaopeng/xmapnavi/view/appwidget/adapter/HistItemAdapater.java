@@ -90,11 +90,13 @@ public class HistItemAdapater extends ArrayAdapter {
                     DecimalFormat df = new DecimalFormat("0.0");
                     String result = df.format(dis);
 //                itemHolder.tvDis.setText(result + "KM");
-                    itemHolder.tvDelet.setOnClickListener(new lvButtonListener(position));
+
 
                 } else {
                     itemHolder.tvShowMsg.setText(hisItem.msg);
                 }
+
+                itemHolder.tvDelet.setOnClickListener(new lvButtonListener(position));
             }catch (Exception e){
                 e.printStackTrace();
             }

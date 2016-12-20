@@ -440,11 +440,13 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
     @Override
     public boolean isCandelete(int position) {
         if (!isHistoryList)return false;
-        if (position==mHisItems.size()) {
-            return false;
-        }else {
-            return true;
-        }
+        if (mHisItems!=null) {
+            if (position == mHisItems.size()) {
+                return false;
+            } else {
+                return true;
+            }
+        }return false;
     }
 
     @Override

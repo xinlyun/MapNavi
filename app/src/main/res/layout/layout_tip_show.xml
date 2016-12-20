@@ -2,21 +2,21 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="104px"
+    android:layout_height="116px"
     android:background="@drawable/img_markinfo_0"
-    android:paddingBottom="16px"
+    android:paddingBottom="0px"
     android:paddingTop="4px"
     android:paddingLeft="9px"
     android:paddingRight="9px"
     >
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="80px" />
+    <!--<TextView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="80px" />-->
     <LinearLayout
 
         android:orientation="vertical"
         android:layout_width="wrap_content"
-        android:background="@color/white"
+
         android:layout_height="88px"
         >
         <LinearLayout
