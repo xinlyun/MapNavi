@@ -504,12 +504,14 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         }
         routeOverLays.clear();
         routeOverLayList.clear();
-        for (int i = 0 ;i<ints.length;i++){
-            int id = ints[i];
-            AMapNaviPath mapNaviPath = mPaths.get(id);
-            MRouteOverLay routeOverLay = drawRoutes(id,mapNaviPath);
-            routeOverLays.put(id,routeOverLay);
-            routeOverLayList.add(routeOverLay);
+        if (ints.length>1) {
+            for (int i = 0; i < ints.length; i++) {
+                int id = ints[i];
+                AMapNaviPath mapNaviPath = mPaths.get(id);
+                MRouteOverLay routeOverLay = drawRoutes(id, mapNaviPath);
+                routeOverLays.put(id, routeOverLay);
+                routeOverLayList.add(routeOverLay);
+            }
         }
     }
 
@@ -630,6 +632,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
 
             case R.id.btn_exit:
 //                getActivity().finish();
+                mAmap.clear();
                 mActivity.exitFragment();
                 break;
 
@@ -676,10 +679,12 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     }
 
     private void startNavi() {
+        mAmap.clear();
         LogUtils.d(TAG, "startNavi");
         Intent intent = new Intent(getActivity(), RouteNaviActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         getActivity().startActivity(intent);
+
         mActivity.exitFragment();
     }
 

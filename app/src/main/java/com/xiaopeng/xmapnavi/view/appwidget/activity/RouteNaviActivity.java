@@ -136,7 +136,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 
 
 		mAMapNaviView.setAMapNaviViewListener(RouteNaviActivity.this);
-		mAMapNaviView.setLockZoom(15);
+		mAMapNaviView.setLockZoom(16);
 		mNaviAmap = mAMapNaviView.getMap();
 		mNaviAmap.setTrafficEnabled(isTraff);
 
@@ -258,10 +258,20 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		super.onResume();
 		if (mAMapNaviView!=null) {
 			mAMapNaviView.onResume();
+			mAMapNaviView.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					if (mNaviAmap!=null) {
+						mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
+					}
+				}
+			},3000);
 		}
 		if (mTmap!=null) {
 			mTmap.onResume();
 		}
+
+
 		BugHunter.countTimeEnd(getApplication(),BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
 		mLocationPro.setAiosListener(aiosMapListener);
 	}
@@ -291,7 +301,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	@Override
 	protected void onStart() {
 		super.onStart();
-		mNaviAmap.setMapType(AMap.MAP_TYPE_NIGHT);
+
 		mLocationPro.addNaviInfoListner(this);
 		mLocationPro.addNaviCalueListner(xpNaviCalueListener);
 	}
@@ -616,9 +626,11 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			isTraff = !isTraff;
 			mNaviAmap.setTrafficEnabled(isTraff);
 			if (isTraff){
+//				mNaviAmap.setMapType(AMap.MAP_TYPE_NIGHT);
 				mIvLkIcon.setImageResource(R.drawable.icon_lukuang_01);
 //				mImgBtnLukuang.setImageResource(R.drawable.lukuang_00);
 			}else {
+
 				mIvLkIcon.setImageResource(R.drawable.icon_lukuang_02);
 //				mImgBtnLukuang.setImageResource(R.drawable.lukuang_01);
 			}

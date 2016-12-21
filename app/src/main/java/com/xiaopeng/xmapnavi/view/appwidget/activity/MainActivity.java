@@ -326,14 +326,15 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
             return;
         }
         if (mFragments.size()==1) {
-            if (aMap!=null) {
-                aMap.clear();
-            }
-            FragmentManager manager = getFragmentManager();
-            FragmentTransaction transaction = manager.beginTransaction();
-            transaction.remove(mFragments.remove(mFragments.size() - 1));
-            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
-            transaction.commit();
+//            if (aMap!=null) {
+//                aMap.clear();
+//            }
+            return;
+//            FragmentManager manager = getFragmentManager();
+//            FragmentTransaction transaction = manager.beginTransaction();
+//            transaction.remove(mFragments.remove(mFragments.size() - 1));
+//            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE);
+//            transaction.commit();
 
         }else {
             mFragments.remove(mFragments.size()-1);
@@ -465,6 +466,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
 
     @Override
     public void showDialogwithOther() {
+        LogUtils.d(TAG,"showDialogwithOther");
         if (mProgDialog!=null){
             mProgDialog.show();
         }

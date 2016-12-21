@@ -102,6 +102,8 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         mAMap.setMapType(AMap.MAP_TYPE_NAVI);
     }
 
+    private RouteOverLay mOnlyOverLay;
+
     public void setPosiFromTo(LatLonPoint fromPoint, LatLonPoint toPoint){
         LogUtils.d(TAG,"setPosiFromTo:"+"from:"+fromPoint+"\nto:"+toPoint);
         this.fromPoint = fromPoint;
@@ -436,7 +438,10 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         routeMap.clear();
         mRouteOverLays.clear();
         mRouteHash.clear();
-
+        if (mOnlyOverLay!=null){
+            mOnlyOverLay.removeFromMap();
+            mOnlyOverLay = null;
+        }
 
         paths = mLocaionPro.getNaviPaths();
         ints = mLocaionPro.getPathsInts();
@@ -471,46 +476,59 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         drawPathLine();
         if (paths != null  && ints != null){
 //            if (!isTouch) {
-            int routeID = ints[0];
-            routeIndex = 0;
+
+            if (ints.length>1) {
+                int routeID = ints[0];
+                routeIndex = 0;
 //            AMapNaviPath path = paths.get(routeID);
 //            drawRoutes(routeID,path);
 
-            mLocaionPro.selectRouteId(routeID);
+                mLocaionPro.selectRouteId(routeID);
 
-            mAmapView.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        adapter = new NaviPathAdapter(getActivity(), R.layout.layout_gradview_item);
-                        adapter.setDate(paths, ints);
-                        mGvShowNaviPaths.setAdapter(adapter);
-                        mGvShowNaviPaths.setNumColumns(ints.length);
-                        mGvShowNaviPaths.setOnItemClickListener(mClickPathItemListner);
+                mAmapView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            adapter = new NaviPathAdapter(getActivity(), R.layout.layout_gradview_item);
+                            adapter.setDate(paths, ints);
+                            mGvShowNaviPaths.setAdapter(adapter);
+                            mGvShowNaviPaths.setNumColumns(ints.length);
+                            mGvShowNaviPaths.setOnItemClickListener(mClickPathItemListner);
 
-                        for (int i = 0; i < ints.length; i++) {
-                            AMapNaviPath path = paths.get(ints[i]);
-                            if (path != null) {
-                                MRouteOverLay mRouteOverLay = drawMRoutes(ints[i],path);
-                                mRouteOverLays.add(mRouteOverLay);
-                                mRouteHash.put(ints[i],mRouteOverLay);
+                            for (int i = 0; i < ints.length; i++) {
+                                AMapNaviPath path = paths.get(ints[i]);
+                                if (path != null) {
+                                    MRouteOverLay mRouteOverLay = drawMRoutes(ints[i], path);
+                                    mRouteOverLays.add(mRouteOverLay);
+                                    mRouteHash.put(ints[i], mRouteOverLay);
+                                }
                             }
-                        }
 
-                        for (int i = 0; i < ints.length; i++) {
-                            AMapNaviPath path = paths.get(ints[i]);
-                            if (path != null) {
-                                RouteOverLay routeOverLay = drawRoutes(ints[i], path);
-                                routeOverLays.add(routeOverLay);
-                                routeMap.put(ints[i],routeOverLay);
+                            for (int i = 0; i < ints.length; i++) {
+                                AMapNaviPath path = paths.get(ints[i]);
+                                if (path != null) {
+                                    RouteOverLay routeOverLay = drawRoutes(ints[i], path);
+                                    routeOverLays.add(routeOverLay);
+                                    routeMap.put(ints[i], routeOverLay);
+                                }
                             }
+                            changeRoute();
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                        changeRoute();
-                    }catch (Exception e){
-                        e.printStackTrace();
                     }
-                }
-            },400);
+                }, 400);
+            }else {
+                AMapNaviPath path = mLocaionPro.getNaviPath();
+                /**
+                 * 单路径不需要进行路径选择，直接传入－1即可
+                 */
+                RouteOverLay routeOverLay = drawRoutes(-1, path);
+                routeOverLay.setTransparency(1.0f);
+                ints = new int[]{-1};
+                routeMap.put(-1,routeOverLay);
+                routeOverLays.add(routeOverLay);
+            }
 
 //            mAmapView.postDelayed(new Runnable() {
 //                @Override
@@ -633,7 +651,13 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         routeOverLay.setZindex(zindex);
         routeOverLay.addToMap();
         routeOverLay.setTransparency(0.0f);
-
+        if (routeId==-1){
+            if (mOnlyOverLay!=null){
+                mOnlyOverLay.removeFromMap();
+                mOnlyOverLay = null;
+            }
+            mOnlyOverLay = routeOverLay;
+        }
         return routeOverLay;
 
 
@@ -679,19 +703,23 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             case R.id.btn_start_navi:
                 isFirst = true;
                 watchUpdate = null;
+
                 Intent intent = new Intent(getActivity(),RouteNaviActivity.class);
                 intent.putExtra("gps", true);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
+                mActivity.exitFragment();
                 break;
             case R.id.btn_start_route_navi:
                 mAMap.clear();
+                System.gc();
                 isFirst = true;
                 watchUpdate = null;
+
                 RadarNaviFragment radarNaviFragment = new RadarNaviFragment();
                 radarNaviFragment.setMapView(mActivity.getMapView());
                 radarNaviFragment.setToPoint(toPoint);
-                mActivity.startFragment(radarNaviFragment);
+                mActivity.startFragmentReplace(radarNaviFragment);
                 break;
 
             case R.id.btn_pianhao:
@@ -1073,7 +1101,9 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     @Override
     public void onDestroyView() {
         mLocaionPro = null;
-        mAMap.setMapCustomEnable(false);
+        if (mAMap!=null) {
+            mAMap.setMapCustomEnable(false);
+        }
         super.onDestroyView();
     }
 
@@ -1247,9 +1277,18 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     @Override
     public void onChioceNaviStyle(boolean congestion, boolean avHighSpeed, boolean avCost, boolean highSpeed) {
         if (mLocaionPro==null)return;
+        LogUtils.d(TAG,"onChioceNaviStyle");
+        mActivity.showDialogwithOther();
         mLocaionPro.setNaviStyle(congestion,avHighSpeed,avCost,highSpeed);
-        reCanLine();
-        mProgDialog.show();
+        mIvLKicon.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                reCanLine();
+            }
+        },300);
+
+//        mProgDialog.show();
 
     }
 
@@ -1257,6 +1296,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
         @Override
         public void changeLikeStyle(boolean congestion, boolean avCost, boolean highSpeed, boolean avHighSpeed) {
+            mActivity.showDialogwithOther();
             mLocaionPro.setNaviStyle(congestion,avHighSpeed,avCost,highSpeed);
             mLocaionPro.reCalue();
         }

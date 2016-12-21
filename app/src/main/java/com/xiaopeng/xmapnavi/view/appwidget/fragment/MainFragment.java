@@ -174,6 +174,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
     private MarkerOptions mMarkerOptions;
     private LinearLayout mInfoLayout;
     private Handler findMyPoiDeley;
+    private boolean isInFace  = true;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -198,8 +199,10 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
                 try {
-                    if ((System.currentTimeMillis() - saveTouchTime) >=  30 * 1000) {
-                        findMyPosi();
+                    if (isInFace) {
+                        if ((System.currentTimeMillis() - saveTouchTime) >= 30 * 1000) {
+                            findMyPosi();
+                        }
                     }
                 }catch (Exception e){
                     e.printStackTrace();
@@ -223,6 +226,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         mOrientation = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
         mySensorEventListener = new MySensorEventListener();
+        mLocationProvider.stopNavi();
         return rootView;
     }
 
@@ -264,11 +268,13 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         super.onResume();
         mLocationProvider   .addLocationListener(this);
         mLocationProvider.addSearchListner(this);
+        isInFace = true;
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        isInFace = false;
         mLocationProvider.removeSearchListner(this);
         mLocationProvider   .removeLocationListener(this);
     }
