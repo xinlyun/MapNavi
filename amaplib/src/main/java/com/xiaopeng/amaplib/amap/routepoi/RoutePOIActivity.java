@@ -20,7 +20,7 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.LatLngBounds;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
-import com.amap.api.maps.overlay.DrivingRouteOverlay;
+//import com.amap.api.maps.overlay.DrivingRouteOverlay;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.route.BusRouteResult;
 import com.amap.api.services.route.DrivePath;
@@ -174,14 +174,14 @@ public class RoutePOIActivity extends Activity implements OnMapClickListener,
 					mDriveRouteResult = result;
 					final DrivePath drivePath = mDriveRouteResult.getPaths()
 							.get(0);
-					DrivingRouteOverlay drivingRouteOverlay = new DrivingRouteOverlay(
-							mContext, aMap, drivePath,
-							mDriveRouteResult.getStartPos(),
-							mDriveRouteResult.getTargetPos(), null);
-					drivingRouteOverlay.setNodeIconVisibility(false);//设置节点marker是否显示
-					drivingRouteOverlay.removeFromMap();
-					drivingRouteOverlay.addToMap();
-					drivingRouteOverlay.zoomToSpan();
+//					DrivingRouteOverlay drivingRouteOverlay = new DrivingRouteOverlay(
+//							mContext, aMap, drivePath,
+//							mDriveRouteResult.getStartPos(),
+//							mDriveRouteResult.getTargetPos(), null);
+//					drivingRouteOverlay.setNodeIconVisibility(false);//设置节点marker是否显示
+//					drivingRouteOverlay.removeFromMap();
+//					drivingRouteOverlay.addToMap();
+//					drivingRouteOverlay.zoomToSpan();
 
 				} else if (result != null && result.getPaths() == null) {
 					ToastUtil.show(mContext, R.string.no_result);

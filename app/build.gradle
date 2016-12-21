@@ -10,7 +10,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 23
         versionCode 1
-        versionName "1.0"
+        versionName "3.2.17.1"
         multiDexEnabled true
     }
     signingConfigs {
@@ -59,7 +59,7 @@ android {
         }
 
         debug {
-            versionNameSuffix "-debug"
+            versionNameSuffix "_dev"
             minifyEnabled false
             zipAlignEnabled true
             shrinkResources false

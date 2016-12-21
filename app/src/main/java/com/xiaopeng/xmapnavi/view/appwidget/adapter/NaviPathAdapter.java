@@ -94,7 +94,7 @@ public class NaviPathAdapter extends ArrayAdapter{
         int cast = hashMap.get(ints[0]).getTollCost();
         for (int i = 1 ;i<hashMap.size();i++){
             if ( cast > hashMap.get(ints[i]).getTollCost()){
-                cast = hashMap.get(ints[i]).getAllLength();
+                cast = hashMap.get(ints[i]).getTollCost();
                 k = i;
             }
         }
@@ -105,8 +105,9 @@ public class NaviPathAdapter extends ArrayAdapter{
         int k = 0;
         int cast = getTrafficLightNum(hashMap.get(ints[0]));
         for (int i = 1 ;i<hashMap.size();i++){
-            if ( cast > hashMap.get(ints[i]).getTollCost()){
-                cast = hashMap.get(ints[i]).getAllLength();
+            int num = getTrafficLightNum(hashMap.get(ints[i]));
+            if ( cast > num){
+                cast = num;
                 k = i;
             }
         }

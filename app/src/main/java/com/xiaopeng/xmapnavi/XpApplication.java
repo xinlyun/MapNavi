@@ -24,7 +24,7 @@ public class XpApplication extends Application {
         super.onCreate();
         AMapNavi.setApiKey(this,"518079e13164d2910ff81c078e073bcd");
         ActiveAndroid.initialize(this);
-        BugHunter.init(this);
+//        BugHunter.init(this);
         AIOSForCarSDK.initialize(this);
         if (LocationSaver.getSaveLocation()==null){
             LocationSaver.saverFirst();

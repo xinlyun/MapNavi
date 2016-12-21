@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.WindowManager;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.maps.MapView;
@@ -31,6 +32,7 @@ public class RadarNaviActivity extends Activity implements BaseFuncActivityIntef
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_posi);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         initView();
         mapView.onCreate(savedInstanceState);
         radarNaviFragment = new RadarNaviFragment();
@@ -141,5 +143,15 @@ public class RadarNaviActivity extends Activity implements BaseFuncActivityIntef
     @Override
     public void dismissDeleyDialog() {
 
+    }
+
+    @Override
+    public void showCollectDialog() {
+
+    }
+
+    @Override
+    public int getFragmentNum() {
+        return 1;
     }
 }

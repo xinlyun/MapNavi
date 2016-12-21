@@ -26,7 +26,7 @@
 
             <LinearLayout
                 android:orientation="horizontal"
-                android:background="@color/grey_bg_color"
+                android:background="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="72px" >
 
@@ -40,11 +40,15 @@
                     android:textSize="30px"
                     android:textColor="@color/first_text_color"
                     android:gravity="center"
-                    android:text="@string/pianhao"
+                    android:text="@string/offine_map"
                     android:layout_width="704px"
                     android:layout_height="match_parent" />
 
             </LinearLayout>
+            <ImageView
+                android:background="@color/gray_btn_bg_pressed_color"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
             <!--
                 <LinearLayout
                    android:layout_width="fill_parent"

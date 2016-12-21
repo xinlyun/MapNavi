@@ -8,9 +8,9 @@ package com.xiaopeng.xmapnavi.view.appwidget.selfview;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import com.amap.api.col.ed;
-import com.amap.api.col.ee;
-import com.amap.api.col.gu;
+import com.amap.api.col.el;
+import com.amap.api.col.em;
+import com.amap.api.col.hk;
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdate;
 import com.amap.api.maps.CameraUpdateFactory;
@@ -33,14 +33,12 @@ import com.amap.api.navi.model.AMapNaviStep;
 import com.amap.api.navi.model.AMapTrafficStatus;
 import com.amap.api.navi.model.NaviLatLng;
 import com.amap.api.navi.model.RouteOverlayOptions;
-import com.xiaopeng.xmapnavi.R;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
+import com.xiaopeng.xmapnavi.R;
 public class MRouteOverLay {
     private Bitmap startBitmap;
     private Bitmap endBitmap;
@@ -163,9 +161,10 @@ public class MRouteOverLay {
             this.mAMapNaviPath = var2;
             this.normalRoute = BitmapDescriptorFactory.fromResource(R.drawable.custtexture_green_new);
         } catch (Throwable var4) {
-            ed.a(var4);
-            gu.b(var4, "RouteOverLay", "init(AMap amap, AMapNaviPath aMapNaviPath)");
+            el.a(var4);
+            hk.b(var4, "RouteOverLay", "init(AMap amap, AMapNaviPath aMapNaviPath)");
         }
+
 
         this.arrowOnRoute = BitmapDescriptorFactory.fromAsset("custtexture_aolr.png");
         this.smoothTraffic = BitmapDescriptorFactory.fromResource(R.drawable.custtexture_green_new);
@@ -248,7 +247,7 @@ public class MRouteOverLay {
             }
 
             if(this.startBitmap == null) {
-                this.startMarker = this.aMap.addMarker((new MarkerOptions()).position(var12).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(ee.a(), 2130837624))));
+                this.startMarker = this.aMap.addMarker((new MarkerOptions()).position(var12).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(em.a(), 1191313528))));
             } else if(this.startBitmapDescriptor != null) {
                 this.startMarker = this.aMap.addMarker((new MarkerOptions()).position(var12).icon(this.startBitmapDescriptor));
             }
@@ -265,7 +264,7 @@ public class MRouteOverLay {
                     LatLng var9 = new LatLng(var8.getLatitude(), var8.getLongitude());
                     var10 = null;
                     if(this.wayBitmap == null) {
-                        var10 = this.aMap.addMarker((new MarkerOptions()).position(var9).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(ee.a(), 2130837631))));
+                        var10 = this.aMap.addMarker((new MarkerOptions()).position(var9).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(em.a(), 1191313535))));
                     } else if(this.wayPointBitmapDescriptor != null) {
                         var10 = this.aMap.addMarker((new MarkerOptions()).position(var9).icon(this.wayPointBitmapDescriptor));
                     }
@@ -273,7 +272,7 @@ public class MRouteOverLay {
             }
 
             if(this.endBitmap == null) {
-                this.endMarker = this.aMap.addMarker((new MarkerOptions()).position(var13).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(ee.a(), 2130837513))));
+                this.endMarker = this.aMap.addMarker((new MarkerOptions()).position(var13).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(em.a(), 1191313417))));
             } else if(this.endBitmapDescriptor != null) {
                 this.endMarker = this.aMap.addMarker((new MarkerOptions()).position(var13).icon(this.endBitmapDescriptor));
             }
@@ -282,8 +281,8 @@ public class MRouteOverLay {
                 this.setTrafficLine(Boolean.valueOf(this.isTrafficLine));
             }
         } catch (Throwable var11) {
-            ed.a(var11);
-            gu.b(var11, "RouteOverLay", "addToMap()");
+            el.a(var11);
+            hk.b(var11, "RouteOverLay", "addToMap()");
         }
 
     }
@@ -338,7 +337,7 @@ public class MRouteOverLay {
             }
         } catch (Exception var7) {
             var7.printStackTrace();
-            gu.b(var7, "RouteOverLay", "drawEmulateGPSLocation(Vector<String> gpsData)");
+            hk.b(var7, "RouteOverLay", "drawEmulateGPSLocation(Vector<String> gpsData)");
         }
 
     }
@@ -423,8 +422,8 @@ public class MRouteOverLay {
 
             this.clearTrafficLineAndInvisibleOriginalLine();
         } catch (Throwable var3) {
-            ed.a(var3);
-            gu.b(var3, "RouteOverLay", "removeFromMap()");
+            el.a(var3);
+            hk.b(var3, "RouteOverLay", "removeFromMap()");
         }
 
     }
@@ -471,11 +470,11 @@ public class MRouteOverLay {
                         var4 = (LatLng)this.mLatLngsOfPath.get(var10);
                         NaviLatLng var11 = new NaviLatLng(var3.latitude, var3.longitude);
                         NaviLatLng var12 = new NaviLatLng(var4.latitude, var4.longitude);
-                        double var13 = (double)ed.a(var11, var12);
+                        double var13 = (double)el.a(var11, var12);
                         var5 += var13;
                         if(var5 > (double)(var7.getLength() + 1)) {
                             double var15 = var13 - (var5 - (double)var7.getLength());
-                            NaviLatLng var17 = ed.a(var11, var12, var15);
+                            NaviLatLng var17 = el.a(var11, var12, var15);
                             LatLng var18 = new LatLng(var17.getLatitude(), var17.getLongitude());
                             var8.add(var18);
                             var3 = var18;
@@ -541,8 +540,8 @@ public class MRouteOverLay {
             CameraUpdate var2 = CameraUpdateFactory.newLatLngBounds(this.mAMapNaviPath.getBoundsForPath(), var1);
             this.aMap.animateCamera(var2, 1000L, (CancelableCallback)null);
         } catch (Throwable var3) {
-            ed.a(var3);
-            gu.b(var3, "RouteOverLay", "zoomToSpan()");
+            el.a(var3);
+            hk.b(var3, "RouteOverLay", "zoomToSpan()");
         }
 
     }
@@ -590,8 +589,8 @@ public class MRouteOverLay {
                 this.wayBitmap.recycle();
             }
         } catch (Throwable var2) {
-            ed.a(var2);
-            gu.b(var2, "RouteOverLay", "destroy()");
+            el.a(var2);
+            hk.b(var2, "RouteOverLay", "destroy()");
         }
 
     }
@@ -623,7 +622,7 @@ public class MRouteOverLay {
             this.naviArrow.setVisible(true);
         } catch (Throwable var7) {
             var7.printStackTrace();
-            gu.b(var7, "RouteOverLay", "drawArrow(List<NaviLatLng> list) ");
+            hk.b(var7, "RouteOverLay", "drawArrow(List<NaviLatLng> list) ");
         }
 
     }
@@ -654,10 +653,10 @@ public class MRouteOverLay {
                 NaviLatLng var15;
                 for(var12 = var6 - 1; var12 >= 0; --var12) {
                     var13 = (NaviLatLng)var2.get(var12);
-                    var14 = ed.a(var9, var13);
+                    var14 = el.a(var9, var13);
                     var10 += var14;
                     if(var10 >= var11) {
-                        var15 = ed.a(var9, var13, (double)(var11 + var14 - var10));
+                        var15 = el.a(var9, var13, (double)(var11 + var14 - var10));
                         var8.add(var15);
                         break;
                     }
@@ -673,10 +672,10 @@ public class MRouteOverLay {
 
                 for(var12 = var6 + 1; var12 < var3; ++var12) {
                     var13 = (NaviLatLng)var2.get(var12);
-                    var14 = ed.a(var9, var13);
+                    var14 = el.a(var9, var13);
                     var10 += var14;
                     if(var10 >= var11) {
-                        var15 = ed.a(var9, var13, (double)(var11 + var14 - var10));
+                        var15 = el.a(var9, var13, (double)(var11 + var14 - var10));
                         var8.add(var15);
                         break;
                     }
@@ -690,7 +689,7 @@ public class MRouteOverLay {
                 }
             } catch (Exception var16) {
                 var16.printStackTrace();
-                gu.b(var16, "RouteOverLay", "getArrowPoints(int roadIndex)");
+                hk.b(var16, "RouteOverLay", "getArrowPoints(int roadIndex)");
             }
 
             return null;
@@ -725,7 +724,7 @@ public class MRouteOverLay {
             }
         } catch (Throwable var3) {
             var3.printStackTrace();
-            gu.b(var3, "RouteOverLay", "setTrafficLine(Boolean enabled)");
+            hk.b(var3, "RouteOverLay", "setTrafficLine(Boolean enabled)");
         }
 
     }
@@ -843,7 +842,7 @@ public class MRouteOverLay {
             }
 
             if(this.startBitmap == null) {
-                this.startMarker = this.aMap.addMarker((new MarkerOptions()).position(var20).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(ee.a(), 2130837624))));
+                this.startMarker = this.aMap.addMarker((new MarkerOptions()).position(var20).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(em.a(), 1191313528))));
             } else if(this.startBitmapDescriptor != null) {
                 this.startMarker = this.aMap.addMarker((new MarkerOptions()).position(var20).icon(this.startBitmapDescriptor));
             }
@@ -860,7 +859,7 @@ public class MRouteOverLay {
                     LatLng var16 = new LatLng(var15.getLatitude(), var15.getLongitude());
                     var17 = null;
                     if(this.wayBitmap == null) {
-                        var17 = this.aMap.addMarker((new MarkerOptions()).position(var16).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(ee.a(), 2130837631))));
+                        var17 = this.aMap.addMarker((new MarkerOptions()).position(var16).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(em.a(), 1191313535))));
                     } else if(this.wayPointBitmapDescriptor != null) {
                         var17 = this.aMap.addMarker((new MarkerOptions()).position(var16).icon(this.wayPointBitmapDescriptor));
                     }
@@ -868,7 +867,7 @@ public class MRouteOverLay {
             }
 
             if(this.endBitmap == null) {
-                this.endMarker = this.aMap.addMarker((new MarkerOptions()).position(var21).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(ee.a(), 2130837513))));
+                this.endMarker = this.aMap.addMarker((new MarkerOptions()).position(var21).icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(em.a(), 1191313417))));
             } else if(this.endBitmapDescriptor != null) {
                 this.endMarker = this.aMap.addMarker((new MarkerOptions()).position(var21).icon(this.endBitmapDescriptor));
             }
@@ -877,8 +876,8 @@ public class MRouteOverLay {
                 this.setTrafficLine(Boolean.valueOf(this.isTrafficLine));
             }
         } catch (Throwable var18) {
-            ed.a(var18);
-            gu.b(var18, "RouteOverLay", "addToMap(int[] color, int[] index, BitmapDescriptor[] resourceArray)");
+            el.a(var18);
+            hk.b(var18, "RouteOverLay", "addToMap(int[] color, int[] index, BitmapDescriptor[] resourceArray)");
         }
 
     }

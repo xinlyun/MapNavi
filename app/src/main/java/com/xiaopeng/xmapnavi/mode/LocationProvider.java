@@ -28,6 +28,8 @@ import com.aispeech.aios.sdk.manager.AIOSSettingManager;
 import com.amap.api.maps.offlinemap.OfflineMapManager;
 import com.amap.api.navi.TBTEngine;
 import com.amap.api.navi.enums.BroadcastMode;
+import com.amap.api.navi.model.AMapNaviStaticInfo;
+import com.nostra13.universalimageloader.utils.L;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 
 import android.support.annotation.NonNull;
@@ -133,6 +135,11 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private int mBroadCastMode = BroadcastMode.CONCISE;
     private List<NaviLatLng> saveEndList = new ArrayList<>();
     private int AIM_STATE = AimLessMode.CAMERA_AND_SPECIALROAD_DETECTED;
+
+    private boolean isCalueIng = false;
+
+    private boolean isWillOOM = false;
+
     public static void init(Context context) {
         mContext = context;
         mLp      = new LocationProvider(context);
@@ -251,6 +258,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public void calueRunWay(List<NaviLatLng> startList,List<NaviLatLng> wayList,List<NaviLatLng> endList) {
+        if (isCalueIng)return;
         aMapNavi.stopNavi();
         if (avoidhightspeed && hightspeed) {
             LogUtils.d(TAG,"不走高速与高速优先不能同时为true.");
@@ -269,8 +277,9 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
             e.printStackTrace();
         }
         if (strategyFlag >= 0) {
-
+            isCalueIng = true;
             aMapNavi.calculateDriveRoute(startList, endList, wayList, strategyFlag);
+
             LogUtils.d(TAG,"策略:" + strategyFlag);
         }
         saveEndList.clear();
@@ -279,6 +288,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public boolean tryCalueRunWay(List<NaviLatLng> endList) {
+        if (isCalueIng)return false;
         if (mAmapLocation==null)return false;
 
         List<NaviLatLng> startList = new ArrayList<>();
@@ -291,6 +301,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
             e.printStackTrace();
         }
         if (strategyFlag >= 0) {
+            isCalueIng = true;
             aMapNavi.calculateDriveRoute(startList, endList, wayList, strategyFlag);
             LogUtils.d(TAG,"策略:" + strategyFlag);
         }
@@ -315,7 +326,14 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public HashMap<Integer, AMapNaviPath> getNaviPaths() {
-        return aMapNavi.getNaviPaths();
+        if (!isWillOOM) {
+            return aMapNavi.getNaviPaths();
+        }else {
+            HashMap<Integer,AMapNaviPath> pathHashMap = aMapNavi.getNaviPaths();
+            HashMap<Integer,AMapNaviPath> pathHashMap1 = new HashMap<>();
+            pathHashMap1.put(mInts[0],pathHashMap.get(mInts[0]));
+            return pathHashMap1;
+        }
     }
 
     public static ILocationProvider getInstence(Context context){
@@ -450,6 +468,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         if (aMapLocation != null) {
             if (aMapLocation != null
                     && aMapLocation.getErrorCode() == 0) {
+                String errText = "定位成功," + aMapLocation.getAddress()+ ": \n lat:" + aMapLocation.getLatitude()+"\n lon :"+aMapLocation.getLongitude();
+                LogUtils.e("AmapErr",errText);
                 mAmapLocation = aMapLocation;
                 if (System.currentTimeMillis() - timeSave > (60 * 1000)){
                     timeSave = System.currentTimeMillis();
@@ -518,7 +538,13 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     }
 
     @Override
+    public void onArriveDestination(AMapNaviStaticInfo aMapNaviStaticInfo) {
+        LogUtils.d(NAVI_TAG,"onArriveDestination");
+    }
+
+    @Override
     public void onCalculateRouteSuccess() {
+        isCalueIng = false;
         LogUtils.d(NAVI_TAG,"onCalculateRouteSuccess");
         for (XpNaviCalueListener listener:mNaviCalueListeners){
             listener.onCalculateRouteSuccess();
@@ -527,6 +553,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public void onCalculateRouteFailure(int i) {
+        isCalueIng = false;
         LogUtils.d(NAVI_TAG,"onCalculateRouteFailure i="+i);
         for (XpNaviCalueListener listener:mNaviCalueListeners){
             listener.onCalculateRouteFailure();
@@ -535,11 +562,13 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public void onReCalculateRouteForYaw() {
+        isCalueIng = false;
         LogUtils.d(NAVI_TAG,"onReCalculateRouteForYaw");
     }
 
     @Override
     public void onReCalculateRouteForTrafficJam() {
+        isCalueIng = false;
         LogUtils.d(NAVI_TAG,"onReCalculateRouteForTrafficJam");
     }
 
@@ -613,12 +642,48 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void onCalculateMultipleRoutesSuccess(int[] ints) {
         LogUtils.d(NAVI_TAG,"onCalculateMultipleRoutesSuccess");
+        isCalueIng = false;
         mInts = ints;
         mRoutePower.setPath(aMapNavi.getNaviPaths(),ints);
-        for (XpNaviCalueListener listener:mNaviCalueListeners){
-            listener.onCalculateMultipleRoutesSuccess(ints);
+        isWillOOM = isWillOutOfMemory();
+        if (!isWillOOM) {
+
+            for (XpNaviCalueListener listener : mNaviCalueListeners) {
+                listener.onCalculateMultipleRoutesSuccess(ints);
+            }
+        }else {
+            mInts = new int[]{
+                    ints[0]
+            };
+            for (XpNaviCalueListener listener : mNaviCalueListeners) {
+                listener.onCalculateMultipleRoutesSuccess(mInts);
+            }
         }
     }
+
+    private boolean isWillOutOfMemory(){
+        try {
+            HashMap<Integer, AMapNaviPath> aMapNaviPaths = aMapNavi.getNaviPaths();
+            AMapNaviPath path = aMapNaviPaths.get(mInts[0]);
+            if (path.getAllLength()>800000){
+                LogUtils.d(TAG,"isWillOutOfMemory");
+                return true;
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            LogUtils.d(TAG,"will not OOM");
+            return false;
+        }finally {
+
+
+        }
+        LogUtils.d(TAG,"will not OOM");
+        return false;
+    }
+
+
+
 
     @Override
     public void notifyParallelRoad(int i) {
@@ -666,9 +731,9 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private AMapLocationClientOption getDefaultOption(){
         AMapLocationClientOption mOption = new AMapLocationClientOption();
         mOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);//可选，设置定位模式，可选的模式有高精度、仅设备、仅网络。默认为高精度模式
-        mOption.setGpsFirst(true);//可选，设置是否gps优先，只在高精度模式下有效。默认关闭
+        mOption.setGpsFirst(false);//可选，设置是否gps优先，只在高精度模式下有效。默认关闭
         mOption.setHttpTimeOut(30 *1000);//可选，设置网络请求超时时间。默认为30秒。在仅设备模式下无效
-        mOption.setInterval(2 * 1000);//可选，设置定位间隔。默认为2秒
+        mOption.setInterval(5 * 1000);//可选，设置定位间隔。默认为2秒
         mOption.setNeedAddress(true);//可选，设置是否返回逆地理地址信息。默认是ture
         mOption.setOnceLocation(false);//可选，设置是否单次定位。默认是false
         mOption.setOnceLocationLatest(false);//可选，设置是否等待wifi刷新，默认为false.如果设置为true,会自动变为单次定位，持续定位时不要使用
@@ -684,7 +749,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         saveSearchStr = str;
         String cityCode = "";
         if (mAmapLocation != null){
-            cityCode = mAmapLocation.getCityCode();
+            cityCode = mAmapLocation.getCity();
         }
         PoiSearch.Query query  = new PoiSearch.Query(str, "", cityCode);
         query.setPageSize(QUEST_PAGE_SIZE); //设置10 页
@@ -824,6 +889,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void reCalueInNavi() {
         try {
+            if (isCalueIng)return;
+            isCalueIng = true;
             aMapNavi.reCalculateRoute(aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, true));
         } catch (Exception e) {
             e.printStackTrace();
@@ -842,6 +909,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public int[] getPathsInts() {
+
         return mInts;
     }
 

@@ -21,7 +21,6 @@ import com.amap.api.maps.AMap.InfoWindowAdapter;
 import com.amap.api.maps.AMap.OnMarkerClickListener;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.model.Marker;
-import com.amap.api.maps.overlay.BusLineOverlay;
 import com.amap.api.services.busline.BusLineItem;
 import com.amap.api.services.busline.BusLineQuery;
 import com.amap.api.services.busline.BusLineQuery.SearchType;
@@ -363,11 +362,11 @@ public class BuslineActivity extends Activity implements OnMarkerClickListener,
 					aMap.clear();// 清理地图上的marker
 					busLineResult = result;
 					lineItems = busLineResult.getBusLines();
-					BusLineOverlay busLineOverlay = new BusLineOverlay(this,
-							aMap, lineItems.get(0));
-					busLineOverlay.removeFromMap();
-					busLineOverlay.addToMap();
-					busLineOverlay.zoomToSpan();
+//					BusLineOverlay busLineOverlay = new BusLineOverlay(this,
+//							aMap, lineItems.get(0));
+//					busLineOverlay.removeFromMap();
+//					busLineOverlay.addToMap();
+//					busLineOverlay.zoomToSpan();
 				}
 			} else {
 				ToastUtil.show(BuslineActivity.this, R.string.no_result);

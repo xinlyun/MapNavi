@@ -335,7 +335,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
                             endPoi.add(new NaviLatLng(hisItem.posiLat,hisItem.posiLon));
                             poiLat = hisItem.posiLat;
                             poiLon = hisItem.posiLon;
-                            ((MainActivity)getActivity()).setPosi(poiLat,poiLon);
+//                            ((MainActivity)getActivity()).setPosi(poiLat,poiLon);
                             mLocationProvider.calueRunWay(startPoi,wayPoi,endPoi);
                             mProgDialog.show();
                         }
@@ -440,11 +440,13 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
     @Override
     public boolean isCandelete(int position) {
         if (!isHistoryList)return false;
-        if (position==mHisItems.size()) {
-            return false;
-        }else {
-            return true;
-        }
+        if (mHisItems!=null) {
+            if (position == mHisItems.size()) {
+                return false;
+            } else {
+                return true;
+            }
+        }return false;
     }
 
     @Override

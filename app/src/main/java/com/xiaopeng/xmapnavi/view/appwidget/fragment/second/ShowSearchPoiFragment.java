@@ -393,6 +393,14 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
             PoiItem item = poiItems.get(index);
             if (requestCode!=WAY_POI_CODE) {
                 if (requestCode != -1) {
+                    if (mActivity.getFragmentNum()==2){
+                        List<NaviLatLng> endlist = new ArrayList<>();
+                        endlist.add(new NaviLatLng(item.getLatLonPoint().getLatitude(),item.getLatLonPoint().getLongitude()));
+                        if (mLocationPro!=null) {
+                            mLocationPro.tryCalueRunWay(endlist);
+                            mActivity.showDialogwithOther();
+                        }
+                    }
                     dateHelper.saveWhereIten(requestCode, item.toString(), item.getCityName(), item.getLatLonPoint().getLatitude(), item.getLatLonPoint().getLongitude());
                 } else {
                     dateHelper.saveCollect(item.toString(), item.getCityName(), item.getLatLonPoint().getLatitude(), item.getLatLonPoint().getLongitude());

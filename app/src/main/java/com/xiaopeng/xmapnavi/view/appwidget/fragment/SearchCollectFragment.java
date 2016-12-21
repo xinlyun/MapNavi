@@ -27,6 +27,7 @@ import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.help.Inputtips;
 import com.amap.api.services.help.InputtipsQuery;
 import com.amap.api.services.help.Tip;
+import com.amap.api.services.poisearch.PoiResult;
 import com.gc.materialdesign.widgets.ProgressDialog;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import com.xiaopeng.xmapnavi.R;
@@ -45,6 +46,7 @@ import com.xiaopeng.xmapnavi.view.appwidget.adapter.ShowResultAdapter;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.TipItemAdapter;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.second.ShowSearchPoiFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -155,10 +157,14 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
                 mEtSearch.setHint(R.string.please_input_poi);
                 break;
             case 0:
+                //fill down
+            case 3:
                 mEtSearch.setHint(R.string.please_input_company);
                 break;
 
             case 1:
+                //fill down
+            case 4:
                 mEtSearch.setHint(R.string.please_input_home);
                 break;
 
@@ -208,9 +214,12 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
         public void searchSucceful() {
             mProgDialog.dismiss();
             mEtSearch.setText("");
-            ShowSearchPoiFragment fragment = new ShowSearchPoiFragment();
-            fragment.setRequestCode(requestCode);
-            fragment.setSearchStr(searchStr);
+            PoiResult mPoiResult = mLocationProvider.getPoiResult();
+            if (mPoiResult != null && mPoiResult.getQuery() != null
+                    && mPoiResult.getPois() != null && mPoiResult.getPois().size() > 0) {// 搜索poi的结果
+                ShowSearchPoiFragment fragment = new ShowSearchPoiFragment();
+                fragment.setRequestCode(requestCode);
+                fragment.setSearchStr(searchStr);
 //            if (requestCode != WAY_POI_CODE) {
 //                mActivity.startFragment(fragment);
 //            }else {
@@ -221,6 +230,11 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
 //            mFrameLayout1.setVisibility(View.VISIBLE);
 //            List<PoiItem> items = mLocationProvider.getPoiResult().getPois();
 //            mShowResultAdapter.setDate(items);
+            }else {
+                Toast.makeText(getActivity(),"未搜索到结果",Toast.LENGTH_SHORT).show();
+            }
+
+
         }
     };
 
@@ -335,6 +349,14 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
             CollectItem item = mCollectItems.get(position);
             if (requestCode  != WAY_POI_CODE) {
                 mDateHelper.saveWhereIten(requestCode, item.pName, item.pDesc, item.posLat, item.posLon);
+                if (mActivity.getFragmentNum()==2){
+                    List<NaviLatLng> endlist = new ArrayList<>();
+                    endlist.add(new NaviLatLng(item.posLat,item.posLon));
+                    if (mLocationProvider!=null) {
+                        mLocationProvider.tryCalueRunWay(endlist);
+                        mActivity.showDialogwithOther();
+                    }
+                }
                 mActivity.exitFragment();
             }else {
                 if (item!=null) {

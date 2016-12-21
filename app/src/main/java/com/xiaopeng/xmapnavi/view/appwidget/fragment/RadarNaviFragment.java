@@ -173,15 +173,16 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     public void onPause() {
         super.onPause();
         mMapView.onPause();
+        mAmap.setMapCustomEnable(false);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         mMapView.onResume();
-        mAmap.setMapType(AMap.MAP_TYPE_NAVI);
+//        mAmap.setMapType(AMap.MAP_TYPE_NAVI);
         BugHunter.countTimeEnd(getActivity().getApplication(), BugHunter.TIME_TYPE_START, TAG, BugHunter.SWITCH_TYPE_START_COOL);
-
+        mAmap.setMapCustomEnable(true);
     }
 
     @Nullable
@@ -336,6 +337,8 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
 
     }
 
+
+
     private void reCalue() {
         LogUtils.d(TAG, "reCalueInNavi: fromPoint:" + fromPoint
         );
@@ -385,37 +388,6 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         if (mPaths != null) {
             LogUtils.d(TAG, "onCalculateMultipleRoutesSuccess getPath size:" + mPaths.size());
         }
-//        if (ints.length > 1) {
-//            AMapNaviPath path0 = mPaths.get(ints[0]);
-//            AMapNaviPath path1 = mPaths.get(ints[1]);
-//            AMapNaviPath path2 = null;
-//            if (ints.length == 3) {
-//                path2 = mPaths.get(ints[2]);
-//            }
-//            if (mPoline0 != null) {
-//                mPoline0.remove();
-//                mPoline0 = null;
-//
-//            }
-//            mPoline0 = drawPolyLine(path0);
-//            mPoline0.setZIndex(0);
-//
-//            if (mPoline1 != null) {
-//                mPoline1.remove();
-//                mPoline1 = null;
-//            }
-//            mPoline1 = drawPolyLine(path1);
-//            mPoline1.setZIndex(0);
-//
-//            if (mPoline2 != null) {
-//                mPoline2.remove();
-//                mPoline2 = null;
-//            }
-//            if (path2 != null) {
-//                mPoline2 = drawPolyLine(path2);
-//                mPoline2.setZIndex(0);
-//            }
-//        }
         watchAll();
         drawAllPathLine();
 
@@ -484,32 +456,20 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
             watchAll();
             mLocationPro.stopNavi();
             drawInfoLine();
-//            RouteOverLay routeOverLay = routeOverlays.get(routeID);
-//            if (routeOverLay==null)return;
-//            routeOverLay.setTransparency(1f);
             /**
              * 把用户选择的那条路的权值弄高，使路线高亮显示的同时，重合路段不会变的透明
              **/
 
-
-//            routeOverLay.setZindex(zindex+1);
-
             AMapNaviPath path = mLocationPro.getNaviPaths().get(routeID);
             toPoint = new LatLonPoint(path.getEndPoint().getLatitude(),path.getEndPoint().getLongitude());
-//            drawRoutes(routeID, path);
-            drawApath(path);
             mLocationPro.selectRouteId(routeID);
+            drawApath(path);
             mLocationPro.startNavi(AMapNavi.GPSNaviMode);
         } catch (Exception e) {
             e.printStackTrace();
             LogUtils.e(TAG, "changeRoute error:routeId = " + routeID);
         }
 
-//        AMapNaviPath path  = mPaths.get(ints[routeIndex]);
-//        int traListhNum = getTrafficLightNum(path);
-//        int cost = path.getTollCost();
-//        String msgShow = "花费："+cost+"元   经过"+traListhNum+"个红绿灯";
-//        mTvShowMsg.setText(msgShow);
     }
 
     private void drawApath(AMapNaviPath path){
@@ -544,12 +504,14 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         }
         routeOverLays.clear();
         routeOverLayList.clear();
-        for (int i = 0 ;i<ints.length;i++){
-            int id = ints[i];
-            AMapNaviPath mapNaviPath = mPaths.get(id);
-            MRouteOverLay routeOverLay = drawRoutes(id,mapNaviPath);
-            routeOverLays.put(id,routeOverLay);
-            routeOverLayList.add(routeOverLay);
+        if (ints.length>1) {
+            for (int i = 0; i < ints.length; i++) {
+                int id = ints[i];
+                AMapNaviPath mapNaviPath = mPaths.get(id);
+                MRouteOverLay routeOverLay = drawRoutes(id, mapNaviPath);
+                routeOverLays.put(id, routeOverLay);
+                routeOverLayList.add(routeOverLay);
+            }
         }
     }
 
@@ -567,10 +529,6 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     @Override
     public void nearBy(int pathId, int stepNum, int poiNum) {
         LogUtils.d(TAG, "nearBy:" + pathId);
-//        if (pathId!=routeID) {
-//            routeID = pathId;
-//            changeRoute();
-//        }
     }
 
     @Override
@@ -586,11 +544,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
 
     private MRouteOverLay drawRoutes(int routeId, AMapNaviPath path) {
         LogUtils.d(TAG, "drawRoutes id:" + routeId);
-//        if (mRouteOverlay != null) {
-//            mRouteOverlay.removeFromMap();
-//            mRouteOverlay = null;
-//        }
-
+        mLocationPro.selectRouteId(routeId);
         mAmap.moveCamera(CameraUpdateFactory.changeTilt(0));
         MRouteOverLay routeOverLay = new MRouteOverLay(mAmap, path, getActivity());
 
@@ -606,7 +560,6 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         routeOverLay.setTrafficLine(true);
         routeOverLay.addToMap();
         return routeOverLay;
-//        mRouteOverlay = routeOverLay;
     }
 
 
@@ -679,6 +632,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
 
             case R.id.btn_exit:
 //                getActivity().finish();
+                mAmap.clear();
                 mActivity.exitFragment();
                 break;
 
@@ -725,10 +679,12 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     }
 
     private void startNavi() {
+        mAmap.clear();
         LogUtils.d(TAG, "startNavi");
         Intent intent = new Intent(getActivity(), RouteNaviActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         getActivity().startActivity(intent);
+
         mActivity.exitFragment();
     }
 
@@ -979,22 +935,6 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         @Override
         public void onPolylineClick(Polyline polyline) {
             LogUtils.d(TAG, "\n touch one:" + polyline + "\n first:" + mPoline0 + "\n first1:" + mPoline1 + "\n first2:" + mPoline2);
-//            if (polyline.equals(mPoline0)) {
-//                if (mLocationPro.getPathsInts()[0] != routeID) {
-//                    routeID = mLocationPro.getPathsInts()[0];
-//                    changeRoute();
-//                }
-//            } else if (polyline.equals(mPoline1)) {
-//                if (mLocationPro.getPathsInts()[1] != routeID) {
-//                    routeID = mLocationPro.getPathsInts()[1];
-//                    changeRoute();
-//                }
-//            } else if (polyline.equals(mPoline2)) {
-//                if (mLocationPro.getPathsInts()[2] != routeID) {
-//                    routeID = mLocationPro.getPathsInts()[2];
-//                    changeRoute();
-//                }
-//            }
             for (int i = 0;i<ints.length;i++){
                 MRouteOverLay routeOverLay = routeOverLays.get(ints[i]);
                 if (routeOverLay.isPolyLineInIt(polyline)){

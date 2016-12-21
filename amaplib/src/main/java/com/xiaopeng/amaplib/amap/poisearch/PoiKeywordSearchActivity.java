@@ -26,7 +26,7 @@ import com.amap.api.maps.AMapUtils;
 import com.amap.api.maps.SupportMapFragment;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.NaviPara;
-import com.amap.api.maps.overlay.PoiOverlay;
+//import com.amap.api.maps.overlay.PoiOverlay;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.core.SuggestionCity;
 import com.amap.api.services.help.Inputtips;
@@ -307,10 +307,10 @@ public class PoiKeywordSearchActivity extends FragmentActivity implements
 
 					if (poiItems != null && poiItems.size() > 0) {
 						aMap.clear();// 清理之前的图标
-						PoiOverlay poiOverlay = new PoiOverlay(aMap, poiItems);
-						poiOverlay.removeFromMap();
-						poiOverlay.addToMap();
-						poiOverlay.zoomToSpan();
+//						PoiOverlay poiOverlay = new PoiOverlay(aMap, poiItems);
+//						poiOverlay.removeFromMap();
+//						poiOverlay.addToMap();
+//						poiOverlay.zoomToSpan();
 					} else if (suggestionCities != null
 							&& suggestionCities.size() > 0) {
 						showSuggestCity(suggestionCities);
