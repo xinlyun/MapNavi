@@ -136,14 +136,16 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 
 
 		mAMapNaviView.setAMapNaviViewListener(RouteNaviActivity.this);
+		mAMapNaviView.setLockZoom(15);
 		mNaviAmap = mAMapNaviView.getMap();
 		mNaviAmap.setTrafficEnabled(isTraff);
+
 		mNaviAmap.setOnCameraChangeListener(this);
 		mAMapNaviView.setLazyNextTurnTipView((NextTurnTipView) findViewById(R.id.myNextTurnTipView));
 		boolean gps=getIntent().getBooleanExtra("gps", true);
 		if(gps){
-//			mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
-			mLocationPro.startNavi(AMapNavi.GPSNaviMode);
+			mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
+//			mLocationPro.startNavi(AMapNavi.GPSNaviMode);
 		}else{
 			mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
 		}
@@ -244,6 +246,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		viewOptions.setStartPointBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.icon_from_poi));
 		viewOptions.setEndPointBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.icon_end_poi));
 		viewOptions.setWayPointBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.icon_way_poi));
+
 		mAMapNaviView.setViewOptions(viewOptions);
 		mNextView = (NextTurnTipView) findViewById(R.id.nttv_navi);
 		mAMapNaviView.setLazyNextTurnTipView(mNextView);
@@ -288,6 +291,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	@Override
 	protected void onStart() {
 		super.onStart();
+		mNaviAmap.setMapType(AMap.MAP_TYPE_NIGHT);
 		mLocationPro.addNaviInfoListner(this);
 		mLocationPro.addNaviCalueListner(xpNaviCalueListener);
 	}

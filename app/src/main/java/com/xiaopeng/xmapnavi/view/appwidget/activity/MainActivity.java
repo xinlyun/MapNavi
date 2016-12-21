@@ -450,6 +450,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
             mLocationProvider.calueRunWay(startList,wayList,endList);
         }
     }
+
     @Override
     public void showCollectDialog(){
         mCollectDateHelper.getCollectItems();

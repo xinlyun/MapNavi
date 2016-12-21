@@ -255,6 +255,11 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                 }
             },100);
 
+            if (mNaviChioceDialog == null) {
+                mNaviChioceDialog = new NaviChanDialog(RunNaviWayFragment.this.getActivity());
+                mNaviChioceDialog.setOnChioceNaviStyleListner(RunNaviWayFragment.this);
+            }
+
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -274,7 +279,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     @Override
     public void onPause() {
         super.onPause();
-        mAMap.setMapCustomEnable(false);
+
     }
 
     private void initView(){
@@ -292,13 +297,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         findViewById(R.id.btn_zoom_jian).setOnClickListener(this);
         findViewById(R.id.btn_lukuang).setOnClickListener(this);
         findViewById(R.id.btn_add_way_poi).setOnClickListener(this);
-        mBtnStartNavi.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mNaviChioceDialog = new NaviChanDialog(RunNaviWayFragment.this.getActivity());
-                mNaviChioceDialog.setOnChioceNaviStyleListner(RunNaviWayFragment.this);
-            }
-        },1000);
+
 
 
         mProgDialog = new ProgressDialog(this.getActivity());
@@ -1074,6 +1073,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     @Override
     public void onDestroyView() {
         mLocaionPro = null;
+        mAMap.setMapCustomEnable(false);
         super.onDestroyView();
     }
 
