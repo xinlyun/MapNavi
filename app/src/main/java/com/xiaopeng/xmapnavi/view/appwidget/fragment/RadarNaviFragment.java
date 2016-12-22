@@ -17,6 +17,7 @@ import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.Polyline;
 import com.amap.api.maps.model.PolylineOptions;
 import com.amap.api.navi.AMapNavi;
+import com.amap.api.navi.enums.NaviType;
 import com.amap.api.navi.model.AMapNaviCross;
 import com.amap.api.navi.view.RouteOverLay;
 import com.xiaopeng.lib.bughunter.BugHunter;
@@ -77,8 +78,8 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     private int[] ints;
     private OnLocationChangedListener mLisenerClient;
     private LatLonPoint fromPoint, toPoint;
-    int routeID = 1;
-//    private int zindex = 2;
+    int routeID = -1;
+    //    private int zindex = 2;
     private ImageView mIvLukuang;
     private long timeSave;
     private LatLng poiSave;
@@ -86,6 +87,8 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     private Marker mLineMarker0, mLineMarker1;
     private Marker mMarker0, mMarker1;
     private ImageView mIvShowNaviInfo,mIvBroadCast;
+
+    private ImageView mImgShowIntro;
 
     private static final int LINE_TYPE_TOP = 0;
     private static final int LINE_TYPE_BOTTOM = 1;
@@ -143,6 +146,10 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     private int remebTime = 0;
     private int remebLenght = 0;
     private boolean isBroadCast = false;
+
+
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         BugHunter.countTimeStart(BugHunter.TIME_TYPE_START, TAG, BugHunter.SWITCH_TYPE_START_COOL);
@@ -197,14 +204,16 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     }
 
     void initView() {
-        mTvShowMsg = (TextView) findViewById(R.id.tv_show_msg);
-        mTvShowRoad = (TextView) findViewById(R.id.tv_show_other);
-        mMapFloatView = (MapFloatView) findViewById(R.id.mfv_show);
-        mMapFloatView.initAmap(mAmap);
-        mIvLukuang = (ImageView) findViewById(R.id.iv_lukuang);
-        mTxShowShengyu = (TextView) findViewById(R.id.tv_show_shengyu);
-        mIvShowNaviInfo = (ImageView) findViewById(R.id.iv_show_navi_icon);
-        mIvBroadCast = (ImageView) findViewById(R.id.iv_broadcast);
+        mTvShowMsg          = (TextView) findViewById(R.id.tv_show_msg);
+        mTvShowRoad         = (TextView) findViewById(R.id.tv_show_other);
+        mMapFloatView       = (MapFloatView) findViewById(R.id.mfv_show);
+        mMapFloatView       .initAmap(mAmap);
+        mIvLukuang          = (ImageView) findViewById(R.id.iv_lukuang);
+        mTxShowShengyu      = (TextView) findViewById(R.id.tv_show_shengyu);
+        mIvShowNaviInfo     = (ImageView) findViewById(R.id.iv_show_navi_icon);
+        mIvBroadCast        = (ImageView) findViewById(R.id.iv_broadcast);
+        mImgShowIntro       = (ImageView) findViewById(R.id.iv_show_intro);
+
         mIvBroadCast.setOnClickListener(this);
         findViewById(R.id.btn_see_all).setOnClickListener(this);
         findViewById(R.id.btn_exit).setOnClickListener(this);
@@ -220,6 +229,8 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
         findViewById(R.id.btn_zoom_plus).setOnClickListener(this);
         findViewById(R.id.btn_zoom_jian).setOnClickListener(this);
         mMapFloatView.setFloatViewTouchListener(xpFloatViewTouchListener);
+        mImgShowIntro.setOnClickListener(this);
+        findViewById(R.id.btn_show_intro).setOnClickListener(this);
 
     }
 
@@ -260,7 +271,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
 
 
             MarkerOptions options = new MarkerOptions();
-            options.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_from_poi));
+            options.icon(BitmapDescriptorFactory.fromResource(R.drawable.nothing_poi));
             options.anchor(0.5f, 1f);
             options.position(new LatLng(fromPoint.getLatitude(), fromPoint.getLongitude()));
             markerFromPoi = mAmap.addMarker(options);
@@ -464,7 +475,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
             toPoint = new LatLonPoint(path.getEndPoint().getLatitude(),path.getEndPoint().getLongitude());
             mLocationPro.selectRouteId(routeID);
             drawApath(path);
-            mLocationPro.startNavi(AMapNavi.GPSNaviMode);
+            mLocationPro.startNavi(NaviType.GPS);
         } catch (Exception e) {
             e.printStackTrace();
             LogUtils.e(TAG, "changeRoute error:routeId = " + routeID);
@@ -576,11 +587,26 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
             remebLenght = naviInfo.getPathRetainDistance();
             remebTime   = naviInfo.getPathRetainTime();
 
-            String str = "" + naviInfo.getCurStepRetainDistance() + "米后" ;
-            String str2 = "进入" + naviInfo.getNextRoadName();
+
+
+
+
+
+
             if (mTvShowMsg != null) {
-                mTvShowMsg.setText(str);
+                if (naviInfo.getCurStepRetainDistance()<1000) {
+                    String str = "" + naviInfo.getCurStepRetainDistance() + "米后";
+                    mTvShowMsg.setText(str);
+                }else {
+                    int dis = naviInfo.getPathRetainDistance();
+                    dis = dis / 1000;
+                    DecimalFormat df = new DecimalFormat("0.0");
+                    String result = df.format(dis);
+                    String lenght = "" + result + "公里";
+                    mTxShowShengyu.setText(lenght);
+                }
             }
+            String str2 = "进入" + naviInfo.getNextRoadName();
             if (mTvShowRoad !=null){
                 mTvShowRoad.setText(str2);
             }
@@ -670,6 +696,14 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
                     mIvBroadCast.setImageResource(R.drawable.icon_broad_false);
                 }
 
+                break;
+
+            case R.id.btn_show_intro:
+                showIntro();
+                break;
+
+            case R.id.iv_show_intro:
+                hideIntro();
                 break;
 
             default:
@@ -994,4 +1028,23 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
             }
         }
     };
+
+
+    private void showIntro(){
+        if (mImgShowIntro!=null){
+            mImgShowIntro.setImageResource(R.drawable.img_introc_radia);
+            mImgShowIntro.setVisibility(View.VISIBLE);
+        }
+    }
+    private void hideIntro(){
+        if (mImgShowIntro!=null){
+            mImgShowIntro.setImageBitmap(null);
+            mImgShowIntro.setVisibility(View.GONE);
+        }
+    }
+
+    public void setRemebLenght(int disTent){
+        remebLenght = disTent;
+    }
+
 }

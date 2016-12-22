@@ -502,7 +502,7 @@
                     <TextView
 
                         android:id="@+id/tx_time_need"
-                        android:text="30分钟"
+                        android:text="1小时49分"
                         android:textColor="@color/white"
                         android:textSize="20px"
                         android:layout_marginLeft="10px"

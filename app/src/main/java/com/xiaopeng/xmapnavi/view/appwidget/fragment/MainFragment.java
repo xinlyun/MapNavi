@@ -622,6 +622,19 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
     }
 
+
+    private void removeLocationMarker(){
+        try{
+            if (mLocationMarker!=null){
+                mLocationMarker.remove();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            mLocationMarker = null;
+        }
+    }
+
     @Override
     public void onLocationChange(AMapNaviLocation location) {
 
@@ -722,10 +735,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         geocodeSearch = new GeocodeSearch(getActivity());
         geocodeSearch.setOnGeocodeSearchListener(this);
 
-        if (mLocationMarker != null){
-            mLocationMarker.remove();
-            mLocationMarker = null;
-        }
+        removeLocationMarker();
         mLocationMarker = mAmap.addMarker(new MarkerOptions()
                 .icon(BitmapDescriptorFactory
                         .fromResource(R.drawable.icon_seewatch_1))
@@ -777,6 +787,8 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
             mapView = mActivity.getMapView();
             init();
         }
+        mAmap.setCustomMapStylePath("/sdcard/main_style_true.json");
+        mAmap.setMapCustomEnable(true);
         mapView.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -829,7 +841,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         polylineOptions.aboveMaskLayer(true);
         mPolyline = mAmap.addPolyline(polylineOptions);
 
-
+        removeLocationMarker();
         mLocationMarker = mAmap.addMarker(new MarkerOptions()
                 .icon(BitmapDescriptorFactory
                         .fromResource(R.drawable.icon_seewatch_1))
@@ -892,6 +904,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                             mLocationMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_seewatch_1));
                             mLocationMarker.setPosition(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
                         }else{
+                            removeLocationMarker();
                             mLocationMarker  = mAmap.addMarker(new MarkerOptions()
                                     .icon(BitmapDescriptorFactory
                                             .fromResource(R.drawable.icon_seewatch_1))
@@ -916,6 +929,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                         mLocationMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_seewatch_0));
                         mLocationMarker.setPosition(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
                     }else{
+                        removeLocationMarker();
                         mLocationMarker  = mAmap.addMarker(new MarkerOptions()
                                 .icon(BitmapDescriptorFactory
                                         .fromResource(R.drawable.icon_seewatch_0))
@@ -934,6 +948,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                         mLocationMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_seewatch_0));
                         mLocationMarker.setPosition(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
                     }else{
+                        removeLocationMarker();
                         mLocationMarker  = mAmap.addMarker(new MarkerOptions()
                                 .icon(BitmapDescriptorFactory
                                         .fromResource(R.drawable.icon_seewatch_0))
@@ -998,7 +1013,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
     private void init() {
         if (mAmap == null) {
             mAmap = mapView.getMap();
-            mAmap.setCustomMapStylePath("/sdcard/style2.json");
+
             mAmap.setMapTextZIndex(0);
 
             mAmap.setMapCustomEnable(false);
@@ -1211,15 +1226,16 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
             mAmap.setTrafficEnabled(isTraff);
 
             if (isTraff){
-                mAmap.setMapType(AMap.MAP_TYPE_NAVI);
+//                mAmap.setMapType(AMap.MAP_TYPE_NAVI);
+                mAmap.setCustomMapStylePath("/sdcard/main_style_true.json");
                 mAmap.setMapCustomEnable(true);
                 mapView.getMap().setMaskLayerParams(500,500,500,500,500,500);
                 mIvShowTraffic.setImageResource(R.drawable.icon_lukuang_01);
                 mAmap.showIndoorMap(false);
                 mAmap.showBuildings(false);
             }else {
-                mAmap.setMapType(AMap.MAP_TYPE_NAVI);
-                mAmap.setMapCustomEnable(false);
+                mAmap.setCustomMapStylePath("/sdcard/main_style_false.json");
+                mAmap.setMapCustomEnable(true);
 
                 mapView.getMap().setMaskLayerParams(500,500,500,500,500,500);
                 mIvShowTraffic.setImageResource(R.drawable.icon_lukuang_02);

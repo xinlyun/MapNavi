@@ -32,6 +32,7 @@
     <string name="into">进入</string>
     <string name="hour">小时</string>
     <string name="min">分钟</string>
+    <string name="onlymin">分</string>
     <string name="need">剩余</string>
     <string name="second">秒</string>
     <string name="company">公司</string>

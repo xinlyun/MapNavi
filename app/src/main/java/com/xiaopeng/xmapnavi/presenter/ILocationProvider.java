@@ -5,6 +5,7 @@ import android.content.Context;
 import com.amap.api.location.AMapLocation;
 import com.amap.api.maps.offlinemap.OfflineMapManager;
 import com.amap.api.navi.model.AMapNaviPath;
+import com.amap.api.navi.model.NaviInfo;
 import com.amap.api.navi.model.NaviLatLng;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
@@ -64,7 +65,7 @@ public interface ILocationProvider {
     void startRouteNavi();
     void stopRouteNavi();
     void setNaviStyle(boolean congestion, boolean avHighSpeed, boolean avCost, boolean highSpeed);
-    void reCalueInNavi();
+    boolean reCalueInNavi();
     void reCalue();
     int[] getPathsInts();
     NaviLatLng getNaviEndPoi();
@@ -84,4 +85,6 @@ public interface ILocationProvider {
 
     void muteLaught();
     void unmuteLaught();
+
+    NaviInfo getNaviInfo();
 }

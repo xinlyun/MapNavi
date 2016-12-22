@@ -88,6 +88,7 @@ public class RadarNaviActivity extends Activity implements BaseFuncActivityIntef
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.add(R.id.tmv_search_show,radarNaviFragment);
         transaction.commit();
+        setIntent(null);
     }
 
     @Override

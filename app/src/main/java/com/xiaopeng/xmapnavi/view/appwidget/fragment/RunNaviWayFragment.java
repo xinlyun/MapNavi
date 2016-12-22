@@ -719,6 +719,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                 RadarNaviFragment radarNaviFragment = new RadarNaviFragment();
                 radarNaviFragment.setMapView(mActivity.getMapView());
                 radarNaviFragment.setToPoint(toPoint);
+                radarNaviFragment.setRemebLenght(getSelectPathLength());
                 mActivity.startFragmentReplace(radarNaviFragment);
                 break;
 
@@ -1556,5 +1557,16 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             return true;
         }
     };
+
+    private int getSelectPathLength(){
+        try {
+            AMapNaviPath aMapNaviPath = paths.get(ints[routeIndex]);
+            return aMapNaviPath.getAllLength();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return 0;
+
+    }
 
 }

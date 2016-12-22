@@ -70,10 +70,10 @@
                         android:layout_height="match_parent" />
                     <LinearLayout
                         android:gravity="center_vertical"
-                        android:layout_width="370px"
+                        android:layout_width="340px"
                         android:layout_height="match_parent">
                         <TextView
-                            android:layout_marginLeft="20px"
+                            android:layout_marginLeft="10px"
                             android:singleLine="true"
                             android:textColor="@color/a3a3a3"
                             android:textSize="24px"
@@ -108,20 +108,21 @@
                         android:textSize="28px"
                         android:text="剩余1小时36分钟 25.6公里"
                         android:gravity="center|right"
-                        android:layout_marginRight="192px"
+                        android:layout_marginRight="270px"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent" />
 
                 </LinearLayout>
                 <ImageView
-                    android:visibility="gone"
+                    android:id="@+id/btn_show_intro"
+                    android:visibility="visible"
                     android:layout_marginRight="168px"
                     android:layout_alignParentRight="true"
                     android:src="@drawable/icon_help"
                     android:layout_width="88px"
                     android:layout_height="108px" />
                 <ImageView
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:background="@color/gray_btn_bg_pressed_color"
                     android:layout_marginTop="34px"
                     android:layout_marginBottom="34px"
@@ -257,4 +258,11 @@
                 android:layout_height="88px" />
         </LinearLayout>
     </FrameLayout>
+    <ImageView
+        android:scaleType="fitXY"
+
+        android:visibility="gone"
+        android:id="@+id/iv_show_intro"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </RelativeLayout>
