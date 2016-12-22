@@ -993,12 +993,17 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public void muteLaught() {
-        aMapNavi.removeAMapNaviListener(ttsManager);
+        ttsManager.setSpeakType(TTSController.ALL_NO_SPEAK);
     }
 
     @Override
     public void unmuteLaught() {
-        aMapNavi.addAMapNaviListener(ttsManager);
+        ttsManager.setSpeakType(TTSController.ALL_SPEAK);
+    }
+
+    @Override
+    public void muteSomeLaught() {
+        ttsManager.setSpeakType(TTSController.SPEAK_SOMW);
     }
 
     @Override

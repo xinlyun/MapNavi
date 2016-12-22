@@ -689,7 +689,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
             case R.id.iv_broadcast:
                 isBroadCast = !isBroadCast;
                 if (isBroadCast){
-                    mLocationPro.unmuteLaught();
+                    mLocationPro.muteSomeLaught();
                     mIvBroadCast.setImageResource(R.drawable.icon_broad_true);
                 }else {
                     mLocationPro.muteLaught();
@@ -715,6 +715,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     private void startNavi() {
         mAmap.clear();
         LogUtils.d(TAG, "startNavi");
+        mLocationPro.unmuteLaught();
         Intent intent = new Intent(getActivity(), RouteNaviActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         getActivity().startActivity(intent);

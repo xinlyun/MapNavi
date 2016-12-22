@@ -85,6 +85,7 @@ public interface ILocationProvider {
 
     void muteLaught();
     void unmuteLaught();
+    void muteSomeLaught();
 
     NaviInfo getNaviInfo();
 }
