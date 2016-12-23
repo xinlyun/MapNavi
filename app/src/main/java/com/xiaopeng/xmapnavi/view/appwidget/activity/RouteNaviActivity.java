@@ -587,6 +587,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			case R.id.btn_goto_again:
 				//继续导航
 				mAMapNaviView.recoverLockMode();
+				onLockMap(true);
 				delectMissLayout.sendEmptyMessage(0);
 				break;
 
@@ -782,13 +783,12 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
-			if (mProgDialog.isShowing()) {
-				Toast.makeText(RouteNaviActivity.this, "规划失败，请稍后重试", Toast.LENGTH_SHORT).show();
+			if (mProgDialog.isShowing()){
+				Toast.makeText(RouteNaviActivity.this,"规划失败，请稍后重试",Toast.LENGTH_SHORT).show();
 			}
 			if (mProgDialog != null) {
 				mProgDialog.dismiss();
 			}
-
 
 		}
 	};

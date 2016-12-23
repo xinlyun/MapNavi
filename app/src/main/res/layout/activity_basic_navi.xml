@@ -262,14 +262,14 @@
                         android:layout_height="match_parent">
                         <ImageView
                             android:id="@+id/iv_see_watch"
-                            android:src="@drawable/icon_seewatch_0"
+                            android:src="@drawable/icon_seewatch_1"
                             android:layout_width="match_parent"
                             android:layout_height="72px" />
                         <TextView
                             android:id="@+id/tx_see_watch"
                             android:textColor="@color/first_text_color"
 
-                            android:text="@string/watch_3d"
+                            android:text="@string/watch_follow"
                             android:gravity="center_horizontal"
                             android:textSize="22px"
 
