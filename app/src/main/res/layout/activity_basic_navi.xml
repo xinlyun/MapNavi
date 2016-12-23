@@ -485,7 +485,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
                 <LinearLayout
-                    android:layout_marginTop="10px"
+                    android:layout_marginTop="18px"
                     android:orientation="horizontal"
                     android:background="@color/text_black"
                     android:layout_width="match_parent"
