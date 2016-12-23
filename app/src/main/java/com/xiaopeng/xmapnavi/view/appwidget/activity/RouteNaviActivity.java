@@ -771,9 +771,21 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 				if (mProgDialog != null) {
 					mProgDialog.show();
 				}
+				deleyHandler.sendEmptyMessageDelayed(0,20 * 1000);
 			}else {
 				Toast.makeText(RouteNaviActivity.this,"规划失败，请稍后重试",Toast.LENGTH_SHORT).show();
 			}
+		}
+	};
+
+	private Handler deleyHandler = new Handler(){
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			if (mProgDialog != null) {
+				mProgDialog.dismiss();
+			}
+			Toast.makeText(RouteNaviActivity.this,"规划失败，请稍后重试",Toast.LENGTH_SHORT).show();
 		}
 	};
 
