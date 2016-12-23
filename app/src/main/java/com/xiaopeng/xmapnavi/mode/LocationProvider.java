@@ -910,9 +910,11 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
             startPoi.add(path.getStartPoint());
             List<NaviLatLng> wayPoi = new ArrayList<>();
             wayPoi.addAll(path.getWayPoint());
+
             aMapNavi.stopNavi();
-            return aMapNavi.calculateDriveRoute(startPoi, endPois, wayPoi, aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, true));
-//            return aMapNavi.reCalculateRoute(aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, true));
+            return aMapNavi.calculateDriveRoute(startPoi, endPois, wayPoi, aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, false));
+
+//            return aMapNavi.reCalculateRoute(aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, false));
         } catch (Exception e) {
             e.printStackTrace();
         }
