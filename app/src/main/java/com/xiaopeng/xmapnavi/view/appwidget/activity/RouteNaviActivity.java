@@ -772,7 +772,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 				if (mProgDialog != null) {
 					mProgDialog.show();
 				}
-				deleyHandler2.sendEmptyMessageDelayed(0,20 * 1000);
+				deleyHandler2.sendEmptyMessageDelayed(0,10 * 1000);
 			}else {
 				Toast.makeText(RouteNaviActivity.this,"规划失败，请稍后重试",Toast.LENGTH_SHORT).show();
 			}
@@ -907,6 +907,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			}catch (Exception e){
 				e.printStackTrace();
 			}
+			mLocationPro.selectRouteId(ints[0]);
 			mLocationPro.startNavi(AMapNavi.GPSNaviMode);
 			if (mAMapNaviView!=null) {
 				mAMapNaviView.postDelayed(new Runnable() {
