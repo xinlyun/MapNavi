@@ -28,15 +28,16 @@
                 android:singleLine="true"
                 android:textColor="@color/first_text_color"
                 android:id="@+id/pre_list_name"
-
-                android:textSize="28px"
+                android:text="深圳北"
+                android:textSize="@dimen/list_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
             <TextView
-                android:layout_marginTop="4px"
+                android:text="广州东"
+                android:layout_marginTop="@dimen/two_top_marage"
                 android:singleLine="true"
                 android:textColor="@color/a3a3a3"
-                android:textSize="24px"
+                android:textSize="@dimen/list_msg"
                 android:id="@+id/pre_list_posi"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

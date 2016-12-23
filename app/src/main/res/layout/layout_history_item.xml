@@ -42,17 +42,17 @@
                 android:id="@+id/pre_list_name"
                 android:singleLine="true"
                 android:textColor="@color/first_text_color"
-                android:textSize="28px"
+                android:textSize="@dimen/list_title"
 
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
             <TextView
-                android:layout_marginTop="4px"
+                android:layout_marginTop="@dimen/two_top_marage"
                 android:singleLine="true"
                 android:text="adfadf"
                 android:id="@+id/pre_list_posi"
                 android:textColor="@color/gray_btn_bg_pressed_color"
-                android:textSize="24px"
+                android:textSize="@dimen/list_msg"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>

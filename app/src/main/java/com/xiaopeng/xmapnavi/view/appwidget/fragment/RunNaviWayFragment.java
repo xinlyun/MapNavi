@@ -272,8 +272,8 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         super.onResume();
         BugHunter.countTimeEnd(getActivity().getApplication(),BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
 //        mAMap.setMapType(AMap.MAP_TYPE_NAVI);
-
-        mAMap.setMapCustomEnable(true);
+        mAMap.setMapType(AMap.MAP_TYPE_NAVI);
+//        mAMap.setMapCustomEnable(true);
         mAMap.setMapTextZIndex(0);
 
     }
@@ -665,6 +665,9 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
     }
 
+
+
+
     private MRouteOverLay drawMRoutes(int rouid,AMapNaviPath path) {
         mLocaionPro.selectRouteId(rouid);
         calculateSuccess = true;
@@ -696,6 +699,13 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         }
     };
 
+    private Handler deletExit = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            mActivity.exitFragment();
+        }
+    };
 
     @Override
     public void onClick(View view) {
@@ -708,7 +718,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                 intent.putExtra("gps", true);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
-                mActivity.exitFragment();
+                deletExit.sendEmptyMessageDelayed(0,1500);
                 break;
             case R.id.btn_start_route_navi:
                 mAMap.clear();
@@ -719,6 +729,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                 RadarNaviFragment radarNaviFragment = new RadarNaviFragment();
                 radarNaviFragment.setMapView(mActivity.getMapView());
                 radarNaviFragment.setToPoint(toPoint);
+                radarNaviFragment.setRemebLenght(getSelectPathLength());
                 mActivity.startFragmentReplace(radarNaviFragment);
                 break;
 
@@ -1556,5 +1567,16 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             return true;
         }
     };
+
+    private int getSelectPathLength(){
+        try {
+            AMapNaviPath aMapNaviPath = paths.get(ints[routeIndex]);
+            return aMapNaviPath.getAllLength();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return 0;
+
+    }
 
 }

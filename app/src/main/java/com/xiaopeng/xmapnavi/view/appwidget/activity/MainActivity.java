@@ -27,6 +27,7 @@ import com.aispeech.aios.common.bean.PoiBean;
 import com.amap.api.maps.AMapOptions;
 import com.amap.api.maps.Projection;
 import com.amap.api.maps.model.Circle;
+import com.amap.api.maps.model.MyTrafficStyle;
 import com.amap.api.maps.model.Poi;
 import com.amap.api.navi.model.AMapNaviPath;
 import com.gc.materialdesign.widgets.ProgressDialog;
@@ -185,6 +186,8 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
 
             mapView.onCreate(null);// 此方法必须重写
             aMap = mapView.getMap();
+            MyTrafficStyle myTrafficStyle = new MyTrafficStyle();
+
         }
         mapView.postDelayed(new Runnable() {
             @Override

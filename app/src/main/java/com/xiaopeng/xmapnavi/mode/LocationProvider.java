@@ -140,6 +140,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     private boolean isWillOOM = false;
 
+    private NaviInfo naviInfoSave ;
+
     public static void init(Context context) {
         mContext = context;
         mLp      = new LocationProvider(context);
@@ -590,6 +592,12 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void onNaviInfoUpdate(NaviInfo naviInfo) {
 //        LogUtils.d(NAVI_TAG,"onNaviInfoUpdate");
+        naviInfoSave = naviInfo;
+        if (naviInfo!=null) {
+            if (naviInfo.getCurStepRetainDistance()>2000){
+                naviInfo.setIconType(9);
+            }
+        }
         for (XpNaviInfoListener naviInfoListener:mNaviInfoListners){
             naviInfoListener.onNaviInfoUpdate(naviInfo);
         }
@@ -632,6 +640,9 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void showLaneInfo(AMapLaneInfo[] aMapLaneInfos, byte[] bytes, byte[] bytes1) {
         LogUtils.d(NAVI_TAG,"showLaneInfo");
+        for (XpNaviInfoListener listener:mNaviInfoListners){
+            listener.showLaneInfo(aMapLaneInfos,bytes,bytes1);
+        }
     }
 
     @Override
@@ -887,14 +898,15 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     }
 
     @Override
-    public void reCalueInNavi() {
+    public boolean reCalueInNavi() {
         try {
-            if (isCalueIng)return;
+            if (isCalueIng)return false;
             isCalueIng = true;
-            aMapNavi.reCalculateRoute(aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, true));
+            return aMapNavi.reCalculateRoute(aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, true));
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     @Override
@@ -984,12 +996,22 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public void muteLaught() {
-        aMapNavi.removeAMapNaviListener(ttsManager);
+        ttsManager.setSpeakType(TTSController.ALL_NO_SPEAK);
     }
 
     @Override
     public void unmuteLaught() {
-        aMapNavi.addAMapNaviListener(ttsManager);
+        ttsManager.setSpeakType(TTSController.ALL_SPEAK);
+    }
+
+    @Override
+    public void muteSomeLaught() {
+        ttsManager.setSpeakType(TTSController.SPEAK_SOMW);
+    }
+
+    @Override
+    public NaviInfo getNaviInfo() {
+        return naviInfoSave;
     }
 
 

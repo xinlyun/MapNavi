@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.amap.api.navi.AMapNaviListener;
+import com.amap.api.navi.enums.NaviTTSType;
 import com.amap.api.navi.model.AMapLaneInfo;
 import com.amap.api.navi.model.AMapNaviCross;
 import com.amap.api.navi.model.AMapNaviInfo;
@@ -31,7 +32,7 @@ import com.xiaopeng.amaplib.R;
  * 语音播报组件
  */
 public class TTSController implements AMapNaviListener {
-
+    public static final int ALL_SPEAK = 0,ALL_NO_SPEAK = 2,SPEAK_SOMW = 1;
     private Context mContext;
     private static TTSController ttsManager;
     private SpeechSynthesizer mTts;
@@ -39,6 +40,14 @@ public class TTSController implements AMapNaviListener {
     /**
      * 初始化监听。
      */
+
+
+
+    private int isSpeakType = ALL_SPEAK;
+
+    public void setSpeakType(int type){
+        isSpeakType = type;
+    }
     private InitListener mTtsInitListener = new InitListener() {
         @Override
         public void onInit(int code) {
@@ -195,7 +204,27 @@ public class TTSController implements AMapNaviListener {
 
     @Override
     public void onGetNavigationText(int i, String s) {
-        startSpeaking(s);
+        Log.d("TTSController","\ntype:"+i+"\nstr: "+s);
+        switch (isSpeakType){
+            case ALL_SPEAK:
+                startSpeaking(s);
+                break;
+            case SPEAK_SOMW:
+                if (-1!=s.indexOf("准备出发") || -1!=s.indexOf("开始导航")){
+                    Log.d("TTSController","now type:SPEAK_SOMW  no speak");
+                }else {
+                    Log.d("TTSController","now type:SPEAK_SOMW  can speak");
+                    startSpeaking(s);
+                }
+                break;
+
+            case ALL_NO_SPEAK:
+
+                break;
+        }
+//        if (i!= NaviTTSType.WHOLETRAFFIC_TEXT) {
+
+//        }
     }
 
     @Override

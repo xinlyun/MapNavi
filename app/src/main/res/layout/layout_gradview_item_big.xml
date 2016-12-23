@@ -28,7 +28,7 @@
         <TextView
             android:text="40分钟"
             android:layout_marginTop="2px"
-            android:textSize="36px"
+            android:textSize="34px"
             android:textColor="@color/black"
             android:id="@+id/tv_msg_show"
 
