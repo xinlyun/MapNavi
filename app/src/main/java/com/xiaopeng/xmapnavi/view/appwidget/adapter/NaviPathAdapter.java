@@ -176,7 +176,11 @@ public class NaviPathAdapter extends ArrayAdapter{
         if (min ==  0){
             minStr = "";
         }else {
-            minStr  = ""+min+"分钟";
+            if (hour != 0) {
+                minStr = "" + min + "分";
+            }else {
+                minStr = ""+min+"分钟";
+            }
         }
         secStr = ""+path.getAllTime()/60+"秒";
         String timeString = hourStr+minStr;

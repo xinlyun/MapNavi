@@ -640,6 +640,9 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void showLaneInfo(AMapLaneInfo[] aMapLaneInfos, byte[] bytes, byte[] bytes1) {
         LogUtils.d(NAVI_TAG,"showLaneInfo");
+        for (XpNaviInfoListener listener:mNaviInfoListners){
+            listener.showLaneInfo(aMapLaneInfos,bytes,bytes1);
+        }
     }
 
     @Override

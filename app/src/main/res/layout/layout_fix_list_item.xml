@@ -38,15 +38,15 @@
                     android:textColor="@color/first_text_color"
                     android:id="@+id/pre_list_name"
 
-                    android:textSize="28px"
+                    android:textSize="@dimen/list_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
                 <TextView
                     android:text=""
                     android:singleLine="true"
-                    android:layout_marginTop="4px"
+                    android:layout_marginTop="@dimen/two_top_marage"
                     android:textColor="@color/a3a3a3"
-                    android:textSize="24px"
+                    android:textSize="@dimen/list_msg"
                     android:id="@+id/pre_list_posi"
 
                     android:layout_width="match_parent"

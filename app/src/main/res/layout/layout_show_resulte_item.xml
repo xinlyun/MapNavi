@@ -11,16 +11,16 @@
         android:layout_width="88px"
         android:layout_height="88px" />
     <LinearLayout
-
+        android:gravity="center_vertical"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="108px">
         <TextView
-            android:layout_marginTop="28px"
+
             android:singleLine="true"
             android:id="@+id/pre_list_name"
             android:textColor="@color/first_text_color"
-            android:textSize="28px"
+            android:textSize="@dimen/list_title"
 
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -28,8 +28,8 @@
             android:singleLine="true"
             android:id="@+id/pre_list_posi"
             android:textColor="@color/a3a3a3"
-            android:textSize="24px"
-            android:layout_marginTop="10px"
+            android:textSize="@dimen/list_msg"
+            android:layout_marginTop="@dimen/two_top_marage"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </LinearLayout>

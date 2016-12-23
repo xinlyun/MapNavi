@@ -36,7 +36,7 @@
 
                     android:textColor="@color/first_text_color"
                     android:id="@+id/pre_list_name"
-                    android:textSize="28px"
+                    android:textSize="@dimen/list_title"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
 

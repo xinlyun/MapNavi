@@ -2,14 +2,18 @@ package com.xiaopeng.xmapnavi;
 
 import android.app.Application;
 import android.graphics.Typeface;
+import android.os.Environment;
 
 import com.activeandroid.ActiveAndroid;
 import com.aispeech.aios.sdk.AIOSForCarSDK;
 import com.amap.api.navi.AMapNavi;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.xiaopeng.lib.bughunter.BugHunter;
+import com.xiaopeng.lib.utils.utils.LogUtils;
 import com.xiaopeng.xmapnavi.bean.LocationSaver;
+import com.xiaopeng.xmapnavi.mode.AssetsCopyTOSDcard;
 
+import java.io.File;
 import java.lang.reflect.Field;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
@@ -19,12 +23,15 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
  */
 public class XpApplication extends Application {
     public static Typeface typeFace;
+    private static final String TAG = "XpApplication";
     @Override
     public void onCreate() {
         super.onCreate();
         AMapNavi.setApiKey(this,"518079e13164d2910ff81c078e073bcd");
         ActiveAndroid.initialize(this);
 //        BugHunter.init(this);
+
+
         AIOSForCarSDK.initialize(this);
         if (LocationSaver.getSaveLocation()==null){
             LocationSaver.saverFirst();
@@ -39,9 +46,12 @@ public class XpApplication extends Application {
         try {
             CrashReport.initCrashReport(XpApplication.this, "ae6efa93c1", true);
 //            LeakCanary.install(this);
+            initStyle();
         } catch (Exception e) {
 
         }
+
+
 
     }
 
@@ -78,4 +88,24 @@ public class XpApplication extends Application {
             e.printStackTrace();
         }
     }
+    private void initStyle(){
+        AssetsCopyTOSDcard copyTOSDcard = new AssetsCopyTOSDcard(this);
+        File file0 = new File(Environment.getExternalStorageDirectory().toString()+"/main_style_false.json");
+        if (!file0.exists()){
+            LogUtils.d(TAG,"file0 not exists");
+            copyTOSDcard.AssetToSD("mapstyle/main_style_false.json",Environment.getExternalStorageDirectory().toString()+"/main_style_false.json");
+        }else {
+            LogUtils.d(TAG,"file0  exists");
+        }
+        AssetsCopyTOSDcard copyTOSDcard2 = new AssetsCopyTOSDcard(this);
+        File file1 = new File(Environment.getExternalStorageDirectory().toString()+"/main_style_true.json");
+        if (!file1.exists()){
+            LogUtils.d(TAG,"file1 not exists");
+            copyTOSDcard2.AssetToSD("mapstyle/main_style_true.json",Environment.getExternalStorageDirectory().toString()+"/main_style_true.json");
+        }else {
+            LogUtils.d(TAG,"file0  exists");
+        }
+    }
+
+
 }

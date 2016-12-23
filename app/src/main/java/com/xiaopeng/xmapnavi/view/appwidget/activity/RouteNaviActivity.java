@@ -32,11 +32,13 @@ import com.amap.api.navi.AMapNavi;
 import com.amap.api.navi.AMapNaviView;
 import com.amap.api.navi.AMapNaviViewListener;
 import com.amap.api.navi.AMapNaviViewOptions;
+import com.amap.api.navi.model.AMapLaneInfo;
 import com.amap.api.navi.model.AMapNaviCross;
 import com.amap.api.navi.model.AMapNaviPath;
 import com.amap.api.navi.model.AMapTrafficStatus;
 import com.amap.api.navi.model.NaviInfo;
 import com.amap.api.navi.model.NaviLatLng;
+import com.amap.api.navi.view.DriveWayView;
 import com.amap.api.navi.view.NextTurnTipView;
 import com.amap.api.navi.view.RouteOverLay;
 import com.amap.api.navi.view.TrafficBarView;
@@ -90,7 +92,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	private static final int OLD_HEIDHT = 1332;
 	private static final int NEW_HEIDHT = 1147;
 	private static final int RIGHT_WIDHT = 500;
-	private static final int TITLE_NUM = 45;
+	private static final int TITLE_NUM = 39;
 	private MTrafficBarView mTrafficBarView ;
 	private MTrafficBarView2 mTrafficBarView2;
 
@@ -106,9 +108,13 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 
 	private TextView mTxSeeWatch;
 	private ImageView mImgSeeWatch;
-	private int isFollowCar = 0;
+	private int isFollowCar = 1;
 	private ProgressDialog mProgDialog;
 	private boolean isFirstTime = true;
+	private boolean isFirstInit = true;
+	private boolean isNotUseLock = false;
+
+	private DriveWayView mDrawWayView;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		BugHunter.countTimeStart(BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
@@ -120,42 +126,50 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		saveBundle = savedInstanceState;
 		mLocationPro = LocationProvider.getInstence(this);
 
-		mAMapNaviView = (AMapNaviView) findViewById(R.id.navi_view);
-		mAMapNaviView.onCreate(saveBundle);
-
-		initView();
-		mAMapNaviView.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				mTmap		= (TextureMapView) findViewById(R.id.navi_map_view);
-				mTmap		.onCreate(saveBundle);
-				mTmap		.setOnClickListener(RouteNaviActivity.this);
-				mAmap 		= mTmap.getMap();
-				mAmap		.setOnMapLoadedListener(RouteNaviActivity.this);
-				mTmap		.onResume();
-
-			}
-		},500);
 
 
-		mAMapNaviView.setAMapNaviViewListener(RouteNaviActivity.this);
-		mAMapNaviView.setLockZoom(16);
-		mAMapNaviView.setLockTilt(TITLE_NUM);
-		mNaviAmap = mAMapNaviView.getMap();
-		mNaviAmap.setTrafficEnabled(isTraff);
 
-		mNaviAmap.setOnCameraChangeListener(this);
-		mAMapNaviView.setLazyNextTurnTipView((NextTurnTipView) findViewById(R.id.myNextTurnTipView));
-		boolean gps=getIntent().getBooleanExtra("gps", true);
-		if(gps){
-			mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
+	}
+
+	private void initAll(){
+		if (isFirstInit) {
+			isFirstInit = false;
+			mAMapNaviView = (AMapNaviView) findViewById(R.id.navi_view);
+			mAMapNaviView.onCreate(saveBundle);
+
+			initView();
+			mAMapNaviView.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					mTmap = (TextureMapView) findViewById(R.id.navi_map_view);
+					mTmap.onCreate(saveBundle);
+					mTmap.setOnClickListener(RouteNaviActivity.this);
+					mAmap = mTmap.getMap();
+					mAmap.setOnMapLoadedListener(RouteNaviActivity.this);
+					mTmap.onResume();
+
+				}
+			}, 500);
+
+
+			mAMapNaviView.setAMapNaviViewListener(RouteNaviActivity.this);
+			mAMapNaviView.setLockZoom(16);
+			mAMapNaviView.setLockTilt(TITLE_NUM);
+			mNaviAmap = mAMapNaviView.getMap();
+			mNaviAmap.setTrafficEnabled(isTraff);
+
+			mNaviAmap.setOnCameraChangeListener(this);
+//			mAMapNaviView.setLazyNextTurnTipView((NextTurnTipView) findViewById(R.id.myNextTurnTipView));
+			boolean gps = getIntent().getBooleanExtra("gps", true);
+			if (gps) {
+				mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
 //			mLocationPro.startNavi(AMapNavi.GPSNaviMode);
-		}else{
-			mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
+			} else {
+				mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
+			}
+			initMap();
+
 		}
-		initMap();
-
-
 	}
 
 	@Override
@@ -181,6 +195,8 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		mTmapLayout		= (FrameLayout) findViewById(R.id.mapview_frlayout);
 		mIvLkIcon 		= (ImageView) findViewById(R.id.iv_lukuang_icon);
 		mDanwei			= (TextView) findViewById(R.id.tx_danwei);
+		mDrawWayView	= (DriveWayView) findViewById(R.id.myNextTurnTipView);
+		mDrawWayView	.setAMapNaviView(mAMapNaviView);
 		mZoomInIntersectionView = (ImageView) findViewById(R.id.myZoomInIntersectionView);
 		mRlChange		= (RelativeLayout) findViewById(R.id.rv_be_change);
 		mTrafficBarView	= (MTrafficBarView) findViewById(R.id.tbv_show);
@@ -226,6 +242,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 
 	private void changeSeeWatch(){
 		isFollowCar = (isFollowCar+1)%3;
+		isNotUseLock = true;
 		switch (isFollowCar){
 			case 0:
 				mImgSeeWatch.setImageResource(R.drawable.icon_seewatch_0);
@@ -233,7 +250,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 				if (mAMapNaviView!=null){
 					mAMapNaviView.setNaviMode(AMapNaviView.CAR_UP_MODE);
 					mAMapNaviView.setLockTilt(TITLE_NUM);
-					mAMapNaviView.recoverLockMode();
+//					mAMapNaviView.recoverLockMode();
 				}
 				break;
 
@@ -243,7 +260,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 				if (mAMapNaviView!=null){
 					mAMapNaviView.setNaviMode(AMapNaviView.CAR_UP_MODE);
 					mAMapNaviView.setLockTilt(0);
-					mAMapNaviView.recoverLockMode();
+//					mAMapNaviView.recoverLockMode();
 				}
 
 				break;
@@ -254,14 +271,18 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 				if (mAMapNaviView!=null){
 					mAMapNaviView.setNaviMode(AMapNaviView.NORTH_UP_MODE);
 
-					mAMapNaviView.recoverLockMode();
+//					mAMapNaviView.recoverLockMode();
 				}
 				break;
+		}
+		if (mNaviAmap!=null) {
+			mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
 		}
 	}
 
 	private void initMap(){
 		AMapNaviViewOptions viewOptions = mAMapNaviView.getViewOptions();
+
 		viewOptions.setLayoutVisible(false);
 		viewOptions.setTrafficBarEnabled(false);
 		viewOptions.setStartPointBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.icon_from_poi));
@@ -272,6 +293,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		mNextView = (NextTurnTipView) findViewById(R.id.nttv_navi);
 		mAMapNaviView.setLazyNextTurnTipView(mNextView);
 		mAMapNaviView.setLazyTrafficBarView(mTrafficBarView);
+
 	}
 
 	@Override
@@ -284,9 +306,14 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 				public void run() {
 					if (mNaviAmap!=null) {
 						mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
+						mNaviAmap.setTrafficEnabled(isTraff);
+
+						if (isFollowCar == 1 && mAMapNaviView!=null){
+							mAMapNaviView.setLockTilt(0);
+						}
 					}
 				}
-			},3000);
+			},1500);
 		}
 		if (mTmap!=null) {
 			mTmap.onResume();
@@ -326,7 +353,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	@Override
 	protected void onStart() {
 		super.onStart();
-
+		initAll();
 		mLocationPro.addNaviInfoListner(this);
 		mLocationPro.addNaviCalueListner(xpNaviCalueListener);
 	}
@@ -377,7 +404,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			mImgNavi.setImageResource(imgId[iconType]);
 		}
 		int length = naviinfo.getCurStepRetainDistance();
-		if (length>1000){
+		if (length>=1000){
 			StringBuffer stringBuffer = new StringBuffer();
 			stringBuffer.append(length/1000);
 			mDanwei.setText(R.string.killmile_more);
@@ -420,7 +447,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 
 		int allPathLenght = naviinfo.getPathRetainDistance();
 		StringBuffer strLengthNeed = new StringBuffer();
-		if (allPathLenght>1000){
+		if (allPathLenght>=1000){
 			int killMile = allPathLenght/1000;
 			strLengthNeed.append(killMile);
 			strLengthNeed.append(getString(R.string.kmile));
@@ -448,12 +475,19 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		mZoomInIntersectionView.setVisibility(View.INVISIBLE);
 	}
 
-
 	@Override
-	public void onLockMap(boolean isLock) {
-		LogUtils.d(TAG,"onLockMap:"+isLock);
-		LogUtils.d(TAG,"onLockMap2:"+mSettingDialog.isShow());
-		if (isLock){
+	public void showLaneInfo(AMapLaneInfo[] var1, byte[] var2, byte[] var3) {
+		LogUtils.d(TAG,"showLaneInfo:var:"+var1);
+		if (mDrawWayView!=null){
+
+			mDrawWayView.loadDriveWayBitmap(var2,var3);
+		}
+	}
+
+	Handler delectMissLayout = new Handler(){
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
 			isShowDownLayout = false;
 			if (!mSettingDialog.isShow()) {
 				mUnLockView.setVisibility(View.GONE);
@@ -461,6 +495,34 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 				mRLBilici.setVisibility(View.VISIBLE);
 				findViewById(R.id.tbv_show_1).setVisibility(View.VISIBLE);
 			}
+		}
+	};
+
+	@Override
+	public void onLockMap(boolean isLock) {
+		LogUtils.d(TAG,"onLockMap:"+isLock);
+		LogUtils.d(TAG,"onLockMap2:"+mSettingDialog.isShow());
+		if (isLock){
+			if (!isNotUseLock) {
+				isShowDownLayout = false;
+				if (!mSettingDialog.isShow()) {
+					mUnLockView.setVisibility(View.GONE);
+					mTmapLayout.setVisibility(View.VISIBLE);
+					mRLBilici.setVisibility(View.VISIBLE);
+					findViewById(R.id.tbv_show_1).setVisibility(View.VISIBLE);
+				}
+			}else {
+				isNotUseLock = false;
+				delectMissLayout.removeMessages(0);
+				delectMissLayout.sendEmptyMessageDelayed(0,5000);
+			}
+			if (mNaviAmap!=null) {
+				mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
+			}
+
+
+
+
 		}else {
 			isShowDownLayout = true;
 			mUnLockView.setVisibility(View.VISIBLE);
@@ -525,6 +587,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			case R.id.btn_goto_again:
 				//继续导航
 				mAMapNaviView.recoverLockMode();
+				delectMissLayout.sendEmptyMessage(0);
 				break;
 
 			case R.id.btn_lukuang:
@@ -764,7 +827,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			String str = String.format(getString(R.string.num_mile),""+mi);
 			mTxBilici.setText(str);
 			mTxBilici1.setText(str);
-		}else if (mi > 1000){
+		}else if (mi >= 1000){
 			mi = mi/1000;
 			String str = String.format(getString(R.string.num_kilemile),""+mi);
 			mTxBilici.setText(str);

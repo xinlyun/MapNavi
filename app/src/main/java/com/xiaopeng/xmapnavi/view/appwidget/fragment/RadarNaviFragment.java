@@ -18,6 +18,7 @@ import com.amap.api.maps.model.Polyline;
 import com.amap.api.maps.model.PolylineOptions;
 import com.amap.api.navi.AMapNavi;
 import com.amap.api.navi.enums.NaviType;
+import com.amap.api.navi.model.AMapLaneInfo;
 import com.amap.api.navi.model.AMapNaviCross;
 import com.amap.api.navi.view.RouteOverLay;
 import com.xiaopeng.lib.bughunter.BugHunter;
@@ -187,9 +188,9 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
     public void onResume() {
         super.onResume();
         mMapView.onResume();
-//        mAmap.setMapType(AMap.MAP_TYPE_NAVI);
+        mAmap.setMapType(AMap.MAP_TYPE_NAVI);
         BugHunter.countTimeEnd(getActivity().getApplication(), BugHunter.TIME_TYPE_START, TAG, BugHunter.SWITCH_TYPE_START_COOL);
-        mAmap.setMapCustomEnable(true);
+//        mAmap.setMapCustomEnable(true);
     }
 
     @Nullable
@@ -642,6 +643,11 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
 
     @Override
     public void hideCross() {
+
+    }
+
+    @Override
+    public void showLaneInfo(AMapLaneInfo[] var1, byte[] var2, byte[] var3) {
 
     }
 

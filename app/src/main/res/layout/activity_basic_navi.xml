@@ -403,7 +403,7 @@
         android:layout_marginLeft="3px"
         android:background="@drawable/shadowss"
         android:layout_width="288px"
-        android:layout_height="390px"
+        android:layout_height="366px"
 
         >
         <RelativeLayout
@@ -416,7 +416,7 @@
                 android:orientation="vertical"
                 android:layout_alignParentBottom="true"
                 android:layout_width="match_parent"
-                android:layout_height="320px">
+                android:layout_height="302px">
                 <com.amap.api.navi.view.NextTurnTipView
                     android:id="@+id/nttv_navi"
                     android:visibility="gone"
@@ -428,7 +428,7 @@
 
                 </com.amap.api.navi.view.NextTurnTipView>
                 <ImageView
-                    android:src="@drawable/navi_icon_3"
+                    android:src="@drawable/navi_icon_2"
                     android:id="@+id/img_navi"
                     android:scaleType="centerCrop"
                     android:layout_width="match_parent"
@@ -439,7 +439,7 @@
 
                 </ImageView>
                 <LinearLayout
-                    android:layout_marginTop="24px"
+                    android:layout_marginTop="0px"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -449,14 +449,14 @@
                         android:gravity="center_vertical|bottom"
                         android:text="260"
                         android:id="@+id/tx_length"
-                        android:textSize="33px"
+                        android:textSize="36px"
                         android:textColor="@color/white"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent" />
                     <TextView
 
                         android:id="@+id/tx_danwei"
-                        android:textSize="24px"
+                        android:textSize="26px"
                         android:textColor="@color/white"
                         android:layout_marginLeft="5px"
                         android:text="米后"
@@ -465,7 +465,7 @@
                         android:layout_height="match_parent" />
                     <TextView
 
-                        android:textSize="24px"
+                        android:textSize="26px"
                         android:textColor="@color/gray_btn_bg_pressed_color"
                         android:layout_marginLeft="5px"
                         android:text="@string/entra"
@@ -475,9 +475,9 @@
                 </LinearLayout>
                 <TextView
 
-                    android:layout_marginTop="12px"
+                    android:layout_marginTop="16px"
                     android:id="@+id/tx_to_road"
-                    android:textSize="24px"
+                    android:textSize="26px"
                     android:textColor="@color/white"
                     android:text="无名道路"
                     android:layout_marginLeft="24px"
@@ -485,7 +485,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
                 <LinearLayout
-                    android:layout_marginTop="18px"
+                    android:layout_marginTop="10px"
                     android:orientation="horizontal"
                     android:background="@color/text_black"
                     android:layout_width="match_parent"
@@ -541,7 +541,7 @@
         android:layout_width="270px"
         android:layout_height="202px"
         android:layout_marginLeft="12px"
-        android:layout_marginTop="384px"
+        android:layout_marginTop="360px"
 
         />
     <LinearLayout
@@ -549,14 +549,14 @@
         android:layout_marginTop="12px"
         android:layout_width="match_parent"
         android:layout_height="200px">
-        <com.amap.api.navi.view.NextTurnTipView
+        <com.amap.api.navi.view.DriveWayView
             android:id="@+id/myNextTurnTipView"
-            android:layout_width="300px"
-            android:layout_height="100px"
+            android:layout_width="200px"
+            android:layout_height="70px"
 
             android:layout_centerHorizontal="true"
             >
 
-        </com.amap.api.navi.view.NextTurnTipView>
+        </com.amap.api.navi.view.DriveWayView>
     </LinearLayout>
 </RelativeLayout>

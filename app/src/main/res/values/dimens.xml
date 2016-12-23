@@ -5,4 +5,7 @@
     <dimen name="delete_action_len">107px</dimen>
     <dimen name="bottom_first">15px</dimen>
     <dimen name="second_bottom">246px</dimen>
+    <dimen name="two_top_marage">4px</dimen>
+    <dimen name="list_title">24px</dimen>
+    <dimen name="list_msg">22px</dimen>
 </resources>

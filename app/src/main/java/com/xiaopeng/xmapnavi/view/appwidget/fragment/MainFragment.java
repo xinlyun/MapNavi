@@ -786,9 +786,16 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         if (mapView==null){
             mapView = mActivity.getMapView();
             init();
+
         }
-        mAmap.setCustomMapStylePath("/sdcard/main_style_true.json");
-        mAmap.setMapCustomEnable(true);
+        if (isTraff){
+            mAmap.setCustomMapStylePath("/sdcard/main_style_true.json");
+            mAmap.setMapCustomEnable(true);
+        }else {
+            mAmap.setCustomMapStylePath("/sdcard/main_style_false.json");
+            mAmap.setMapCustomEnable(true);
+        }
+
         mapView.postDelayed(new Runnable() {
             @Override
             public void run() {
