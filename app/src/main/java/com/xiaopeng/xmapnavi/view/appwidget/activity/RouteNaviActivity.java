@@ -159,7 +159,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			mNaviAmap.setTrafficEnabled(isTraff);
 
 			mNaviAmap.setOnCameraChangeListener(this);
-//			mAMapNaviView.setLazyNextTurnTipView((NextTurnTipView) findViewById(R.id.myNextTurnTipView));
+//			mAMapNaviView.setLazyNextTurnTipView((NextTurnTipView) findViadewById(R.id.myNextTurnTipView));
 			boolean gps = getIntent().getBooleanExtra("gps", true);
 			if (gps) {
 				mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);

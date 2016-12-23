@@ -260,7 +260,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public void calueRunWay(List<NaviLatLng> startList,List<NaviLatLng> wayList,List<NaviLatLng> endList) {
-        if (isCalueIng)return;
+//        if (isCalueIng)return;
         aMapNavi.stopNavi();
         if (avoidhightspeed && hightspeed) {
             LogUtils.d(TAG,"不走高速与高速优先不能同时为true.");
@@ -290,7 +290,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public boolean tryCalueRunWay(List<NaviLatLng> endList) {
-        if (isCalueIng)return false;
+//        if (isCalueIng)return false;
         if (mAmapLocation==null)return false;
 
         List<NaviLatLng> startList = new ArrayList<>();
@@ -902,12 +902,31 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         try {
             if (isCalueIng)return false;
             isCalueIng = true;
-            return aMapNavi.reCalculateRoute(aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, true));
+            deleyNewO.sendEmptyMessageDelayed(0,20 * 1000);
+            AMapNaviPath path = aMapNavi.getNaviPath();
+            List<NaviLatLng> endPois = new ArrayList<>();
+            endPois.add(path.getEndPoint());
+            List<NaviLatLng> startPoi = new ArrayList<>();
+            startPoi.add(path.getStartPoint());
+            List<NaviLatLng> wayPoi = new ArrayList<>();
+            wayPoi.addAll(path.getWayPoint());
+            aMapNavi.stopNavi();
+            return aMapNavi.calculateDriveRoute(startPoi, endPois, wayPoi, aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, true));
+//            return aMapNavi.reCalculateRoute(aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, true));
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
+
     }
+
+    Handler deleyNewO = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            isCalueIng = false;
+        }
+    };
 
     @Override
     public void reCalue() {
