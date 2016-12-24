@@ -28,7 +28,11 @@ public class XpApplication extends Application {
     public void onCreate() {
         super.onCreate();
         AMapNavi.setApiKey(this,"518079e13164d2910ff81c078e073bcd");
-        ActiveAndroid.initialize(this);
+        try {
+            ActiveAndroid.initialize(this);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 //        BugHunter.init(this);
 
 
