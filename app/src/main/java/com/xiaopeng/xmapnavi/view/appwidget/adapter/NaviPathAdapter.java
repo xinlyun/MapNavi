@@ -81,8 +81,8 @@ public class NaviPathAdapter extends ArrayAdapter{
         int k = 0;
         int time = hashMap.get(ints[0]).getAllTime();
         for (int i = 1 ;i<hashMap.size();i++){
-            if ( time > hashMap.get(ints[i]).getAllLength()){
-                time = hashMap.get(ints[i]).getAllLength();
+            if ( time > hashMap.get(ints[i]).getAllTime()){
+                time = hashMap.get(ints[i]).getAllTime();
                 k = i;
             }
         }

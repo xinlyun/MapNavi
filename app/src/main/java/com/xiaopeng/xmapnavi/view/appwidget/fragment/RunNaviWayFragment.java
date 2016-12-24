@@ -703,7 +703,11 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            mActivity.exitFragment();
+            try {
+                mActivity.exitFragment();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     };
 
