@@ -68,6 +68,7 @@ import com.xiaopeng.amaplib.util.TTSController;
 import com.xiaopeng.xmapnavi.bean.LocationSaver;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
 import com.xiaopeng.xmapnavi.presenter.IRoutePower;
+import com.xiaopeng.xmapnavi.presenter.callback.XpAimNaviMsgListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpAiosMapListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpCollectListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
@@ -109,6 +110,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private static List<XpNaviInfoListener> mNaviInfoListners;
     private static List<XpSensorListener> mSensorListners;
     private static List<XpCollectListener> mCollectListeners;
+    private static List<XpAimNaviMsgListener> mAimNaviListeners;
     private XpAiosMapListener mAiosListener;
     private OfflineMapManager.OfflineMapDownloadListener mMapDownListener;
     private OfflineMapManager mDownMapManager;
@@ -212,7 +214,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     public void addSensorListner(XpSensorListener xpSensorListener) {
         if (mSensorListners.size() < 1){
             Sensor sensor = manager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-//应用在前台时候注册监听器
+            //应用在前台时候注册监听器
             manager.registerListener(this, sensor,
                     SensorManager.SENSOR_DELAY_GAME);
 
@@ -237,6 +239,16 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void setAiosListener(XpAiosMapListener xpAiosMapListener) {
         mAiosListener = xpAiosMapListener;
+    }
+
+    @Override
+    public void addAimNaviListener(XpAimNaviMsgListener listener) {
+        mAimNaviListeners.add(listener);
+    }
+
+    @Override
+    public void removeAimNaviListener(XpAimNaviMsgListener listener) {
+        mAimNaviListeners.remove(listener);
     }
 
 
@@ -353,7 +365,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         mNaviInfoListners   = new ArrayList<>();
         mSensorListners     = new ArrayList<>();
         mCollectListeners   = new ArrayList<>();
-
+        mAimNaviListeners   = new ArrayList<>();
         mSendNaviBroad = new SendNaviBroad();
         mSendNaviBroad  .initBroad(context);
         SharedPreferences sharedPreferences = context.getSharedPreferences("myown",Context.MODE_PRIVATE);
@@ -611,6 +623,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         if (info!=null){
             LogUtils.d(NAVI_TAG, "(trafficFacilityInfo.coor_X+trafficFacilityInfo.coor_Y+trafficFacilityInfo.distance+trafficFacilityInfo.limitSpeed):"
                     + (info.getCoorX() + info.getCoorY() + info.getDistance() + info.getLimitSpeed()));
+
         }
 
     }
@@ -711,6 +724,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         LogUtils.d(NAVI_TAG,"updateAimlessModeStatistics");
         LogUtils.d(TAG, "distance=" + aimLessModeStat.getAimlessModeDistance());
         LogUtils.d(TAG, "time=" + aimLessModeStat.getAimlessModeTime());
+
     }
 
     @Override

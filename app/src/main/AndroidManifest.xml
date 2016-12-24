@@ -58,7 +58,19 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             >
+
+
+
         </activity>
+
+
+        <activity android:name=".view.appwidget.activity.AskDialogActivity"
+            android:theme="@android:style/Theme.Translucent"
+            />
+        <activity android:name=".view.appwidget.activity.ShowCode2Activity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent"
+            />
         <activity android:name=".view.appwidget.activity.RadarNaviActivity"
             android:screenOrientation="portrait"
             >

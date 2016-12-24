@@ -1,1 +1,1 @@
-include ':app', ':amaplib',':MaterialDesign',':lib_utils',':lib_bughunter'
+include ':app', ':amaplib',':MaterialDesign',':lib_utils',':lib_bughunter',':scuLib'

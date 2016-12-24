@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <!-- 第一层 -->
+    <item>
+        <shape>
+            <solid android:color="#ffffff" />
+            <!-- 圆角 -->
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+    <!-- 第二层 -->
+    <!-- 距离第一层上边缘4px -->
+    <item android:bottom="30px">
+        <shape>
+            <!-- 实心填充颜色 -->
+            <solid android:color="#ffffff"/>
+        </shape>
+    </item>
+
+</layer-list>  
