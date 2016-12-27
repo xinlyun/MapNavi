@@ -4,3 +4,6 @@
 [submodule "lib_bughunter"]
 	path = lib_bughunter
 	url = ssh://git@192.168.0.188:10022/Android_App/bughunter.git
+[submodule "scuLib"]
+	path = scuLib
+	url = ssh://git@192.168.0.188:10022/Android_App/scu_library.git

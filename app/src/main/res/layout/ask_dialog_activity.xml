@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:id="@+id/dialog_bg_touch"
+    android:background="@color/layout_tran_1"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:background="@drawable/dialog_bg"
+        android:layout_marginLeft="165px"
+        android:layout_marginTop="400px"
+        android:layout_width="750px"
+        android:layout_height="500px">
+        <!--<LinearLayout-->
+        <!--android:orientation="horizontal"-->
+        <!--android:layout_width="750px"-->
+        <!--android:layout_height="450px">-->
+        <!--<ImageView-->
+        <!--android:src="@drawable/dialog_left_btn_bg"-->
+        <!--android:layout_weight="1"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent" />-->
+        <!--<ImageView-->
+        <!--android:background="@color/gray_btn_bg_pressed_colorx"-->
+        <!--android:layout_width="1px"-->
+        <!--android:layout_height="match_parent" />-->
+        <!--<ImageView-->
+        <!--android:src="@drawable/dialog_right_btn_bg"-->
+        <!--android:layout_weight="1"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent" />-->
+        <!--</LinearLayout>-->
+
+        <!--<ImageView-->
+        <!--android:src="@drawable/dialog_top_ly_bg"-->
+        <!--android:layout_marginBottom="125px"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent" />-->
+        <TextView
+            android:textSize="36px"
+            android:gravity="center"
+            android:text="位置信息"
+            android:textColor="#333333"
+            android:layout_width="match_parent"
+            android:layout_height="125px" />
+        <ImageView
+
+            android:background="@color/gray_btn_bg_pressed_colorx"
+            android:layout_marginTop="126px"
+            android:layout_width="match_parent"
+            android:layout_height="1px" />
+        <ImageView
+            android:layout_alignParentBottom="true"
+            android:background="@color/gray_btn_bg_pressed_colorx"
+            android:layout_marginBottom="126px"
+            android:layout_width="match_parent"
+            android:layout_height="1px" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_marginTop="125px"
+            android:layout_marginBottom="125px"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+
+                android:text="导航前往"
+                android:textSize="32px"
+                android:layout_weight="1"
+                android:textColor="#333333"
+                android:gravity="center_horizontal|bottom"
+                android:layout_width="match_parent"
+                android:layout_gravity="center_horizontal|top"
+                android:layout_marginBottom="15px"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:layout_weight="1"
+                android:text="广州广播电视台"
+                android:textSize="36px"
+                android:gravity="center_horizontal|top"
+                android:textColor="@color/text_blue_1"
+                android:id="@+id/title_dialog"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:background="@drawable/btn_bottom_bou"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="125px">
+            <TextView
+                android:id="@+id/left_btn"
+                android:text="马上出发"
+                android:textColor="@color/text_blue_1"
+                android:textSize="36px"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/right_btn"
+                android:text="取消"
+                android:textColor="@color/text_blue_0"
+                android:textSize="36px"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+    <ImageButton
+        android:id="@+id/touch_exit"
+        android:layout_marginTop="350px"
+        android:layout_marginLeft="105px"
+        android:background="@drawable/dialog_quxiao_btn"
+        android:layout_width="120px"
+        android:layout_height="120px" />
+
+</RelativeLayout>

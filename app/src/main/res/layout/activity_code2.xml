@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/touch_exit"
+    android:background="#99000000"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ImageView
+        android:background="#ffffff"
+        android:id="@+id/ticket_show2"
+        android:layout_marginTop="300px"
+        android:layout_marginLeft="270px"
+        android:layout_width="540px"
+        android:layout_height="540px" />
+</LinearLayout>

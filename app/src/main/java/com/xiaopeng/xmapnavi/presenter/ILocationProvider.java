@@ -10,6 +10,7 @@ import com.amap.api.navi.model.NaviLatLng;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.poisearch.PoiResult;
+import com.xiaopeng.xmapnavi.presenter.callback.XpAimNaviMsgListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpAiosMapListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpCollectListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
@@ -49,6 +50,10 @@ public interface ILocationProvider {
 
     void setOfflineMapListner(OfflineMapManager.OfflineMapDownloadListener listner);
     void setAiosListener(XpAiosMapListener xpAiosMapListener);
+
+    void addAimNaviListener(XpAimNaviMsgListener listener);
+    void removeAimNaviListener(XpAimNaviMsgListener listener);
+
 
     void trySearchPosi(String str);
     boolean tryAddWayPoiCalue(NaviLatLng wayPoi);

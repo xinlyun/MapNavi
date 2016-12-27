@@ -162,7 +162,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
     private SensorManager mSensorManager;
     private Sensor mOrientation;
-    private MySensorEventListener mySensorEventListener;
+//    private MySensorEventListener mySensorEventListener;
     private float mSeeFloat = 0;
     private long saveTouchTime = 0;
     private long sensorChangeTime = 0;
@@ -175,6 +175,8 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
     private LinearLayout mInfoLayout;
     private Handler findMyPoiDeley;
     private boolean isInFace  = true;
+
+    private boolean isLock = true;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -225,7 +227,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
         mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         mOrientation = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-        mySensorEventListener = new MySensorEventListener();
+//        mySensorEventListener = new MySensorEventListener();
         mLocationProvider.stopNavi();
         return rootView;
     }
@@ -586,39 +588,57 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
-        if (aMapLocation != null) {
-            mCity = aMapLocation.getCity();
-            if (mAmap !=null && mWatchStyle!= WATCH_NORTH){
-            }
-            if (mAmap!=null && isFirst){
-                mapView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        CameraUpdate update = CameraUpdateFactory.newCameraPosition(new CameraPosition(
-                                new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude())
+        try {
+            if (aMapLocation != null) {
+                mCity = aMapLocation.getCity();
+                if (mAmap != null && mWatchStyle != WATCH_NORTH) {
+                }
+                if (mAmap != null && isFirst) {
+                    mapView.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            CameraUpdate update = CameraUpdateFactory.newCameraPosition(new CameraPosition(
+                                    new LatLng(mLocationProvider.getAmapLocation().getLatitude(), mLocationProvider.getAmapLocation().getLongitude())
 //                    新的中心点坐标
-                                ,17, //新的缩放级别
-                                0, //俯仰角0°~45°（垂直与地图时为0）
-                                0  ////偏航角 0~360° (正北方为0)
-                        ));
-                        mAmap.animateCamera(update);
+                                    , 17, //新的缩放级别
+                                    0, //俯仰角0°~45°（垂直与地图时为0）
+                                    0  ////偏航角 0~360° (正北方为0)
+                            ));
 
-                    }
-                },700);
-                isFirst = false;
+                            mAmap.animateCamera(update);
+
+                        }
+                    }, 700);
+                    isFirst = false;
+                }
+
+
             }
-
-        }
-        if (mListener != null){
+            if (mListener != null) {
 //            mListener.onLocationChanged(aMapLocation);
+            }
+
+            if (mLocationMarker != null) {
+                mLocationMarker.setPosition(new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude()));
+                if (mWatchStyle == WATCH_NORTH) {
+
+                    mLocationMarker.setVisible(true);
+                } else {
+
+                }
+                mLocationMarker.setRotateAngle(360 - aMapLocation.getBearing());
+            }
+
+            if (isLock && mAmap != null) {
+                mAmap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude())));
+                if (mWatchStyle != WATCH_NORTH) {
+                    mAmap.moveCamera(CameraUpdateFactory.changeBearing(aMapLocation.getBearing()));
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
-        if (mLocationMarker!=null){
-            mLocationMarker.setPosition(new LatLng(aMapLocation.getLatitude(),aMapLocation.getLongitude()));
-            if (mWatchStyle == WATCH_NORTH){
-                mLocationMarker.setVisible(true);
-            }
-        }
 
     }
 
@@ -649,6 +669,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 //            if (mLocationMarker!=null){
 //                mLocationMarker.setRotateAngle(360 - a);
 //            }
+            LogUtils.d(TAG,"onSensorChanged");
             saveA = event.values[0];
             if (mLocationMarker != null) {
                 mLocationMarker.setRotateAngle(360 - saveA);
@@ -670,6 +691,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         @Override
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
             // TODO Auto-generated method stub
+            LogUtils.d(TAG,"onAccuracyChanged :Vendor:"+sensor.getVendor());
 
         }
 
@@ -772,6 +794,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                 ));
 
                 mAmap.moveCamera(update);
+                isLock = true;
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -803,8 +826,8 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
             }
         },2000);
 
-        mSensorManager.registerListener(mySensorEventListener,
-                mOrientation, SensorManager.SENSOR_DELAY_NORMAL);
+//        mSensorManager.registerListener(mySensorEventListener,
+//                mOrientation, SensorManager.SENSOR_DELAY_NORMAL);
 
 
         mLoveBtn.postDelayed(new Runnable() {
@@ -826,7 +849,11 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
     @Override
     public void onStop() {
         super.onStop();
-        mSensorManager.unregisterListener(mySensorEventListener);
+        try {
+//            mSensorManager.unregisterListener(mySensorEventListener);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void reInit(){
@@ -1081,6 +1108,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+                        isLock = false;
 //                        hideKeyboard(mEtvSearch);
                         // 按下屏幕
                         // 如果timer在执行，关掉它

@@ -15,6 +15,7 @@ import com.amap.api.navi.enums.BroadcastMode;
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
+import com.xiaopeng.xmapnavi.view.appwidget.activity.ShowCode2Activity;
 
 /**
  * Created by linzx on 2016/11/30.
@@ -158,9 +159,10 @@ public class SettingFirstFragment extends Fragment implements View.OnClickListen
 
     private void startWeixinNavi(){
         try{
-            Intent intent = new Intent();
-            intent.setClassName("com.xiaopeng.naviprovide","com.xiaopeng.naviprovide.ShowCode2Activity");
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            Intent intent = new Intent();
+//            intent.setClassName("com.xiaopeng.naviprovide","com.xiaopeng.naviprovide.ShowCode2Activity");
+            Intent intent = new Intent(getActivity(), ShowCode2Activity.class);
+//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             getActivity().startActivity(intent);
         }catch (Exception e){
             e.printStackTrace();
