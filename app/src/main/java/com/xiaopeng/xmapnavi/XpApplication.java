@@ -50,7 +50,11 @@ public class XpApplication extends LibScuApplication {
 
     @Override
     public void onCreate() {
-        super.onCreate();
+        try {
+            super.onCreate();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         AMapNavi.setApiKey(this,"518079e13164d2910ff81c078e073bcd");
         try {
             ActiveAndroid.initialize(this);

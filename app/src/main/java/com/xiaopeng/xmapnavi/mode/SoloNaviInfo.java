@@ -54,7 +54,7 @@ public class SoloNaviInfo implements IRunBroadInfo,GuideInfoExtraKey {
                 jsonObject.put("CurRoadName",intent.getStringExtra(CUR_ROAD_NAME));
                 jsonObject.put("NexRoadName",intent.getStringExtra(NEXT_ROAD_NAME));
                 int icon = getNewNaviIcon(intent.getIntExtra(ICON,0));
-                jsonObject.put("NavIcon",icon);
+                jsonObject.put("NavIcon",""+icon);
                 jsonObject.put("RoadRemainDis",""+intent.getIntExtra(SEG_REMAIN_DIS,0));
                 int cameraType = intent.getIntExtra(CAMERA_TYPE,-1);
                 if(cameraType==-1){

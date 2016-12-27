@@ -57,9 +57,13 @@ public class LocationProService extends Service {
         super.onCreate();
 //        LocationProvider.init(this);
         deleyToInit.sendEmptyMessageDelayed(0,1000);
-        mScuMailboxes = XpApplication.sApplication.getScuMailboxes();
-        mNcmControlBox = mScuMailboxes.getNcmControlBox(mNcmControlCallback);
-        naviInfo = new SoloNaviInfo(this,mNcmControlBox);
+        try {
+            mScuMailboxes = XpApplication.sApplication.getScuMailboxes();
+            mNcmControlBox = mScuMailboxes.getNcmControlBox(mNcmControlCallback);
+            naviInfo = new SoloNaviInfo(this, mNcmControlBox);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
 //        localBind = new LocalBinder();
     }
@@ -67,11 +71,16 @@ public class LocationProService extends Service {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+
             mLocationProvider  = LocationProvider.getInstence(LocationProService.this);
-            initBroadCast();
-            mLocationICU = new LocationForICU(LocationProService.this,mNcmControlBox);
-            mLocationICU.beginToLocation(mLocationProvider);
-            mLocationICU.setConnectState(isConnect);
+            try {
+                initBroadCast();
+                mLocationICU = new LocationForICU(LocationProService.this, mNcmControlBox);
+                mLocationICU.beginToLocation(mLocationProvider);
+                mLocationICU.setConnectState(isConnect);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     };
 

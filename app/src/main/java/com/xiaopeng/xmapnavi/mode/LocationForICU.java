@@ -20,6 +20,7 @@ import com.xiaopeng.lib.scu.AbsCarControlCallback;
 import com.xiaopeng.lib.scu.CarControlBox;
 import com.xiaopeng.lib.scu.NcmControlBox;
 import com.xiaopeng.lib.scu.ScuMailboxes;
+import com.xiaopeng.lib.utils.utils.LogUtils;
 import com.xiaopeng.xmapnavi.presenter.ILocationForICU;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
 import com.xiaopeng.xmapnavi.presenter.callback.XpAimNaviMsgListener;
@@ -118,7 +119,6 @@ public class LocationForICU implements ILocationForICU {
                 if (aMapLocation != null) {
                     double lat = aMapLocation.getLatitude();
                     double lon = aMapLocation.getLongitude();
-
                     int locationType = aMapLocation.getLocationType();
                     long times = aMapLocation.getTime();
                     Log.d("AmapLocation", "lat:" + lat + "  lon:" + lon + "  locationType:" + locationType + "  times:" + times);
@@ -158,12 +158,17 @@ public class LocationForICU implements ILocationForICU {
 
         @Override
         public void OnUpdateTrafficFacility(AMapNaviTrafficFacilityInfo info) {
-
+            LogUtils.d("LocationForICU","OnUpdateTrafficFacility0");
+            try{
+                mSendControlBox.sendNotifyMsg(msgId,getSpeedLimitStr(info.getLimitSpeed()).getBytes(),null);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
 
         @Override
         public void OnUpdateTrafficFacility(TrafficFacilityInfo trafficFacilityInfo) {
-
+            LogUtils.d("LocationForICU","OnUpdateTrafficFacility1");
         }
     };
 
@@ -174,6 +179,8 @@ public class LocationForICU implements ILocationForICU {
                 if (isConnect) {
                     msgId = (msgId+1)%128;
                     mSendControlBox.sendNotifyMsg(msgId, getRoadJsonStr(naviInfo.getCurrentRoadName()).getBytes(), null);
+                    msgId = (msgId+1)%128;
+                    mSendControlBox.sendNotifyMsg(msgId,getSpeedLimitStr(naviInfo.getLimitSpeed()).getBytes(),null);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -207,6 +214,21 @@ public class LocationForICU implements ILocationForICU {
         notify.put(CDU_USB,"0");
         notify.put(BLUE_MUSIC,"0");
         notify.put(NOMAL_LIMIT,"0");
+        jsonObject.put(NOTIFY,notify);
+        jsonObject.put(ENABLE,"1");
+        jsonObject.put(MSG_TYPE,"1");
+        return jsonObject.toJSONString();
+    }
+
+    private String getSpeedLimitStr(int speedLimit){
+        JSONObject jsonObject = new JSONObject();
+        JSONObject notify = new JSONObject();
+        notify.put(MSG_INDEX,"4");
+        notify.put(NOMAL_NAME,"");
+        notify.put(CDU_REC,"0");
+        notify.put(CDU_USB,"0");
+        notify.put(BLUE_MUSIC,"0");
+        notify.put(NOMAL_LIMIT,""+speedLimit);
         jsonObject.put(NOTIFY,notify);
         jsonObject.put(ENABLE,"1");
         jsonObject.put(MSG_TYPE,"1");
