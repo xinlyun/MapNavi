@@ -67,7 +67,9 @@ import com.autonavi.tbt.TrafficFacilityInfo;
 import com.xiaopeng.amaplib.util.TTSController;
 import com.xiaopeng.xmapnavi.bean.LocationSaver;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
+import com.xiaopeng.xmapnavi.presenter.IMusicPoiProvider;
 import com.xiaopeng.xmapnavi.presenter.IRoutePower;
+import com.xiaopeng.xmapnavi.presenter.IStubGroupProvider;
 import com.xiaopeng.xmapnavi.presenter.callback.XpAimNaviMsgListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpAiosMapListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpCollectListener;
@@ -143,7 +145,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private boolean isWillOOM = false;
 
     private NaviInfo naviInfoSave ;
-
+    private IStubGroupProvider mStubGroupProvider;
+    private IMusicPoiProvider mMusicPoiProvider;
     public static void init(Context context) {
         mContext = context;
         mLp      = new LocationProvider(context);
@@ -370,6 +373,10 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         mSendNaviBroad  .initBroad(context);
         SharedPreferences sharedPreferences = context.getSharedPreferences("myown",Context.MODE_PRIVATE);
         AIM_STATE = sharedPreferences.getInt("aimState",AimLessMode.CAMERA_AND_SPECIALROAD_DETECTED);
+        mStubGroupProvider  = new StubGroupProvider();
+        mMusicPoiProvider   = new MusicPoiProvider();
+        mStubGroupProvider  .init(context);
+        mMusicPoiProvider   .init(context);
 
         if (mLocationClient == null) {
             mLocationClient = new AMapLocationClient(context.getApplicationContext());
@@ -539,17 +546,21 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         if (aMapLocation != null) {
             if (aMapLocation != null
                     && aMapLocation.getErrorCode() == 0) {
+                if (mMusicPoiProvider!=null){
+                    mMusicPoiProvider.sendProvide(aMapLocation);
+                }
+//                Toast.makeText(mContext,"bearing:"+aMapLocation.getBearing(),Toast.LENGTH_SHORT).show();
                 String errText = "定位成功," + aMapLocation.getAddress()+ ": \n lat:" + aMapLocation.getLatitude()+"\n lon :"+aMapLocation.getLongitude();
                 LogUtils.e("AmapErr",errText);
-                try {
-                    MyLatLng myLatLng = new MyLatLng(mAmapLocation.getLongitude(), mAmapLocation.getLatitude());
-                    MyLatLng myLatLng1 = new MyLatLng(aMapLocation.getLongitude(), aMapLocation.getLatitude());
-                    float roatate = (float) getAngle(myLatLng, myLatLng1);
-                    LogUtils.d(TAG, "onLocationChanged :roatate :" + roatate);
-                    aMapLocation.setBearing(roatate);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
+//                try {
+//                    MyLatLng myLatLng = new MyLatLng(mAmapLocation.getLongitude(), mAmapLocation.getLatitude());
+//                    MyLatLng myLatLng1 = new MyLatLng(aMapLocation.getLongitude(), aMapLocation.getLatitude());
+//                    float roatate = (float) getAngle(myLatLng, myLatLng1);
+//                    LogUtils.d(TAG, "onLocationChanged :roatate :" + roatate);
+//                    aMapLocation.setBearing(roatate);
+//                }catch (Exception e){
+//                    e.printStackTrace();
+//                }
 
 
                 mAmapLocation = aMapLocation;
@@ -1110,6 +1121,22 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void muteSomeLaught() {
         ttsManager.setSpeakType(TTSController.SPEAK_SOMW);
+    }
+
+    @Override
+    public void getStubGroups(double lat, double lon) {
+        mStubGroupProvider.getStubGroupByPoi(lat,lon);
+    }
+
+    @Override
+    public void getStubGroups(String city) {
+        if (city!=null) {
+            mStubGroupProvider.getStubGroupByCity(city);
+        }else {
+            if (mAmapLocation!=null){
+                mStubGroupProvider.getStubGroupByCity(mAmapLocation.getCityCode());
+            }
+        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.xiaopeng.xmapnavi.view.appwidget.fragment;
 
+import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
@@ -162,7 +163,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
     private SensorManager mSensorManager;
     private Sensor mOrientation;
-//    private MySensorEventListener mySensorEventListener;
+    private MySensorEventListener mySensorEventListener;
     private float mSeeFloat = 0;
     private long saveTouchTime = 0;
     private long sensorChangeTime = 0;
@@ -189,7 +190,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                 .setShadowDy(0)
                 .setShadowRadius(UIUtils.dip2px(getActivity(),5));
         mLocationProvider    = LocationProvider.getInstence(getActivity());
-
+        getSensorList();
     }
 
     @Nullable
@@ -227,10 +228,38 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
         mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         mOrientation = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-//        mySensorEventListener = new MySensorEventListener();
+        mySensorEventListener = new MySensorEventListener();
         mLocationProvider.stopNavi();
         return rootView;
     }
+
+    @SuppressLint("NewApi")
+    private void getSensorList() {
+        // 获取传感器管理器
+        SensorManager sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+
+        // 获取全部传感器列表
+        List<Sensor> sensors = sensorManager.getSensorList(Sensor.TYPE_ALL);
+
+        // 打印每个传感器信息
+        StringBuilder strLog = new StringBuilder();
+        int iIndex = 1;
+        for (Sensor item : sensors) {
+            strLog.append(iIndex + ".");
+            strLog.append(" Sensor Type - " + item.getType() + "\r\n");
+            strLog.append(" Sensor Name - " + item.getName() + "\r\n");
+            strLog.append(" Sensor Version - " + item.getVersion() + "\r\n");
+            strLog.append(" Sensor Vendor - " + item.getVendor() + "\r\n");
+            strLog.append(" Maximum Range - " + item.getMaximumRange() + "\r\n");
+            strLog.append(" Minimum Delay - " + item.getMinDelay() + "\r\n");
+            strLog.append(" Power - " + item.getPower() + "\r\n");
+            strLog.append(" Resolution - " + item.getResolution() + "\r\n");
+            strLog.append("\r\n");
+            iIndex++;
+        }
+        LogUtils.d(TAG,"msg:\n"+strLog.toString());
+    }
+
 
     private View findViewById(int id){
         return rootView.findViewById(id);
@@ -399,6 +428,12 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                 break;
 
             case R.id.btn_setting:
+                try {
+//                    mLocationProvider.getStubGroups(mLocationMarker.getPosition().latitude, mLocationMarker.getPosition().longitude);
+                    mLocationProvider.getStubGroups(null);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
                 mActivity.startFragment(new SettingFragment());
                 break;
 

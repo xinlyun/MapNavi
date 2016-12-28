@@ -55,6 +55,8 @@ public interface ILocationProvider {
     void removeAimNaviListener(XpAimNaviMsgListener listener);
 
 
+
+
     void trySearchPosi(String str);
     boolean tryAddWayPoiCalue(NaviLatLng wayPoi);
     void calueRunWay(List<NaviLatLng> startList, List<NaviLatLng> wayList, List<NaviLatLng> endList);
@@ -92,5 +94,7 @@ public interface ILocationProvider {
     void unmuteLaught();
     void muteSomeLaught();
 
+    void getStubGroups(double lat,double lon);
+    void getStubGroups(String city);
     NaviInfo getNaviInfo();
 }
