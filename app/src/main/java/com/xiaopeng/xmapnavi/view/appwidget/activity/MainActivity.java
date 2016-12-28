@@ -213,7 +213,6 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
         super.onStop();
 
 //        mapView.setVisibility(View.GONE);
-
         if (mFragments.size()==0){
             aMap.clear();
         }
@@ -259,14 +258,11 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
     }
 
 
-
-
-
-
-
-
-
-
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
+    }
 
     /**
      * 方法必须重写

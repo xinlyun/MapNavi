@@ -67,7 +67,10 @@ import com.autonavi.tbt.TrafficFacilityInfo;
 import com.xiaopeng.amaplib.util.TTSController;
 import com.xiaopeng.xmapnavi.bean.LocationSaver;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
+import com.xiaopeng.xmapnavi.presenter.IMusicPoiProvider;
 import com.xiaopeng.xmapnavi.presenter.IRoutePower;
+import com.xiaopeng.xmapnavi.presenter.IStubGroupProvider;
+import com.xiaopeng.xmapnavi.presenter.callback.XpAimNaviMsgListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpAiosMapListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpCollectListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
@@ -109,6 +112,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private static List<XpNaviInfoListener> mNaviInfoListners;
     private static List<XpSensorListener> mSensorListners;
     private static List<XpCollectListener> mCollectListeners;
+    private static List<XpAimNaviMsgListener> mAimNaviListeners;
     private XpAiosMapListener mAiosListener;
     private OfflineMapManager.OfflineMapDownloadListener mMapDownListener;
     private OfflineMapManager mDownMapManager;
@@ -141,7 +145,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private boolean isWillOOM = false;
 
     private NaviInfo naviInfoSave ;
-
+    private IStubGroupProvider mStubGroupProvider;
+    private IMusicPoiProvider mMusicPoiProvider;
     public static void init(Context context) {
         mContext = context;
         mLp      = new LocationProvider(context);
@@ -212,7 +217,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     public void addSensorListner(XpSensorListener xpSensorListener) {
         if (mSensorListners.size() < 1){
             Sensor sensor = manager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-//应用在前台时候注册监听器
+            //应用在前台时候注册监听器
             manager.registerListener(this, sensor,
                     SensorManager.SENSOR_DELAY_GAME);
 
@@ -237,6 +242,16 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void setAiosListener(XpAiosMapListener xpAiosMapListener) {
         mAiosListener = xpAiosMapListener;
+    }
+
+    @Override
+    public void addAimNaviListener(XpAimNaviMsgListener listener) {
+        mAimNaviListeners.add(listener);
+    }
+
+    @Override
+    public void removeAimNaviListener(XpAimNaviMsgListener listener) {
+        mAimNaviListeners.remove(listener);
     }
 
 
@@ -353,11 +368,15 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         mNaviInfoListners   = new ArrayList<>();
         mSensorListners     = new ArrayList<>();
         mCollectListeners   = new ArrayList<>();
-
+        mAimNaviListeners   = new ArrayList<>();
         mSendNaviBroad = new SendNaviBroad();
         mSendNaviBroad  .initBroad(context);
         SharedPreferences sharedPreferences = context.getSharedPreferences("myown",Context.MODE_PRIVATE);
         AIM_STATE = sharedPreferences.getInt("aimState",AimLessMode.CAMERA_AND_SPECIALROAD_DETECTED);
+        mStubGroupProvider  = new StubGroupProvider();
+        mMusicPoiProvider   = new MusicPoiProvider();
+        mStubGroupProvider  .init(context);
+        mMusicPoiProvider   .init(context);
 
         if (mLocationClient == null) {
             mLocationClient = new AMapLocationClient(context.getApplicationContext());
@@ -463,6 +482,63 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     };
 
 
+    /**
+     * 获取AB连线与正北方向的角度
+     * @param A  A点的经纬度
+     * @param B  B点的经纬度
+     * @return  AB连线与正北方向的角度（0~360）
+     */
+    public  static double getAngle(MyLatLng A,MyLatLng B){
+        double dx=(B.m_RadLo-A.m_RadLo)*A.Ed;
+        double dy=(B.m_RadLa-A.m_RadLa)*A.Ec;
+        double angle=0.0;
+        if (dy !=0) {
+            angle = Math.atan(Math.abs(dx / dy)) * 180. / Math.PI;
+            double dLo = B.m_Longitude - A.m_Longitude;
+            double dLa = B.m_Latitude - A.m_Latitude;
+            if (dLo > 0 && dLa <= 0) {
+                angle = (90. - angle) + 90;
+            } else if (dLo <= 0 && dLa < 0) {
+                angle = angle + 180.;
+            } else if (dLo < 0 && dLa >= 0) {
+                angle = (90. - angle) + 270;
+            }
+            return angle;
+        }else {
+            if (dx >= 0){
+                return 0;
+            }else {
+                return 180;
+            }
+        }
+    }
+
+    static class MyLatLng {
+        final static double Rc=6378137;
+        final static double Rj=6356725;
+        double m_LoDeg,m_LoMin,m_LoSec;
+        double m_LaDeg,m_LaMin,m_LaSec;
+        double m_Longitude,m_Latitude;
+        double m_RadLo,m_RadLa;
+        double Ec;
+        double Ed;
+        public MyLatLng(double longitude,double latitude){
+            m_LoDeg=(int)longitude;
+            m_LoMin=(int)((longitude-m_LoDeg)*60);
+            m_LoSec=(longitude-m_LoDeg-m_LoMin/60.)*3600;
+
+            m_LaDeg=(int)latitude;
+            m_LaMin=(int)((latitude-m_LaDeg)*60);
+            m_LaSec=(latitude-m_LaDeg-m_LaMin/60.)*3600;
+
+            m_Longitude=longitude;
+            m_Latitude=latitude;
+            m_RadLo=longitude*Math.PI/180.;
+            m_RadLa=latitude*Math.PI/180.;
+            Ec=Rj+(Rc-Rj)*(90.-m_Latitude)/90.;
+            Ed=Ec*Math.cos(m_RadLa);
+        }
+    }
 
 
     @Override
@@ -470,8 +546,23 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         if (aMapLocation != null) {
             if (aMapLocation != null
                     && aMapLocation.getErrorCode() == 0) {
+                if (mMusicPoiProvider!=null){
+                    mMusicPoiProvider.sendProvide(aMapLocation);
+                }
+//                Toast.makeText(mContext,"bearing:"+aMapLocation.getBearing(),Toast.LENGTH_SHORT).show();
                 String errText = "定位成功," + aMapLocation.getAddress()+ ": \n lat:" + aMapLocation.getLatitude()+"\n lon :"+aMapLocation.getLongitude();
                 LogUtils.e("AmapErr",errText);
+//                try {
+//                    MyLatLng myLatLng = new MyLatLng(mAmapLocation.getLongitude(), mAmapLocation.getLatitude());
+//                    MyLatLng myLatLng1 = new MyLatLng(aMapLocation.getLongitude(), aMapLocation.getLatitude());
+//                    float roatate = (float) getAngle(myLatLng, myLatLng1);
+//                    LogUtils.d(TAG, "onLocationChanged :roatate :" + roatate);
+//                    aMapLocation.setBearing(roatate);
+//                }catch (Exception e){
+//                    e.printStackTrace();
+//                }
+
+
                 mAmapLocation = aMapLocation;
                 if (System.currentTimeMillis() - timeSave > (60 * 1000)){
                     timeSave = System.currentTimeMillis();
@@ -611,6 +702,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         if (info!=null){
             LogUtils.d(NAVI_TAG, "(trafficFacilityInfo.coor_X+trafficFacilityInfo.coor_Y+trafficFacilityInfo.distance+trafficFacilityInfo.limitSpeed):"
                     + (info.getCoorX() + info.getCoorY() + info.getDistance() + info.getLimitSpeed()));
+
         }
 
     }
@@ -711,6 +803,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         LogUtils.d(NAVI_TAG,"updateAimlessModeStatistics");
         LogUtils.d(TAG, "distance=" + aimLessModeStat.getAimlessModeDistance());
         LogUtils.d(TAG, "time=" + aimLessModeStat.getAimlessModeTime());
+
     }
 
     @Override
@@ -1028,6 +1121,22 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void muteSomeLaught() {
         ttsManager.setSpeakType(TTSController.SPEAK_SOMW);
+    }
+
+    @Override
+    public void getStubGroups(double lat, double lon) {
+        mStubGroupProvider.getStubGroupByPoi(lat,lon);
+    }
+
+    @Override
+    public void getStubGroups(String city) {
+        if (city!=null) {
+            mStubGroupProvider.getStubGroupByCity(city);
+        }else {
+            if (mAmapLocation!=null){
+                mStubGroupProvider.getStubGroupByCity(mAmapLocation.getCityCode());
+            }
+        }
     }
 
     @Override
