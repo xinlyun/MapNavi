@@ -381,8 +381,8 @@
     <FrameLayout
         android:visibility="gone"
         android:id="@+id/layout_down"
-        android:layout_marginLeft="5px"
-        android:layout_marginRight="5px"
+        android:layout_marginLeft="3px"
+        android:layout_marginRight="3px"
         android:paddingLeft="9px"
         android:paddingRight="9px"
         android:paddingTop="4px"
@@ -477,6 +477,69 @@
 
             </LinearLayout>
         </LinearLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:background="@color/white"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:layout_width="72px"
+                android:layout_height="match_parent" />
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="912px"
+                android:layout_height="match_parent">
+                <TextView
+                    android:paddingTop="8px"
+                    android:textSize="30px"
+                    android:textColor="@color/first_text_color"
+                    android:text="小鹏汽车线下体验店"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="70px" />
+                <LinearLayout
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:textColor="@color/text_blue"
+                        android:textSize="20px"
+                        android:text="1.3公里"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:layout_marginLeft="20px"
+                        android:text="广州天河区五山路"
+                        android:textSize="20px"
+                        android:textColor="@color/a3a3a3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+                <LinearLayout
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16px"
+                    android:layout_width="match_parent"
+                    android:layout_height="32px">
+                    <TextView
+                        android:textColor="@color/first_text_color"
+                        android:textSize=""
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
+                </LinearLayout>
+                
+            </LinearLayout>
+            <ImageView
+                android:src="@drawable/icon_collect_1"
+                android:scaleType="center"
+                android:layout_width="72px"
+                android:layout_height="72px" />
+
+        </LinearLayout>
+
     </FrameLayout>
 
 
