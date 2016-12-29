@@ -240,6 +240,8 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		},4000);
 	}
 
+	private boolean isFrist = true;
+
 	private void changeSeeWatch(){
 		isFollowCar = (isFollowCar+1)%3;
 		isNotUseLock = true;
@@ -251,6 +253,15 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 					mAMapNaviView.setNaviMode(AMapNaviView.CAR_UP_MODE);
 					mAMapNaviView.setLockTilt(TITLE_NUM);
 //					mAMapNaviView.recoverLockMode();
+					mAMapNaviView.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							if (mNaviAmap!=null && isFrist) {
+//
+								mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
+							}
+						}
+					},80);
 				}
 				break;
 
@@ -261,6 +272,15 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 					mAMapNaviView.setNaviMode(AMapNaviView.CAR_UP_MODE);
 					mAMapNaviView.setLockTilt(0);
 //					mAMapNaviView.recoverLockMode();
+					mAMapNaviView.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							if (mNaviAmap!=null && isFrist) {
+//
+								mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
+							}
+						}
+					},80);
 				}
 
 				break;
@@ -275,10 +295,14 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 				}
 				break;
 		}
-		if (mNaviAmap!=null) {
-			mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
-		}
+//		if (mNaviAmap!=null && isFrist) {
+//
+//			mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
+//			isFrist =false;
+//		}
 	}
+
+
 
 	private void initMap(){
 		AMapNaviViewOptions viewOptions = mAMapNaviView.getViewOptions();
@@ -516,9 +540,11 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 				delectMissLayout.removeMessages(0);
 				delectMissLayout.sendEmptyMessageDelayed(0,5000);
 			}
-			if (mNaviAmap!=null) {
-				mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
-			}
+
+//			if (mNaviAmap!=null && mNaviAmap.getMapType()!=AMap.MAP_TYPE_NAVI) {
+//				mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
+//				isFrist = false;
+//			}
 
 
 
@@ -666,6 +692,8 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			showPathInListtle();
 		}
 	};
+
+
 
 	private AMap.OnMapScreenShotListener listener = new AMap.OnMapScreenShotListener() {
 		@Override

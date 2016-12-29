@@ -271,7 +271,14 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     public void onResume() {
         super.onResume();
         BugHunter.countTimeEnd(getActivity().getApplication(),BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
-//        mAMap.setMapType(AMap.MAP_TYPE_NAVI);
+        if (mAmapView!=null){
+            mAmapView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mAMap.setMapType(AMap.MAP_TYPE_NAVI);
+                }
+            },500);
+        }
         mAMap.setMapType(AMap.MAP_TYPE_NAVI);
 //        mAMap.setMapCustomEnable(true);
         mAMap.setMapTextZIndex(0);
