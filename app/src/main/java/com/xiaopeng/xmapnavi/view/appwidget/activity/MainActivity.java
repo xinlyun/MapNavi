@@ -270,7 +270,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
     @Override
     protected void onResume() {
         super.onResume();
-        mapView.onResume();
+//        mapView.onResume();
 
 
         mLocationProvider.setAiosListener(aiosMapListener);
@@ -283,7 +283,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
     @Override
     protected void onPause() {
         super.onPause();
-        mapView.onPause();
+//        mapView.onPause();
 
 
 
@@ -295,7 +295,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        mapView.onSaveInstanceState(outState);
+//        mapView.onSaveInstanceState(outState);
     }
 
     /**
