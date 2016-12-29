@@ -2,6 +2,7 @@ package com.xiaopeng.xmapnavi.presenter;
 
 import android.content.Context;
 
+import com.xiaopeng.xmapnavi.bean.PowerPoint;
 import com.xiaopeng.xmapnavi.bean.StubAc;
 
 import java.util.List;
@@ -19,6 +20,6 @@ public interface IStubGroupProvider {
 
 
     public interface OnStubData{
-        void stubProvide(List<StubAc> stubAcs);
+        void stubProvide(List<PowerPoint> stubAcs);
     }
 }

@@ -156,7 +156,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
     private TextView mTxSeeWatch;
     private Marker mLocationMarker;
     //            ,mLocationMarker1;
-    private Button mLoveBtn;
+    private ImageView mLoveBtn;
     private CollectItem mCollectNow;
     private LatLonPoint fromPoint,toPoint;
     private TextView mTxBilici;
@@ -289,7 +289,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         findViewById(R.id.tx_goto_home).setOnClickListener(this);
         findViewById(R.id.btn_collect).setOnClickListener(this);
         findViewById(R.id.btn_setting).setOnClickListener(this);
-        mLoveBtn        = (Button) findViewById(R.id.btn_collect);
+        mLoveBtn        = (ImageView) findViewById(R.id.btn_collect);
 
         initMarkInfo();
     }
@@ -661,12 +661,14 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                 } else {
 
                 }
-                mLocationMarker.setRotateAngle(360 - aMapLocation.getBearing());
+                if (aMapLocation.getBearing()!=0) {
+                    mLocationMarker.setRotateAngle(360 - aMapLocation.getBearing());
+                }
             }
 
             if (isLock && mAmap != null) {
                 mAmap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude())));
-                if (mWatchStyle != WATCH_NORTH) {
+                if (mWatchStyle != WATCH_NORTH && aMapLocation.getBearing() != 0) {
                     mAmap.moveCamera(CameraUpdateFactory.changeBearing(aMapLocation.getBearing()));
                 }
             }

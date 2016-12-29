@@ -66,6 +66,7 @@ import com.autonavi.tbt.NaviStaticInfo;
 import com.autonavi.tbt.TrafficFacilityInfo;
 import com.xiaopeng.amaplib.util.TTSController;
 import com.xiaopeng.xmapnavi.bean.LocationSaver;
+import com.xiaopeng.xmapnavi.bean.PowerPoint;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
 import com.xiaopeng.xmapnavi.presenter.IMusicPoiProvider;
 import com.xiaopeng.xmapnavi.presenter.IRoutePower;
@@ -79,6 +80,7 @@ import com.xiaopeng.xmapnavi.presenter.callback.XpNaviInfoListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpRouteListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSensorListener;
+import com.xiaopeng.xmapnavi.presenter.callback.XpStubGroupListener;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.MainActivity;
 
 import java.util.ArrayList;
@@ -113,6 +115,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private static List<XpSensorListener> mSensorListners;
     private static List<XpCollectListener> mCollectListeners;
     private static List<XpAimNaviMsgListener> mAimNaviListeners;
+    private static List<XpStubGroupListener> mStubListeners;
     private XpAiosMapListener mAiosListener;
     private OfflineMapManager.OfflineMapDownloadListener mMapDownListener;
     private OfflineMapManager mDownMapManager;
@@ -254,6 +257,16 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         mAimNaviListeners.remove(listener);
     }
 
+    @Override
+    public void addStubGroupListener(XpStubGroupListener listener) {
+        mStubListeners.add(listener);
+    }
+
+    @Override
+    public void removeStubGroupListener(XpStubGroupListener listener) {
+        mStubListeners.remove(listener);
+    }
+
 
     @Override
     public void trySearchPosi(String str) {
@@ -369,6 +382,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         mSensorListners     = new ArrayList<>();
         mCollectListeners   = new ArrayList<>();
         mAimNaviListeners   = new ArrayList<>();
+        mStubListeners      = new ArrayList<>();
         mSendNaviBroad = new SendNaviBroad();
         mSendNaviBroad  .initBroad(context);
         SharedPreferences sharedPreferences = context.getSharedPreferences("myown",Context.MODE_PRIVATE);
@@ -377,7 +391,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         mMusicPoiProvider   = new MusicPoiProvider();
         mStubGroupProvider  .init(context);
         mMusicPoiProvider   .init(context);
-
+        mStubGroupProvider  .setOnStubDataListener(mStubGroupListener);
         if (mLocationClient == null) {
             mLocationClient = new AMapLocationClient(context.getApplicationContext());
             mLocationOption = getDefaultOption();
@@ -1140,6 +1154,13 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     }
 
     @Override
+    public void getStubGroups() {
+        if (mAmapLocation!=null){
+            mStubGroupProvider.getStubGroupByPoi(mAmapLocation.getLatitude(),mAmapLocation.getLongitude());
+        }
+    }
+
+    @Override
     public NaviInfo getNaviInfo() {
         return naviInfoSave;
     }
@@ -1246,6 +1267,18 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
         }
 
+    };
+
+
+    private IStubGroupProvider.OnStubData mStubGroupListener = new IStubGroupProvider.OnStubData() {
+        @Override
+        public void stubProvide(List<PowerPoint> stubAcs) {
+            //TODO
+            for (XpStubGroupListener stubGroupListener:mStubListeners){
+                stubGroupListener.OnStubData(stubAcs);
+            }
+
+        }
     };
 
 

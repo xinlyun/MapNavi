@@ -9,9 +9,11 @@ import com.amap.api.services.route.RouteSearch;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import com.xiaopeng.xmapnavi.bean.CollectItem;
 import com.xiaopeng.xmapnavi.bean.HisItem;
+import com.xiaopeng.xmapnavi.bean.PowerPoint;
 import com.xiaopeng.xmapnavi.bean.WherePoi;
 import com.xiaopeng.xmapnavi.presenter.ICollectDateHelper;
 import com.xiaopeng.xmapnavi.presenter.IHistoryDateHelper;
+import com.xiaopeng.xmapnavi.presenter.IPowerPoiDateHelper;
 import com.xiaopeng.xmapnavi.presenter.IWhereDateHelper;
 import com.xiaopeng.xmapnavi.presenter.callback.XpCollectListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpHisDateListner;
@@ -23,7 +25,7 @@ import java.util.List;
 /**
  * Created by linzx on 2016/10/17.
  */
-public class DateHelper implements IHistoryDateHelper ,ICollectDateHelper,IWhereDateHelper {
+public class DateHelper implements IHistoryDateHelper ,ICollectDateHelper,IWhereDateHelper ,IPowerPoiDateHelper {
     private static final int HIS_BACK = 0;
     private static final int COLLECT_BACK = 1;
     private static final int WHERE_BACK = 2;
@@ -98,6 +100,37 @@ public class DateHelper implements IHistoryDateHelper ,ICollectDateHelper,IWhere
     @Override
     public void saveWhereIten(int type, String name, String desc, double poiLat, double poiLon) {
         new SaveWhereThread(type,name,desc,poiLat,poiLon).start();
+    }
+
+    @Override
+    public void getPowerPoiSave() {
+        //TODO
+    }
+
+    @Override
+    public List<PowerPoint> getPowerPointById(String poiId) {
+        List<PowerPoint> list = new Select()
+                .from(PowerPoint.class)
+                .where("poiId = ?",poiId)
+                .execute();
+        if (list == null || list.size()==0){
+            return null;
+        }else {
+            return list;
+        }
+
+
+    }
+
+    @Override
+    public void deletPowerPointById(String poiId) {
+        List<PowerPoint> list = new Select()
+                .from(PowerPoint.class)
+                .where("poiId = ?",poiId)
+                .execute();
+        for (PowerPoint poi: list){
+            poi.delete();
+        }
     }
 
     class SaveThread extends Thread{

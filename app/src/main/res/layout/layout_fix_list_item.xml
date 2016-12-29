@@ -2,31 +2,32 @@
 <com.xiaopeng.xmapnavi.view.appwidget.selfview.ScrollLinerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="880px"
-    android:minHeight="108px"
-    android:layout_height="108px"
+    android:minHeight="90px"
+    android:layout_height="90px"
     android:orientation="horizontal"
     android:gravity="center_vertical"
     >
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="108px">
+        android:layout_height="90px">
         <LinearLayout
 
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:id="@+id/back_ll"
-            android:minHeight="108px"
-            android:layout_height="107px">
+            android:minHeight="90px"
+            android:layout_height="89px">
             <ImageView
 
                 android:src="@drawable/icon_search_marker"
-
+                android:layout_marginLeft="12px"
                 android:layout_gravity="center_vertical"
-                android:layout_width="88px"
-                android:layout_height="88px" />
+                android:layout_width="48px"
+                android:layout_height="48px" />
             <LinearLayout
+                android:layout_marginLeft="12px"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:layout_width="619px"
@@ -34,7 +35,7 @@
                 <TextView
                     android:text="广州东站"
                     android:singleLine="true"
-
+                    android:textStyle="bold"
                     android:textColor="@color/first_text_color"
                     android:id="@+id/pre_list_name"
 
@@ -77,7 +78,7 @@
         </LinearLayout>
         <ImageView
             android:background="@color/gray_btn_bg_pressed_color"
-            android:layout_marginLeft="88px"
+            android:layout_marginLeft="72px"
             android:layout_width="match_parent"
             android:layout_height="1px" />
     </LinearLayout>

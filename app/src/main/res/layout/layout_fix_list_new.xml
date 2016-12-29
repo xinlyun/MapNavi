@@ -3,15 +3,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="1056px"
-    android:layout_height="108px">
+    android:layout_height="90px">
     <LinearLayout
 
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:id="@+id/back_ll"
-        android:minHeight="108px"
-        android:layout_height="107px">
+        android:minHeight="90px"
+        android:layout_height="89px">
 
         <LinearLayout
             android:layout_marginLeft="40px"
@@ -20,6 +20,7 @@
             android:gravity="center"
             android:layout_height="match_parent">
             <TextView
+                android:textStyle="bold"
                 android:singleLine="true"
                 android:text="1.广州大学城体育中心"
                 android:textColor="@color/first_text_color"
@@ -48,13 +49,14 @@
             android:layout_width="fill_parent"
             android:layout_height="match_parent">
             <ImageView
+                android:layout_marginRight="20px"
                 android:id="@+id/touch_to_navi"
                 android:layout_alignParentRight="true"
                 android:src="@drawable/icon_collect_2"
                 android:layout_marginLeft="8px"
-                android:layout_marginTop="18px"
-                android:layout_width="72px"
-                android:layout_height="72px" />
+                android:layout_marginTop="21px"
+                android:layout_width="48px"
+                android:layout_height="48px" />
             <TextView
                 android:id="@+id/pre_list_dis"
                 android:layout_marginRight="88px"

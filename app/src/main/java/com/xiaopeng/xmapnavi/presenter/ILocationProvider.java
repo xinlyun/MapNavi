@@ -19,6 +19,7 @@ import com.xiaopeng.xmapnavi.presenter.callback.XpNaviInfoListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpRouteListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSensorListener;
+import com.xiaopeng.xmapnavi.presenter.callback.XpStubGroupListener;
 
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +55,8 @@ public interface ILocationProvider {
     void addAimNaviListener(XpAimNaviMsgListener listener);
     void removeAimNaviListener(XpAimNaviMsgListener listener);
 
-
+    void addStubGroupListener(XpStubGroupListener listener);
+    void removeStubGroupListener(XpStubGroupListener listener);
 
 
     void trySearchPosi(String str);
@@ -96,5 +98,6 @@ public interface ILocationProvider {
 
     void getStubGroups(double lat,double lon);
     void getStubGroups(String city);
+    void getStubGroups();
     NaviInfo getNaviInfo();
 }

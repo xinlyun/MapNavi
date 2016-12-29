@@ -33,6 +33,7 @@
                 <ImageView
                     android:id="@+id/back_image_view"
                     android:layout_width="88px"
+                    android:scaleType="center"
                     android:layout_height="match_parent"
                     android:layout_alignParentLeft="true"
                     android:src="@drawable/icon_return" />

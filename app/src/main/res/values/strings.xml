@@ -89,4 +89,5 @@
     <string name="way_poi_dian">途径点</string>
     <string name="please_input_way_poi">请输入途径点</string>
     <string name="surpise_road">特殊路段</string>
+    <string name="stub_grup">充电桩</string>
 </resources>

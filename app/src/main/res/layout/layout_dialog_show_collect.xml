@@ -31,7 +31,7 @@
                 android:id="@+id/btn_return"
                 android:layout_height="72px">
                 <ImageView
-
+                    android:scaleType="center"
                     android:src="@drawable/icon_return"
                     android:layout_width="88px"
                     android:layout_height="72px" />

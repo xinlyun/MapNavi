@@ -24,9 +24,10 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="72px">
-                <Button
+                <ImageView
+                    android:scaleType="center"
                     android:id="@+id/btn_return"
-                    android:background="@drawable/icon_return"
+                    android:src="@drawable/icon_return"
                     android:layout_width="88px"
                     android:layout_height="match_parent" />
                 <TextView

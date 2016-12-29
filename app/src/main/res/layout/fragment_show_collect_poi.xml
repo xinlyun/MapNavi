@@ -20,8 +20,9 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <Button
-                android:background="@drawable/icon_return"
+            <ImageView
+                android:scaleType="center"
+                android:src="@drawable/icon_return"
                 android:id="@+id/btn_exit_show"
 
                 android:layout_width="88px"
@@ -89,8 +90,9 @@
 
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
-                <Button
-                    android:background="@drawable/icon_collect_1"
+                <ImageView
+                    android:scaleType="center"
+                    android:src="@drawable/icon_collect_1"
                     android:id="@+id/btn_collect"
 
                     android:layout_width="72px"

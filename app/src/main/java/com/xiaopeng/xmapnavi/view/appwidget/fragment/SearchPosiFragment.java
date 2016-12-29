@@ -110,6 +110,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
         findViewById(R.id.btn_search).setOnClickListener(this);
         findViewById(R.id.inside_ll).setOnClickListener(this);
         findViewById(R.id.outside_ll).setOnClickListener(this);
+        findViewById(R.id.btn_start_power).setOnClickListener(this);
         mEtvSearch = (EditText) findViewById(R.id.prepare_edittext);
         mEtvSearch.addTextChangedListener(this);
 
@@ -192,6 +193,10 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
             case R.id.btn_go_collect:
                 showHide();
                 ((MainActivity)getActivity()).showCollectDialog();
+                break;
+
+            case R.id.btn_start_power:
+                ((BaseFuncActivityInteface)getActivity()).startFragment(new ShowStubGroupFragment());
                 break;
 
             case R.id.btn_search:

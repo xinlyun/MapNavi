@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
      android:layout_width="match_parent"
-    android:layout_height="108px">
+    android:layout_height="90px">
 
     <ImageView
         android:background="@color/gray_btn_bg_color"
@@ -13,7 +13,7 @@
         android:layout_height="42px" />
     <ImageView
         android:layout_alignParentBottom="true"
-        android:layout_marginLeft="88px"
+        android:layout_marginLeft="72px"
 
         android:background="@color/gray_btn_bg_pressed_color"
         android:layout_width="match_parent"
@@ -23,21 +23,24 @@
 
         android:layout_marginRight="300px"
         android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:layout_width="match_parent"
-        android:layout_height="108px"
+        android:layout_height="90px"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true">
         <ImageView
-            android:layout_marginTop="10px"
+            android:layout_marginLeft="12px"
             android:src="@drawable/icon_search_marker"
-            android:layout_width="88px"
-            android:layout_height="88px" />
+            android:layout_width="48px"
+            android:layout_height="48px" />
         <LinearLayout
+            android:layout_marginLeft="12px"
             android:gravity="center"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <TextView
+                android:textStyle="bold"
                 android:text="11111111"
                 android:id="@+id/pre_list_name"
                 android:singleLine="true"

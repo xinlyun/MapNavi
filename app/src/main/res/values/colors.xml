@@ -86,4 +86,9 @@
     <color name="gray_btn_bg_pressed_colorx">#B6B6B6</color>
     <color name="text_blue_1">#0BB4FF</color>
     <color name="text_blue_0">#00c6dd</color>
+    <color name="f0f0f0">#f0f0f0</color>
+    <color name="text_green">#48cb08</color>
+    <color name="text_origer">#ff8900</color>
+    <color name="f1f1f1">#f1f1f1</color>
+    <color name="text_666">#666666</color>
 </resources>

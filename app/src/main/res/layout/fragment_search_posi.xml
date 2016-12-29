@@ -27,26 +27,27 @@
 
 
             <LinearLayout
+                android:layout_marginTop="12px"
                 android:id="@+id/prepare_edit_bar"
                 android:orientation="horizontal"
                 android:background="@color/white"
                 android:layout_width="match_parent"
-                android:layout_height="72px">
+                android:layout_height="48px">
                 <ImageView
                     android:id="@+id/btn_return"
                     android:src="@drawable/icon_return"
-                    android:layout_width="88px"
-                    android:layout_height="72px" />
+                    android:layout_width="72px"
+                    android:layout_height="match_parent" />
                 <LinearLayout
                     android:orientation="horizontal"
-                    android:background="@drawable/white_backgrouad"
-                    android:layout_width="783px"
-                    android:layout_marginTop="8px"
-                    android:layout_height="56px">
+                    android:background="@color/f0f0f0"
+                    android:layout_width="796px"
+
+                    android:layout_height="match_parent">
                     <ImageView
                         android:src="@drawable/icon_search_02"
-                        android:layout_width="56px"
-                        android:layout_height="56px" />
+                        android:layout_width="48px"
+                        android:layout_height="match_parent" />
                     <EditText
                         android:textCursorDrawable="@drawable/color_cursor"
                         android:background="@null"
@@ -57,7 +58,7 @@
                         android:hint="搜索目的地"
 
                         android:textColorHint="@color/a3a3a3"
-                        android:layout_width="609px"
+                        android:layout_width="660px"
                         android:layout_height="match_parent" />
                     <Button
                         android:id="@+id/btn_search"
@@ -82,35 +83,36 @@
                     android:layout_height="116px" />
 
             </LinearLayout>
-            <ImageView
-                android:background="@color/gray_btn_bg_pressed_color"
-                android:layout_width="match_parent"
-                android:layout_height="1px" />
+            <!--<ImageView-->
+                <!--android:background="@color/gray_btn_bg_pressed_color"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="1px" />-->
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:gravity="center_vertical"
-                android:layout_height="110px">
+                android:layout_height="99px">
                 <LinearLayout
                     android:background="@drawable/text_trans_bg"
                     android:id="@+id/btn_go_collect"
                     android:layout_weight="1"
                     android:orientation="horizontal"
-                    android:gravity="center_vertical"
+                    android:gravity="center"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
                     <ImageView
                         android:src="@drawable/icon_collect_1"
-                        android:layout_width="72px"
-                        android:layout_marginLeft="124px"
-                        android:layout_height="72px" />
-                    <TextView
-                        android:gravity="center_vertical"
+                        android:layout_width="48px"
 
-                        android:textSize="30px"
+                        android:layout_height="48px" />
+                    <TextView
+                        android:layout_marginLeft="12px"
+                        android:gravity="center_vertical"
+                        android:textStyle="bold"
+                        android:textSize="26px"
                         android:textColor="@color/first_text_color"
 
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:text="@string/collor_poi"
                         android:layout_height="match_parent" />
                 </LinearLayout>
@@ -119,23 +121,25 @@
                     android:layout_width="1px"
                     android:layout_height="40px" />
                 <LinearLayout
-                    android:gravity="center_vertical"
+                    android:id="@+id/btn_start_power"
+                    android:gravity="center"
                     android:layout_weight="1"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
                     <ImageView
                         android:src="@drawable/icon_power"
-                        android:layout_width="72px"
-                        android:layout_marginLeft="124px"
-                        android:layout_height="72px" />
+                        android:layout_width="48px"
+
+                        android:layout_height="48px" />
                     <TextView
+                        android:layout_marginLeft="12px"
                         android:gravity="center_vertical"
-                        android:textSize="30px"
+                        android:textSize="26px"
                         android:text="@string/power_dong"
                         android:textColor="@color/first_text_color"
-
-                        android:layout_width="match_parent"
+                        android:textStyle="bold"
+                        android:layout_width="wrap_content"
                         android:layout_height="match_parent" />
                 </LinearLayout>
 

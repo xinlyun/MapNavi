@@ -5,33 +5,36 @@
     android:layout_width="match_parent"
 
     android:gravity="center_vertical"
-    android:layout_height="108px">
+    android:layout_height="90px">
     <ImageView
+        android:layout_marginLeft="12px"
         android:src="@drawable/icon_search_marker"
-        android:layout_width="88px"
-        android:layout_height="88px" />
+        android:layout_width="48px"
+        android:layout_height="48px" />
     <LinearLayout
+        android:layout_marginLeft="12px"
         android:gravity="center_vertical"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="108px">
+        android:layout_height="90px">
         <TextView
-
+            android:text="adfadfa"
             android:singleLine="true"
             android:id="@+id/pre_list_name"
             android:textColor="@color/first_text_color"
             android:textSize="@dimen/list_title"
-
+            android:textStyle="bold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <TextView
+            android:text="adfadfadsf"
             android:singleLine="true"
             android:id="@+id/pre_list_posi"
             android:textColor="@color/a3a3a3"
             android:textSize="@dimen/list_msg"
             android:layout_marginTop="@dimen/two_top_marage"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
     

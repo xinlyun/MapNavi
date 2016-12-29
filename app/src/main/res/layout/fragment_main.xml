@@ -467,8 +467,9 @@
 
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
-                <Button
-                    android:background="@drawable/icon_collect_2"
+                <ImageView
+                    android:scaleType="center"
+                    android:src="@drawable/icon_collect_2"
                     android:id="@+id/btn_collect"
 
                     android:layout_width="72px"
