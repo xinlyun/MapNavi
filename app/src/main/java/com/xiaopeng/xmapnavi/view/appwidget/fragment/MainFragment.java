@@ -661,12 +661,15 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                 } else {
 
                 }
-                mLocationMarker.setRotateAngle(360 - aMapLocation.getBearing());
+                if (aMapLocation.getBearing()!=0) {
+                    mLocationMarker.setRotateAngle(360 - aMapLocation.getBearing());
+                }
             }
 
             if (isLock && mAmap != null) {
                 mAmap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude())));
-                if (mWatchStyle != WATCH_NORTH) {
+                if (mWatchStyle != WATCH_NORTH  && aMapLocation.getBearing() != 0 ) {
+
                     mAmap.moveCamera(CameraUpdateFactory.changeBearing(aMapLocation.getBearing()));
                 }
             }
