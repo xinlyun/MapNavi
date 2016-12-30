@@ -559,6 +559,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
             }
             mTvPoiName.setText(poiName);
             mTxMarkTitle.setText(poiName);
+            mTvPoiStr.setText("");
         }
 
         mCollectNow = mCollectDateHelper.getCollectByName(poiName);

@@ -750,16 +750,26 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         mRoutePower.setPath(aMapNavi.getNaviPaths(),ints);
         isWillOOM = isWillOutOfMemory();
         if (!isWillOOM) {
-
-            for (XpNaviCalueListener listener : mNaviCalueListeners) {
-                listener.onCalculateMultipleRoutesSuccess(ints);
+            if (mNaviCalueListeners.size()>0) {
+                for (int i = mNaviCalueListeners.size()-1;i >= 0;i--) {
+                    XpNaviCalueListener listener = mNaviCalueListeners.get(i);
+                    try {
+                        listener.onCalculateMultipleRoutesSuccess(ints);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }else {
             mInts = new int[]{
                     ints[0]
             };
             for (XpNaviCalueListener listener : mNaviCalueListeners) {
-                listener.onCalculateMultipleRoutesSuccess(mInts);
+                try {
+                    listener.onCalculateMultipleRoutesSuccess(mInts);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -984,6 +994,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public void setNaviStyle(boolean congestion, boolean avHighSpeed, boolean avCost, boolean highSpeed) {
+        LogUtils.d(TAG,"setNaviStyle:\ncongestion:"+congestion+"\navHightSpeed:"+avHighSpeed+"\navCost:"+avCost+"\nhightSpeed:"+highSpeed);
         this.congestion = congestion;
         this.avoidhightspeed = avHighSpeed;
         this.cost = avCost;
@@ -1005,7 +1016,10 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
             wayPoi.addAll(path.getWayPoint());
 
             aMapNavi.stopNavi();
-            return aMapNavi.calculateDriveRoute(startPoi, endPois, wayPoi, aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, false));
+            int trueAvi = aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, false);
+            int falseAvi = aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, true);
+            LogUtils.d(TAG,"\ntrueAvi:"+trueAvi+"\nfalseAvi:"+falseAvi);
+            return aMapNavi.calculateDriveRoute(startPoi, endPois, wayPoi, falseAvi);
 
 //            return aMapNavi.reCalculateRoute(aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, false));
         } catch (Exception e) {
