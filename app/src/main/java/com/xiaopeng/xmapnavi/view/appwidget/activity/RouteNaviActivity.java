@@ -162,8 +162,8 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 //			mAMapNaviView.setLazyNextTurnTipView((NextTurnTipView) findViadewById(R.id.myNextTurnTipView));
 			boolean gps = getIntent().getBooleanExtra("gps", true);
 			if (gps) {
-				mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
-//			mLocationPro.startNavi(AMapNavi.GPSNaviMode);
+//				mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
+			mLocationPro.startNavi(AMapNavi.GPSNaviMode);
 			} else {
 				mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
 			}
@@ -924,6 +924,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	XpNaviCalueListener xpNaviCalueListener = new XpNaviCalueListener() {
 		@Override
 		public void onCalculateMultipleRoutesSuccess(int[] ints) {
+			deleyHandler2.removeMessages(0);
 			if (mProgDialog!=null){
 				mProgDialog.dismiss();
 			}
@@ -945,12 +946,13 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 							mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
 						}
 					}
-				}, 1500);
+				}, 150);
 			}
 		}
 
 		@Override
 		public void onCalculateRouteSuccess() {
+			deleyHandler2.removeMessages(0);
 			if (mProgDialog!=null){
 				mProgDialog.dismiss();
 			}
@@ -971,12 +973,13 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 							mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
 						}
 					}
-				}, 1500);
+				}, 150);
 			}
 		}
 
 		@Override
 		public void onCalculateRouteFailure() {
+			deleyHandler2.removeMessages(0);
 			if (mProgDialog!=null){
 				mProgDialog.dismiss();
 			}
