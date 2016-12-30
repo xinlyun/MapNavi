@@ -233,7 +233,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         mOrientation = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
         mySensorEventListener = new MySensorEventListener();
-        mLocationProvider.stopNavi();
+
         return rootView;
     }
 
@@ -301,14 +301,17 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
     @Override
     public void onResume() {
         super.onResume();
+        LogUtils.d(TAG,"onResume");
         mLocationProvider   .addLocationListener(this);
         mLocationProvider.addSearchListner(this);
         isInFace = true;
+//        mLocationProvider.stopNavi();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        LogUtils.d(TAG,"onPause");
         isInFace = false;
         mLocationProvider.removeSearchListner(this);
         mLocationProvider   .removeLocationListener(this);
