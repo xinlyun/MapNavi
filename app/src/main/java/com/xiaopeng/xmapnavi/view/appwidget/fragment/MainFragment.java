@@ -56,18 +56,25 @@ import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeAddress;
 import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.geocoder.RegeocodeResult;
+import com.nostra13.universalimageloader.utils.L;
 import com.wangjie.shadowviewhelper.ShadowProperty;
+import com.xiaopeng.amaplib.util.AMapUtil;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import com.xiaopeng.lib.utils.utils.UIUtils;
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.bean.CollectItem;
+import com.xiaopeng.xmapnavi.bean.PowerPoint;
 import com.xiaopeng.xmapnavi.bean.WherePoi;
 import com.xiaopeng.xmapnavi.mode.DateHelper;
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
+import com.xiaopeng.xmapnavi.mode.StubGroupProvider;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
+import com.xiaopeng.xmapnavi.presenter.IPowerPoiDateHelper;
+import com.xiaopeng.xmapnavi.presenter.IStubGroupProvider;
 import com.xiaopeng.xmapnavi.presenter.callback.XpCollectListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
+import com.xiaopeng.xmapnavi.presenter.callback.XpStubGroupListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpWhereListener;
 import com.xiaopeng.xmapnavi.utils.Utils;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.BaseFuncActivityInteface;
@@ -178,6 +185,16 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
     private boolean isInFace  = true;
 
     private boolean isLock = true;
+
+    private List<PowerPoint> mPowerPoints = new ArrayList<>();
+
+    private List<Marker> mStubMarkers = new ArrayList<>();
+
+
+    private LinearLayout mDown2Layout;
+    private TextView mTvStubName,mTvStubDis,mTvStubAddress,mTvKuai,mTvMan,mTvStubYunyin,mTvStubPower,mTvStubStop,mTvStubOpen;
+    private ImageView mImgCollectStub;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -191,6 +208,10 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                 .setShadowRadius(UIUtils.dip2px(getActivity(),5));
         mLocationProvider    = LocationProvider.getInstence(getActivity());
         getSensorList();
+
+//        mStubProvider   = new StubGroupProvider();
+//        mStubProvider   .init(getActivity());
+//        mStubProvider   .setOnStubDataListener(mOnStubData);
     }
 
     @Nullable
@@ -220,11 +241,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         };
         initView();
         mLsv.setVisibility(View.GONE);
-
-
-
-
-
 
         mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         mOrientation = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
@@ -276,6 +292,19 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         mTvPoiDis           = (TextView) findViewById(R.id.tv_poi_dis);
         mTxBilici           = (TextView) findViewById(R.id.tx_bilici);
         mInfoLayout         = (LinearLayout) findViewById(R.id.layout_info);
+        mDown2Layout        = (LinearLayout) findViewById(R.id.layout_down_stub);
+        mTvStubName         = (TextView) findViewById(R.id.tv_stub_name);
+        mTvStubDis          = (TextView) findViewById(R.id.tv_stub_dis);
+        mTvStubAddress      = (TextView) findViewById(R.id.tv_stub_addrass);
+        mTvStubYunyin       = (TextView) findViewById(R.id.tv_yunyin);
+        mTvStubPower        = (TextView) findViewById(R.id.tv_pay_power);
+        mTvStubStop         = (TextView) findViewById(R.id.tv_pay_stop);
+        mTvStubOpen         = (TextView) findViewById(R.id.tv_open_time);
+        mTvKuai             = (TextView) findViewById(R.id.tv_kuai_msg);
+        mTvMan              = (TextView) findViewById(R.id.tv_man_msg);
+        mImgCollectStub     = (ImageView) findViewById(R.id.btn_collect_stub);
+
+
         findViewById(R.id.d3_setting).setOnClickListener(this);
         findViewById(R.id.d3_lukuang).setOnClickListener(this);
         findViewById(R.id.btn_begin_navi).setOnClickListener(this);
@@ -289,8 +318,9 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         findViewById(R.id.tx_goto_home).setOnClickListener(this);
         findViewById(R.id.btn_collect).setOnClickListener(this);
         findViewById(R.id.btn_setting).setOnClickListener(this);
+        findViewById(R.id.btn_navi_to_stub).setOnClickListener(this);
         mLoveBtn        = (ImageView) findViewById(R.id.btn_collect);
-
+        mImgCollectStub     .setOnClickListener(this);
         initMarkInfo();
     }
 
@@ -338,8 +368,8 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
     @Override
     public void onClick(View view) {
-        if (mDownLayout1.getVisibility()==View.VISIBLE && view.getId()!=R.id.btn_collect) {
-            mLoveBtn.setBackgroundResource(R.drawable.icon_collect_2);
+        if (mDownLayout1.getVisibility()==View.VISIBLE && view.getId()!=R.id.btn_collect && view.getId()!=R.id.btn_collect_stub) {
+            mLoveBtn.setImageResource(R.drawable.icon_collect_2);
             mDownLayout1.setVisibility(View.GONE);
             RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mReleavieView.getLayoutParams();
             layoutParams.height = height;
@@ -418,7 +448,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                     mDownLayout1.setVisibility(View.VISIBLE);
                     RelativeLayout.LayoutParams layoutParams2 = (RelativeLayout.LayoutParams) mReleavieView.getLayoutParams();
                     height = layoutParams2.height;
-                    layoutParams2.height = 1100;
+                    layoutParams2.height = 1150;
                     mReleavieView.setLayoutParams(layoutParams2);
                 }
                 break;
@@ -437,20 +467,108 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                 mActivity.startFragment(new SettingFragment());
                 break;
 
+            case R.id.btn_navi_to_stub:
+                try {
+                    PowerPoint powerPoint = mPowerPoints.get(clickOne);
+                    List<NaviLatLng> naviLatLngs = new ArrayList<>();
+                    naviLatLngs.add(new NaviLatLng(powerPoint.getLat(),powerPoint.getLon()));
+                    if (mLocationProvider.tryCalueRunWay(naviLatLngs)){
+                        mActivity.showDialogwithOther();
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                break;
+
+            case R.id.btn_collect_stub:
+                try {
+                    PowerPoint powerPoint = mPowerPoints.get(clickOne);
+                    List<PowerPoint> list = mCollectDateHelper.getPowerPointById(powerPoint.getPoiId());
+                    if(list!=null){
+                        mImgCollectStub.setImageResource(R.drawable.icon_collect_2);
+                        for (PowerPoint po:list){
+                            po.delete();
+                        }
+                    }else {
+                        mImgCollectStub.setImageResource(R.drawable.icon_collect_1);
+                        powerPoint.save();
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+                break;
+
 
             default:
                 break;
         }
     }
 
+    private void showStubMsg(PowerPoint powerPoint){
+        //TODO
+        if (mDownLayout1.getVisibility()== View.GONE) {
+            mDownLayout1.setVisibility(View.VISIBLE);
+            RelativeLayout.LayoutParams layoutParams2 = (RelativeLayout.LayoutParams) mReleavieView.getLayoutParams();
+            height = layoutParams2.height;
+            layoutParams2.height = 1150;
+            mReleavieView.setLayoutParams(layoutParams2);
+        }
+        if (powerPoint!=null) {
+            mTvStubName.setText(powerPoint.getName());
+            mTvStubAddress.setText(powerPoint.getAddress());
+            mTvKuai     .setText("快充：空闲"+powerPoint.getAcIdleCnt());
+            mTvMan      .setText("慢充：空闲"+powerPoint.getDcIdleCnt());
+//            mTvStubYunyin.setText("");
+            mTvStubPower.setText(powerPoint.getElectricFee()+"元/度");
+            mTvStubStop.setText(powerPoint.getServiceFee()+"元/小时");
+            mTvStubOpen.setText(powerPoint.getTimeDesc());
+            AMapLocation mapLocation = mLocationProvider.getAmapLocation();
+            LatLng latLng = new LatLng(mapLocation.getLatitude(),mapLocation.getLongitude());
+            LatLng latLng1 = new LatLng(powerPoint.getLat(),powerPoint.getLon());
+            float dis = AMapUtils.calculateLineDistance(latLng,latLng1);
+            String msgDis = AMapUtil.getFriendlyLength((int) dis);
+            mTvStubDis.setText(msgDis);
+
+            List<PowerPoint> love = mCollectDateHelper.getPowerPointById(powerPoint.getPoiId());
+            if (love!=null){
+                mImgCollectStub.setImageResource(R.drawable.icon_collect_1);
+            }else {
+                mImgCollectStub.setImageResource(R.drawable.icon_collect_2);
+            }
+        }
+
+
+    }
+
+    private void clearChangeMarker(){
+        if (clickOne!=-1 && !clickStub){
+            try {
+                Marker marker = mStubMarkers.get(clickOne);
+                marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_poi_show_stub));
+                clickOne = -1;
+                if (mDown2Layout.getVisibility() == View.VISIBLE){
+                    mDown2Layout.setVisibility(View.GONE);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
+        clearChangeMarker();
         if (mDownLayout1.getVisibility()==View.VISIBLE) {
-            mLoveBtn.setBackgroundResource(R.drawable.icon_collect_2);
+            mLoveBtn.setImageResource(R.drawable.icon_collect_2);
             mDownLayout1.setVisibility(View.GONE);
             RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) mReleavieView.getLayoutParams();
             layoutParams.height = height;
             mReleavieView.setLayoutParams(layoutParams);
+        }
+
+        if (mDown2Layout.getVisibility() == View.VISIBLE){
+            mDown2Layout.setVisibility(View.GONE);
         }
 
         upDateLineTo(cameraPosition);
@@ -479,19 +597,31 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         mLatLng = cameraPosition.target;
         marker.setVisible(false);
 
-        RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(cameraPosition.target.latitude,cameraPosition.target.longitude), 200, GeocodeSearch.AMAP);
-        geocodeSearch.getFromLocationAsyn(query);
+        if (!clickStub) {
+            RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(cameraPosition.target.latitude, cameraPosition.target.longitude), 200, GeocodeSearch.AMAP);
+            geocodeSearch.getFromLocationAsyn(query);
 
-        if (!equalNavLat(cameraPosition.target,new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude())) ){
+            if (!equalNavLat(cameraPosition.target, new LatLng(mLocationProvider.getAmapLocation().getLatitude(), mLocationProvider.getAmapLocation().getLongitude()))) {
 
-            mMarkerPoi.setAnimation(scaleAnimation);
-            mMarkerPoi.setVisible(true);
-            mMarkerPoi.startAnimation();
-            isCanShow = true;
-            mTvPoiName.setText(getString(R.string.load_get_msg));
+                mMarkerPoi.setAnimation(scaleAnimation);
+                mMarkerPoi.setVisible(true);
+                mMarkerPoi.startAnimation();
+                isCanShow = true;
+                mTvPoiName.setText(getString(R.string.load_get_msg));
+            } else {
+                isCanShow = false;
+
+            }
         }else {
-            isCanShow = false;
 
+            try {
+                mDown2Layout.setVisibility(View.VISIBLE);
+                PowerPoint powerPoint = mPowerPoints.get(clickOne);
+                showStubMsg(powerPoint);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            clickStub = false;
         }
         updateScale();
 
@@ -502,8 +632,11 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
     }
 
+    private int clickOne = -1;
+    private boolean clickStub = false;
     @Override
     public boolean onMarkerClick(Marker marker) {
+        int one = -1;
         if (marker.getId() == mMarkerPoi.getId()) {
             isCanShow = false;
             LatLng latLng = mMarkerPoi.getPosition();
@@ -524,8 +657,27 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                 mReleavieView.setLayoutParams(layoutParams);
             }
             return true;
+        }else if ((one = isOneOfStubMarker(marker))!=-1){
+            clearChangeMarker();
+            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_power_in_map));
+            clickOne = one;
+            PowerPoint powerPoint = mPowerPoints.get(one);
+            mAmap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(powerPoint.getLat(),powerPoint.getLon())));
+            clickStub = true;
+            return true;
         }
         return false;
+    }
+
+    private int isOneOfStubMarker(Marker marker){
+        int k = -1;
+        for(int i =0;i<mStubMarkers.size();i++){
+            if (marker.getId() == mStubMarkers.get(i).getId()){
+                k = i;
+                break;
+            }
+        }
+        return k;
     }
 
     @Override
@@ -554,7 +706,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
         mCollectNow = mCollectDateHelper.getCollectByName(poiName);
         if (mCollectNow!=null){
-            mLoveBtn.setBackgroundResource(R.drawable.icon_collect_1);
+            mLoveBtn.setImageResource(R.drawable.icon_collect_1);
         }
 
         LatLonPoint latLonPoint = address.getPois().get(0).getLatLonPoint();
@@ -881,6 +1033,8 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
             }
         },500);
         mCollectDateHelper.getWhereItems();
+        mLocationProvider.addStubGroupListener(mOnStubData);
+        mLocationProvider.getStubGroups();
     }
 
     @Override
@@ -888,6 +1042,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         super.onStop();
         try {
 //            mSensorManager.unregisterListener(mySensorEventListener);
+            mLocationProvider.removeStubGroupListener(mOnStubData);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -928,6 +1083,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
 
         mLocationProvider.reCallLocation();
+        setMapInteractiveListener();
     }
 
     private AMap.OnPOIClickListener mPoiClickListener = new AMap.OnPOIClickListener() {
@@ -1145,6 +1301,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+
                         isLock = false;
 //                        hideKeyboard(mEtvSearch);
                         // 按下屏幕
@@ -1162,6 +1319,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
                     case MotionEvent.ACTION_UP:
                         // 离开屏幕
+//                        clearChangeMarker();
                         startTimerSomeTimeLater();
                         findMyPoiDeley.sendEmptyMessageDelayed(0,30 * 1001);
                         updateScale();
@@ -1211,11 +1369,11 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
     private void collectThePoi(){
         if (mCollectNow==null) {
-            mLoveBtn.setBackgroundResource(R.drawable.icon_collect_1);
+            mLoveBtn.setImageResource(R.drawable.icon_collect_1);
             mCollectDateHelper.saveCollect(poiName, poiDesc, mLatLng.latitude, mLatLng.longitude);
             mCollectNow = mCollectDateHelper.getCollectByName(poiName);
         }else {
-            mLoveBtn.setBackgroundResource(R.drawable.icon_collect_2);
+            mLoveBtn.setImageResource(R.drawable.icon_collect_2);
             mCollectNow.delete();
             mCollectNow = null;
         }
@@ -1317,30 +1475,43 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         }
     }
 
-    public void setPosi(double lat,double lon){
-        mLatLng = new LatLng(lat,lon);
-    }
 
 
 
-
-
-    public void showCollectDialog(){
-        mCollectDateHelper.getCollectItems();
-    }
-
-    private void beginCalueNavi(){
-        if (fromPoint!=null && toPoint!=null){
-            List<NaviLatLng> startList = new ArrayList<>();
-            List<NaviLatLng> wayList = new ArrayList<>();
-            List<NaviLatLng> endList = new ArrayList<>();
-            startList.add(new NaviLatLng(fromPoint.getLatitude(),fromPoint.getLongitude()));
-            endList.clear();
-            endList.add(new NaviLatLng(toPoint.getLatitude(),toPoint.getLongitude()));
-//            mProgDialog.show();
-            mActivity.showDialogwithOther();
-            mLocationProvider.calueRunWay(startList,wayList,endList);
+    private XpStubGroupListener mOnStubData = new XpStubGroupListener() {
+        @Override
+        public void OnStubData(List<PowerPoint> powerPoints) {
+            mPowerPoints .clear();
+            if (powerPoints!=null) {
+                mPowerPoints.addAll(powerPoints);
+                initStubMarker();
+            }
         }
+    };
+
+
+    private void initStubMarker(){
+        for (Marker marker:mStubMarkers){
+            try{
+                marker.remove();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        mStubMarkers.clear();
+        for (PowerPoint powerPoint:mPowerPoints){
+            MarkerOptions options = new MarkerOptions();
+            options.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_poi_show_stub));
+            LatLng latLng = new LatLng(powerPoint.getLat(),powerPoint.getLon());
+            options.position(latLng);
+            Marker marker = mAmap.addMarker(options);
+            marker.setAnchor(0.5f,1f);
+            mStubMarkers.add(marker);
+            marker.setClickable(true);
+        }
+
     }
+
+
 
 }

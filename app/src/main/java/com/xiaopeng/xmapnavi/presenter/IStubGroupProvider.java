@@ -16,6 +16,7 @@ public interface IStubGroupProvider {
     void init(Context context);
     void getStubGroupByPoi(double lat,double lon);
     void getStubGroupByCity(String city);
+
     void setOnStubDataListener(OnStubData onStubDataListener);
 
 
