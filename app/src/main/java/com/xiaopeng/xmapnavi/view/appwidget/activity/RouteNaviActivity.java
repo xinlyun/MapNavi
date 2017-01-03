@@ -677,7 +677,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 				}
 
 			}
-		},1500);
+		},500);
 	}
 
 
@@ -924,6 +924,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	XpNaviCalueListener xpNaviCalueListener = new XpNaviCalueListener() {
 		@Override
 		public void onCalculateMultipleRoutesSuccess(int[] ints) {
+			LogUtils.d(TAG,"onCalculateMultipleRoutesSuccess");
 			deleyHandler2.removeMessages(0);
 			if (mProgDialog!=null){
 				mProgDialog.dismiss();
@@ -937,7 +938,9 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 				e.printStackTrace();
 			}
 			mLocationPro.selectRouteId(ints[0]);
-			mLocationPro.startNavi(AMapNavi.GPSNaviMode);
+			boolean isSuccess = mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
+
+			LogUtils.d(TAG,"onCalculateMultipleRoutesSuccess?"+isSuccess);
 			if (mAMapNaviView!=null) {
 				mAMapNaviView.postDelayed(new Runnable() {
 					@Override
@@ -946,12 +949,13 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 							mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
 						}
 					}
-				}, 150);
+				}, 3000);
 			}
 		}
 
 		@Override
 		public void onCalculateRouteSuccess() {
+			LogUtils.d(TAG,"onCalculateRouteSuccess");
 			deleyHandler2.removeMessages(0);
 			if (mProgDialog!=null){
 				mProgDialog.dismiss();
