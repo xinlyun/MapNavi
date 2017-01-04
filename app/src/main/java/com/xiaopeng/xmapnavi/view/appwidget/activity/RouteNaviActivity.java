@@ -162,8 +162,8 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 //			mAMapNaviView.setLazyNextTurnTipView((NextTurnTipView) findViadewById(R.id.myNextTurnTipView));
 			boolean gps = getIntent().getBooleanExtra("gps", true);
 			if (gps) {
-				mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
-//			mLocationPro.startNavi(AMapNavi.GPSNaviMode);
+//				mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
+			mLocationPro.startNavi(AMapNavi.GPSNaviMode);
 			} else {
 				mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
 			}
@@ -240,6 +240,8 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		},4000);
 	}
 
+	private boolean isFrist = true;
+
 	private void changeSeeWatch(){
 		isFollowCar = (isFollowCar+1)%3;
 		isNotUseLock = true;
@@ -251,6 +253,15 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 					mAMapNaviView.setNaviMode(AMapNaviView.CAR_UP_MODE);
 					mAMapNaviView.setLockTilt(TITLE_NUM);
 //					mAMapNaviView.recoverLockMode();
+					mAMapNaviView.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							if (mNaviAmap!=null && isFrist) {
+//
+								mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
+							}
+						}
+					},80);
 				}
 				break;
 
@@ -261,6 +272,15 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 					mAMapNaviView.setNaviMode(AMapNaviView.CAR_UP_MODE);
 					mAMapNaviView.setLockTilt(0);
 //					mAMapNaviView.recoverLockMode();
+					mAMapNaviView.postDelayed(new Runnable() {
+						@Override
+						public void run() {
+							if (mNaviAmap!=null && isFrist) {
+//
+								mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
+							}
+						}
+					},80);
 				}
 
 				break;
@@ -275,10 +295,14 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 				}
 				break;
 		}
-		if (mNaviAmap!=null) {
-			mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
-		}
+//		if (mNaviAmap!=null && isFrist) {
+//
+//			mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
+//			isFrist =false;
+//		}
 	}
+
+
 
 	private void initMap(){
 		AMapNaviViewOptions viewOptions = mAMapNaviView.getViewOptions();
@@ -516,9 +540,11 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 				delectMissLayout.removeMessages(0);
 				delectMissLayout.sendEmptyMessageDelayed(0,5000);
 			}
-			if (mNaviAmap!=null) {
-				mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
-			}
+
+//			if (mNaviAmap!=null && mNaviAmap.getMapType()!=AMap.MAP_TYPE_NAVI) {
+//				mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
+//				isFrist = false;
+//			}
 
 
 
@@ -651,7 +677,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 				}
 
 			}
-		},1500);
+		},500);
 	}
 
 
@@ -666,6 +692,8 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			showPathInListtle();
 		}
 	};
+
+
 
 	private AMap.OnMapScreenShotListener listener = new AMap.OnMapScreenShotListener() {
 		@Override
@@ -896,6 +924,8 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	XpNaviCalueListener xpNaviCalueListener = new XpNaviCalueListener() {
 		@Override
 		public void onCalculateMultipleRoutesSuccess(int[] ints) {
+			LogUtils.d(TAG,"onCalculateMultipleRoutesSuccess");
+			deleyHandler2.removeMessages(0);
 			if (mProgDialog!=null){
 				mProgDialog.dismiss();
 			}
@@ -908,7 +938,9 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 				e.printStackTrace();
 			}
 			mLocationPro.selectRouteId(ints[0]);
-			mLocationPro.startNavi(AMapNavi.GPSNaviMode);
+			boolean isSuccess = mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
+
+			LogUtils.d(TAG,"onCalculateMultipleRoutesSuccess?"+isSuccess);
 			if (mAMapNaviView!=null) {
 				mAMapNaviView.postDelayed(new Runnable() {
 					@Override
@@ -917,12 +949,14 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 							mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
 						}
 					}
-				}, 1500);
+				}, 3000);
 			}
 		}
 
 		@Override
 		public void onCalculateRouteSuccess() {
+			LogUtils.d(TAG,"onCalculateRouteSuccess");
+			deleyHandler2.removeMessages(0);
 			if (mProgDialog!=null){
 				mProgDialog.dismiss();
 			}
@@ -943,12 +977,13 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 							mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
 						}
 					}
-				}, 1500);
+				}, 150);
 			}
 		}
 
 		@Override
 		public void onCalculateRouteFailure() {
+			deleyHandler2.removeMessages(0);
 			if (mProgDialog!=null){
 				mProgDialog.dismiss();
 			}

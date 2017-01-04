@@ -278,6 +278,14 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     public void onResume() {
         super.onResume();
         BugHunter.countTimeEnd(getActivity().getApplication(),BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
+        if (mAmapView!=null){
+            mAmapView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mAMap.setMapType(AMap.MAP_TYPE_NAVI);
+                }
+            },500);
+        }
         mAMap.setMapType(AMap.MAP_TYPE_NAVI);
         mAMap.setMapTextZIndex(0);
 
@@ -362,33 +370,38 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
         watchAll();
 
-        List<NaviLatLng> latLngs = paths.get(ints[0]).getWayPoint();
-        if (latLngs!=null && latLngs.size()>0){
-            findViewById(R.id.img_div).setVisibility(View.GONE);
-            findViewById(R.id.btn_start_route_navi).setVisibility(View.GONE);
+        try {
+            List<NaviLatLng> latLngs = paths.get(ints[0]).getWayPoint();
+
+            if (latLngs != null && latLngs.size() > 0) {
+                findViewById(R.id.img_div).setVisibility(View.GONE);
+                findViewById(R.id.btn_start_route_navi).setVisibility(View.GONE);
 
 
-            NaviLatLng naviLatLng = latLngs.get(0);
+                NaviLatLng naviLatLng = latLngs.get(0);
 
-            RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(naviLatLng.getLatitude(),naviLatLng.getLongitude()), 200, GeocodeSearch.AMAP);
-            geocodeSearch2.getFromLocationAsyn(query);
-            mTxMarkTitle2.setText(R.string.loading_hard);
+                RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(naviLatLng.getLatitude(), naviLatLng.getLongitude()), 200, GeocodeSearch.AMAP);
+                geocodeSearch2.getFromLocationAsyn(query);
+                mTxMarkTitle2.setText(R.string.loading_hard);
 
-            if (markerWayPoi == null){
-                options2.position(new LatLng(naviLatLng.getLatitude(),naviLatLng.getLongitude()));
-                markerWayPoi = mAMap.addMarker(options2);
-                markerWayPoi.setTitle("title1");
-                markerWayPoi.setSnippet("snippet1");
+                if (markerWayPoi == null) {
+                    options2.position(new LatLng(naviLatLng.getLatitude(), naviLatLng.getLongitude()));
+                    markerWayPoi = mAMap.addMarker(options2);
+                    markerWayPoi.setTitle("title1");
+                    markerWayPoi.setSnippet("snippet1");
 
-            }else {
-                markerWayPoi.setPosition(new LatLng(naviLatLng.getLatitude(),naviLatLng.getLongitude()));
-                markerWayPoi.setTitle("title1");
-                markerWayPoi.setSnippet("snippet1");
+                } else {
+                    markerWayPoi.setPosition(new LatLng(naviLatLng.getLatitude(), naviLatLng.getLongitude()));
+                    markerWayPoi.setTitle("title1");
+                    markerWayPoi.setSnippet("snippet1");
 
+                }
+            } else {
+                findViewById(R.id.img_div).setVisibility(View.VISIBLE);
+                findViewById(R.id.btn_start_route_navi).setVisibility(View.VISIBLE);
             }
-        }else {
-            findViewById(R.id.img_div).setVisibility(View.VISIBLE);
-            findViewById(R.id.btn_start_route_navi).setVisibility(View.VISIBLE);
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
 
@@ -681,7 +694,9 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
     private RouteOverLay drawRoutes(int routeId, AMapNaviPath path) {
         LogUtils.d(TAG,"drawRoutes id:"+routeId);
-        mLocaionPro.selectRouteId(routeId);
+        if (routeId!=-1) {
+            mLocaionPro.selectRouteId(routeId);
+        }
         calculateSuccess = true;
 //        if (mRouteOverLay!=null){
 //            mRouteOverLay.removeFromMap();
@@ -707,13 +722,14 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         routeOverLay.setZindex(zindex);
         routeOverLay.addToMap();
         routeOverLay.setTransparency(0.0f);
-        if (routeId==-1){
-            if (mOnlyOverLay!=null){
-                mOnlyOverLay.removeFromMap();
-                mOnlyOverLay = null;
-            }
-            mOnlyOverLay = routeOverLay;
-        }
+//        if (routeId==-1){
+//            if (mOnlyOverLay!=null){
+//                mOnlyOverLay.removeFromMap();
+//                mOnlyOverLay = null;
+//            }
+//            mOnlyOverLay = routeOverLay;
+//            mOnlyOverLay.setTransparency(1.0f);
+//        }
         return routeOverLay;
 
 
@@ -915,6 +931,9 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                                  */
                                 RouteOverLay routeOverLay = drawRoutes(-1, path);
                                 routeOverLay.setTransparency(1.0f);
+                                ints = new int[]{-1};
+                                routeMap.put(-1,routeOverLay);
+                                routeOverLays.add(routeOverLay);
                             }
                             mActivity.dismissDeleyDialog();
 
@@ -1080,6 +1099,9 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                             LogUtils.d(TAG,"only one path:"+path);
                             RouteOverLay routeOverLay = drawRoutes(-1, path);
                             routeOverLay.setTransparency(1.0f);
+                            ints = new int[]{-1};
+                            routeMap.put(-1,routeOverLay);
+                            routeOverLays.add(routeOverLay);
                         }
                         mActivity.dismissDeleyDialog();
 
@@ -1128,13 +1150,21 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                     }
                     changeRoute();
                 } else {
-                    AMapNaviPath path = mLocaionPro.getNaviPath();
+                    AMapNaviPath path;
+                    if (ints.length==1){
+                        path = paths.get(ints[0]);
+                    }else {
+                        path = mLocaionPro.getNaviPath();
+                    }
                     /**
                      * 单路径不需要进行路径选择，直接传入－1即可
                      */
                     LogUtils.d(TAG,"only one path:"+path);
                     RouteOverLay routeOverLay = drawRoutes(-1, path);
                     routeOverLay.setTransparency(1.0f);
+                    ints = new int[]{-1};
+                    routeMap.put(-1,routeOverLay);
+                    routeOverLays.add(routeOverLay);
                 }
                 mActivity.dismissDeleyDialog();
 

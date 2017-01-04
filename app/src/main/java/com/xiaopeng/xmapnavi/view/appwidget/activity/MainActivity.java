@@ -152,6 +152,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
 
     private ILocationProvider mLocationProvider;
     private ShowCollectDialog mCollectDialog;
+    private boolean isLive = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         BugHunter.countTimeStart(BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
@@ -270,8 +271,8 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
     @Override
     protected void onResume() {
         super.onResume();
-        mapView.onResume();
-
+//        mapView.onResume();
+        isLive = true;
 
         mLocationProvider.setAiosListener(aiosMapListener);
         BugHunter.countTimeEnd(getApplication(),BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
@@ -283,8 +284,8 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
     @Override
     protected void onPause() {
         super.onPause();
-        mapView.onPause();
-
+//        mapView.onPause();
+        isLive = false;
 
 
     }
@@ -295,7 +296,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        mapView.onSaveInstanceState(outState);
+//        mapView.onSaveInstanceState(outState);
     }
 
     /**
@@ -528,6 +529,9 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
                 }
             }
         },2000);
+
+        if (!isLive)return;
+
         double lat =0,lon =0;
         HashMap<Integer,AMapNaviPath> pathHashMap = mLocationProvider.getNaviPaths();
         if (pathHashMap!=null && pathHashMap.size()>0){

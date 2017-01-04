@@ -2,6 +2,7 @@ package com.xiaopeng.xmapnavi.view.appwidget.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Fragment;
+import android.app.backup.IFullBackupRestoreObserver;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -36,6 +37,7 @@ import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.Projection;
 import com.amap.api.maps.UiSettings;
+import com.amap.api.maps.model.AMapGestureListener;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
@@ -46,6 +48,7 @@ import com.amap.api.maps.model.Poi;
 import com.amap.api.maps.model.Polyline;
 import com.amap.api.maps.model.PolylineOptions;
 import com.amap.api.maps.model.TextOptions;
+import com.amap.api.maps.model.TileProjection;
 import com.amap.api.maps.model.animation.ScaleAnimation;
 import com.amap.api.navi.model.AMapNaviLocation;
 import com.amap.api.navi.model.NaviLatLng;
@@ -195,6 +198,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
     private TextView mTvStubName,mTvStubDis,mTvStubAddress,mTvKuai,mTvMan,mTvStubYunyin,mTvStubPower,mTvStubStop,mTvStubOpen;
     private ImageView mImgCollectStub;
 
+    private boolean isMapDown = false;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -245,7 +249,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         mOrientation = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
         mySensorEventListener = new MySensorEventListener();
-        mLocationProvider.stopNavi();
+
         return rootView;
     }
 
@@ -327,14 +331,17 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
     @Override
     public void onResume() {
         super.onResume();
+        LogUtils.d(TAG,"onResume");
         mLocationProvider   .addLocationListener(this);
         mLocationProvider.addSearchListner(this);
         isInFace = true;
+//        mLocationProvider.stopNavi();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        LogUtils.d(TAG,"onPause");
         isInFace = false;
         mLocationProvider.removeSearchListner(this);
         mLocationProvider   .removeLocationListener(this);
@@ -571,6 +578,9 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
             mDown2Layout.setVisibility(View.GONE);
         }
 
+//        if (!isMapDown) {
+            updateLine(cameraPosition);
+//        }
         upDateLineTo(cameraPosition);
 
         if (marker!=null) {
@@ -593,7 +603,9 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
     @Override
     public void onCameraChangeFinish(CameraPosition cameraPosition) {
-        upDateLineTo(cameraPosition);
+//        upDateLineTo(cameraPosition);
+        LogUtils.d(TAG,"onCameraChangeFinish");
+        updateLine(cameraPosition);
         mLatLng = cameraPosition.target;
         marker.setVisible(false);
 
@@ -702,6 +714,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
             }
             mTvPoiName.setText(poiName);
             mTxMarkTitle.setText(poiName);
+            mTvPoiStr.setText("");
         }
 
         mCollectNow = mCollectDateHelper.getCollectByName(poiName);
@@ -777,6 +790,10 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
     public void onLocationChanged(AMapLocation aMapLocation) {
         try {
             if (aMapLocation != null) {
+                if (cameraLatlngs.size()>0){
+                    cameraLatlngs.remove(0);
+                }
+                cameraLatlngs.add(0,new LatLng(aMapLocation.getLatitude(),aMapLocation.getLongitude()));
                 mCity = aMapLocation.getCity();
                 if (mAmap != null && mWatchStyle != WATCH_NORTH) {
                 }
@@ -816,11 +833,34 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                 if (aMapLocation.getBearing()!=0) {
                     mLocationMarker.setRotateAngle(360 - aMapLocation.getBearing());
                 }
+            }else{
+                removeLocationMarker();
+                if (mWatchStyle == WATCH_NORTH) {
+                    mLocationMarker = mAmap.addMarker(new MarkerOptions()
+                            .icon(BitmapDescriptorFactory
+                                    .fromResource(R.drawable.icon_seewatch_1))
+                            .draggable(false));
+                }else {
+                    mLocationMarker = mAmap.addMarker(new MarkerOptions()
+                            .icon(BitmapDescriptorFactory
+                                    .fromResource(R.drawable.icon_seewatch_0))
+                            .draggable(false));
+                }
+                mLocationMarker.setAnchor(0.5f,0.5f);
+                mLocationMarker.setVisible(false);
+                mLocationMarker.setFlat(true);
+                mLocationMarker.setPosition(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
+
+                if (aMapLocation.getBearing()!=0) {
+                    mLocationMarker.setRotateAngle(360 - aMapLocation.getBearing());
+                }
+
             }
 
             if (isLock && mAmap != null) {
                 mAmap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude())));
-                if (mWatchStyle != WATCH_NORTH && aMapLocation.getBearing() != 0) {
+                if (mWatchStyle != WATCH_NORTH  && aMapLocation.getBearing() != 0 ) {
+
                     mAmap.moveCamera(CameraUpdateFactory.changeBearing(aMapLocation.getBearing()));
                 }
             }
@@ -868,7 +908,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                 if ((System.currentTimeMillis() - sensorChangeTime > 300)) {
                     if (Math.abs(event.values[0] - saveA) > 5) {
                         saveA = event.values[0];
-
                         mSeeFloat = saveA;
                         mAmap.animateCamera(CameraUpdateFactory.changeBearing(saveA));
                         sensorChangeTime = System.currentTimeMillis();
@@ -1048,6 +1087,49 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         }
     }
 
+    private AMapGestureListener gestureListener = new AMapGestureListener() {
+        @Override
+        public void onDoubleTap(float v, float v1) {
+
+        }
+
+        @Override
+        public void onSingleTap(float v, float v1) {
+
+        }
+
+        @Override
+        public void onFling(float v, float v1) {
+            LogUtils.d(TAG,"onFling");
+        }
+
+        @Override
+        public void onScroll(float v, float v1) {
+            LogUtils.d(TAG,"onScroll");
+            updateLine(marker);
+        }
+
+        @Override
+        public void onLongPress(float v, float v1) {
+
+        }
+
+        @Override
+        public void onDown(float v, float v1) {
+            isMapDown = true;
+        }
+
+        @Override
+        public void onUp(float v, float v1) {
+            isMapDown = false;
+        }
+
+        @Override
+        public void onMapStable() {
+
+        }
+    };
+
     private void reInit(){
         mAmap.clear();
         mAmap.setTrafficEnabled(isTraff);
@@ -1058,15 +1140,20 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         settings.setAllGesturesEnabled(true);
         settings.setTiltGesturesEnabled(false);
         settings.setRotateGesturesEnabled(false);
+        settings.setZoomInByScreenCenter(true);
         mAmap.setOnMarkerDragListener(this);
         mAmap.setOnCameraChangeListener(this);
+        mAmap.setAMapGestureListener(gestureListener);
         polylineOptions = new PolylineOptions();
-        polylineOptions.width(2);
-        polylineOptions.color(Color.argb(255, 1, 1, 1));
-        polylineOptions.setDottedLine(true);
-        polylineOptions.aboveMaskLayer(true);
-        mPolyline = mAmap.addPolyline(polylineOptions);
 
+        polylineOptions.width(2);
+        polylineOptions.color(Color.argb(255, 255, 34, 34));
+//        polylineOptions.setDottedLine(true);
+//        polylineOptions.aboveMaskLayer(true);
+        mPolyline = mAmap.addPolyline(polylineOptions);
+        if (mWatchStyle != WATCH_3D){
+            mPolyline.setVisible(false);
+        }
         removeLocationMarker();
         mLocationMarker = mAmap.addMarker(new MarkerOptions()
                 .icon(BitmapDescriptorFactory
@@ -1121,7 +1208,14 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         if (mAmap!=null){
             switch (mWatchStyle){
                 case WATCH_NORTH:
+                    mLsv.setVisibility(View.VISIBLE);
+                    mPolyline.setVisible(false);
                     mSeeFloat = 0f;
+                    if ( mLocationProvider!=null) {
+                        CameraUpdate update1 = CameraUpdateFactory.changeTilt(0);
+                        mAmap.animateCamera(update1);
+                    }
+
                     if ( mLocationProvider!=null && mLocationProvider.getAmapLocation()!=null) {
 //
 //                        findMyPosi();
@@ -1148,6 +1242,8 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                     break;
 
                 case WATCH_2D:
+                    mLsv.setVisibility(View.VISIBLE);
+                    mPolyline.setVisible(false);
                     if ( mLocationProvider!=null && mLocationProvider.getAmapLocation()!=null) {
                         CameraUpdate update1 = CameraUpdateFactory.changeTilt(0);
                         mAmap.animateCamera(update1);
@@ -1157,6 +1253,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                         mLocationMarker.setPosition(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
                     }else{
                         removeLocationMarker();
+
                         mLocationMarker  = mAmap.addMarker(new MarkerOptions()
                                 .icon(BitmapDescriptorFactory
                                         .fromResource(R.drawable.icon_seewatch_0))
@@ -1169,7 +1266,10 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                     break;
 
                 case WATCH_3D:
-                    CameraUpdate update1 = CameraUpdateFactory.changeTilt(30);
+                    mLsv.setVisibility(View.GONE);
+                    mPolyline.setVisible(true);
+
+                    CameraUpdate update1 = CameraUpdateFactory.changeTilt(45);
                     mAmap.animateCamera(update1);
                     if (mLocationMarker!=null){
                         mLocationMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_seewatch_0));
@@ -1256,13 +1356,16 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
             mAmap.setTrafficEnabled(isTraff);
             mAmap.setInfoWindowAdapter(this);
             mAmap.setOnPOIClickListener(mPoiClickListener);
+            mAmap.setAMapGestureListener(gestureListener);
+
             UiSettings settings = mAmap.getUiSettings();
             settings.setTiltGesturesEnabled(false);
             settings.setRotateGesturesEnabled(false);
             mAmap.setLocationSource(this);// 设置定位监听
             mAmap.getUiSettings().setMyLocationButtonEnabled(false);// 设置默认定位按钮是否显示
             mAmap.getUiSettings().setZoomControlsEnabled(false);
-
+            mAmap.getUiSettings().setZoomInByScreenCenter(true);
+//            mAmap.getUiSettings().setZoomGesturesEnabled(false);
             mAmap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
             // 设置定位的类型为定位模式 ，可以由定位、跟随或地图根据面向方向旋转几种
             mAmap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
@@ -1277,10 +1380,13 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
             mAmap.setOnCameraChangeListener(this);
             polylineOptions = new PolylineOptions();
             polylineOptions.width(2);
-            polylineOptions.color(Color.argb(255, 1, 1, 1));
-            polylineOptions.setDottedLine(true);
-            polylineOptions.aboveMaskLayer(true);
+            polylineOptions.color(Color.argb(255, 255, 34, 34));
+//            polylineOptions.setDottedLine(true);
+//            polylineOptions.aboveMaskLayer(true);
             mPolyline = mAmap.addPolyline(polylineOptions);
+            if (mWatchStyle != WATCH_3D){
+                mPolyline.setVisible(false);
+            }
             setMapInteractiveListener();
 
 
@@ -1289,11 +1395,23 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
     }
 
+    private long timeSave;
+
     /**
      * 设置导航监听
      */
     private void setMapInteractiveListener() {
-
+        mAmap.setOnMapClickListener(new AMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                if((System.currentTimeMillis() - timeSave)<500){
+                    if (mAmap!=null){
+                        mAmap.animateCamera(CameraUpdateFactory.zoomIn());
+                    }
+                }
+                timeSave = System.currentTimeMillis();
+            }
+        });
         mAmap.setOnMapTouchListener(new AMap.OnMapTouchListener() {
 
             @Override
@@ -1408,6 +1526,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         try {
             LatLng mLatlon = new LatLng(mLocationProvider.getAmapLocation().getLatitude(), mLocationProvider.getAmapLocation().getLongitude());
             Projection projection = mAmap.getProjection();
+
             Point pM = projection.toScreenLocation(mLatlon);
             mLsv.setPoint(pM);
         } catch (Exception e) {
@@ -1423,14 +1542,110 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         }
     }
 
+    private List<LatLng> cameraLatlngs = new ArrayList<>();
+
+    private LatLng preLatlng;
+    private double latDis = 0,lonDis = 0;
+
     private void updateLine(CameraPosition cameraPosition){
-        if (marker != null){
-            List<LatLng> latLngs = new ArrayList<LatLng>();
-            latLngs.add(cameraPosition.target);
-            latLngs.add(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
-            mPolyline.setPoints(latLngs);
+//        if (marker != null){
+//            List<LatLng> latLngs = new ArrayList<LatLng>();
+//            latLngs.add(cameraPosition.target);
+//            latLngs.add(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
+//            cameraLatlngs.
+        try {
+//            if (preLatlng!=null){
+//                LatLng latLng = cameraPosition.target;
+//                double disX = latLng.latitude - preLatlng.latitude;
+//                double disY = latLng.longitude - preLatlng.longitude;
+//
+//                preLatlng = latLng;
+//                if (disX * latDis < 0d || disY * lonDis < 0d){
+//                    latDis = disX;
+//                    lonDis = disY;
+//                    return;
+//                }else {
+//                    latDis = disX;
+//                    lonDis = disY;
+//                }
+//            }else {
+//                preLatlng = cameraPosition.target;
+//            }
+
+
+
+            if (cameraLatlngs.size()>1) {
+                cameraLatlngs.remove(1);
+            }
+            cameraLatlngs.add(1, cameraPosition.target);
+
+//            if (mPolyline!=null){
+//                mPolyline.remove();
+//            }
+//            if (polylineOptions!=null) {
+//                polylineOptions.setPoints(cameraLatlngs);
+//                mPolyline = mAmap.addPolyline(polylineOptions);
+//            }else {
+//                LogUtils.d(TAG,"polylineOptions is null");
+//            }
+            mPolyline.setPoints(cameraLatlngs);
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
     }
+
+    private void updateLine(Marker marker){
+//        if (marker != null){
+//            List<LatLng> latLngs = new ArrayList<LatLng>();
+//            latLngs.add(cameraPosition.target);
+//            latLngs.add(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
+//            cameraLatlngs.
+        if (marker==null)return;
+//        if (preLatlng!=null){
+//            LatLng latLng = marker.getPosition();
+//            double disX = latLng.latitude - preLatlng.latitude;
+//            double disY = latLng.longitude - preLatlng.longitude;
+//
+//            preLatlng = latLng;
+//            if (disX * latDis < 0d || disY * lonDis < 0d){
+//                latDis = disX;
+//                lonDis = disY;
+//                return;
+//            }else {
+//                latDis = disX;
+//                lonDis = disY;
+//            }
+//        }else {
+//            preLatlng = marker.getPosition();
+//        }
+
+        LogUtils.d(TAG,"\nPosi:\nlat"+marker.getPosition().latitude+"\nlon"+marker.getPosition().longitude);
+        try {
+            if (cameraLatlngs.size()>1) {
+                cameraLatlngs.remove(1);
+            }
+            cameraLatlngs.add(1, marker.getPosition());
+
+//            if (mPolyline!=null){
+//                mPolyline.remove();
+//            }
+//            if (polylineOptions!=null) {
+//                polylineOptions.setPoints(cameraLatlngs);
+//                mPolyline = mAmap.addPolyline(polylineOptions);
+//            }else {
+//                LogUtils.d(TAG,"polylineOptions is null");
+//            }
+            mPolyline.setPoints(cameraLatlngs);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+//            PolylineOptions polylineOptions = new PolylineOptions();
+//            polylineOptions.set
+//        }
+    }
+
 
     private String getUsefulInfo(RegeocodeAddress address){
         String msg ;
