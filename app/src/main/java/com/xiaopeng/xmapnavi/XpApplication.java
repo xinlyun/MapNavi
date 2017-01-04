@@ -16,8 +16,12 @@ import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.lib.scu.LibScuApplication;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import com.xiaopeng.lib.utils.utils.XPAppSharedPreferenceHelper;
+import com.xiaopeng.xmapnavi.bean.Licen;
 import com.xiaopeng.xmapnavi.bean.LocationSaver;
 import com.xiaopeng.xmapnavi.mode.AssetsCopyTOSDcard;
+import com.xiaopeng.xmapnavi.mode.WeixinLicenceProvider;
+import com.xiaopeng.xmapnavi.presenter.IWeixinLicenceProvider;
+import com.xiaopeng.xmapnavi.presenter.callback.XpLicProListener;
 import com.xiaopeng.xmapnavi.utils.LicenceConfig;
 
 import java.io.File;
@@ -117,10 +121,15 @@ public class XpApplication extends LibScuApplication {
                     }else {
                         code = "Device licence error";
                         Log.e(TAG,"Device licence error");
+
                     }
                 }else {
                     code = "not Device";
                     Log.e(TAG,"not Device");
+                    IWeixinLicenceProvider weixinLicenceProvider = new WeixinLicenceProvider();
+                    weixinLicenceProvider.init(XpApplication.this);
+                    weixinLicenceProvider.setLicProListener(licProListener);
+                    weixinLicenceProvider.getLic();
                 }
 
             }catch (Exception e){
@@ -128,6 +137,18 @@ public class XpApplication extends LibScuApplication {
             }
         }
     };
+
+    private XpLicProListener licProListener = new XpLicProListener() {
+        @Override
+        public void getLicence(Licen licen) {
+            LogUtils.d(TAG,"getLicence");
+            licShow = licen.getLicence();
+            device_id = licen.getDevice_id();
+            ticket = licen.getTicket();
+            Cloud.init(licShow);
+        }
+    };
+
 
     public void setTypeface(){
         //华文彩云，加载外部字体assets/front/huawen_caiyun.ttf
