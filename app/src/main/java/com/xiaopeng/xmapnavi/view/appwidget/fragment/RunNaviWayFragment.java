@@ -53,10 +53,12 @@ import com.amap.api.services.route.WalkRouteResult;
 import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import com.xiaopeng.xmapnavi.R;
+import com.xiaopeng.xmapnavi.bean.PowerPoint;
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
 import com.xiaopeng.xmapnavi.presenter.ICarControlReple;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
+import com.xiaopeng.xmapnavi.presenter.callback.XpStubGroupListener;
 import com.xiaopeng.xmapnavi.utils.Utils;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.BaseFuncActivityInteface;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.RouteNaviActivity;
@@ -156,6 +158,14 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
     private TextView mTvNorLenght,mTvNorMsg;
 
+    private boolean isStubPower = false;
+
+    private ImageView mStubImg;
+
+    private List<PowerPoint> mPowerPoints = new ArrayList<>();
+
+    private List<Marker> mStubMarkers = new ArrayList<>();
+
     public void setMapView(MapView mapView){
         mAmapView = mapView;
         mAMap = mAmapView.getMap();
@@ -198,6 +208,41 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         return rootView.findViewById(id);
     }
 
+
+    private XpStubGroupListener xpStubGroupListener = new XpStubGroupListener() {
+        @Override
+        public void OnStubData(List<PowerPoint> powerPoints) {
+            mPowerPoints .clear();
+            if (powerPoints!=null) {
+                mPowerPoints.addAll(powerPoints);
+                initStubMarker();
+            }
+        }
+    };
+
+    private void initStubMarker(){
+        for (Marker marker:mStubMarkers){
+            try{
+                marker.remove();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        mStubMarkers.clear();
+        for (PowerPoint powerPoint:mPowerPoints){
+            MarkerOptions options = new MarkerOptions();
+            options.zIndex(1);
+            options.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_poi_show_stub));
+            LatLng latLng = new LatLng(powerPoint.getLat(),powerPoint.getLon());
+            options.position(latLng);
+            Marker marker = mAMap.addMarker(options);
+            marker.setAnchor(0.5f,1f);
+            mStubMarkers.add(marker);
+            marker.setClickable(true);
+        }
+
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -229,8 +274,8 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
             options2 = new MarkerOptions();
             options2.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_way_poi));
+            options2.zIndex(3);
             options2.anchor(0.5f, 1f);
-
 
             mAMap.setMapType(AMap.MAP_TYPE_NAVI);
             mAMap.setOnMapLongClickListener(this);
@@ -251,7 +296,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             wayPoiOptions = new MarkerOptions();
             wayPoiOptions.anchor(0.5f, 1f);
             wayPoiOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_add_way_poi));
-
+            wayPoiOptions.zIndex(2);
             mAMap.setInfoWindowAdapter(infoWindowAdapter);
             mAmapView.postDelayed(new Runnable() {
                 @Override
@@ -268,6 +313,8 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                 mNaviChioceDialog = new NaviChanDialog(RunNaviWayFragment.this.getActivity());
                 mNaviChioceDialog.setOnChioceNaviStyleListner(RunNaviWayFragment.this);
             }
+
+            changeStubPower();
 
         }catch (Exception e){
             e.printStackTrace();
@@ -305,6 +352,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         mTxBilici           = (TextView) findViewById(R.id.tx_bilici);
         mTvNorLenght        = (TextView) findViewById(R.id.tv_nor_length);
         mTvNorMsg           = (TextView) findViewById(R.id.tv_nor_str);
+        mStubImg            = (ImageView) findViewById(R.id.iv_stub_show);
         //--listener--//
         mBtnStartNavi       .setOnClickListener(this);
         findViewById(R.id.btn_start_route_navi).setOnClickListener(this);
@@ -314,6 +362,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         findViewById(R.id.btn_zoom_jian).setOnClickListener(this);
         findViewById(R.id.btn_lukuang).setOnClickListener(this);
         findViewById(R.id.btn_add_way_poi).setOnClickListener(this);
+        findViewById(R.id.btn_chongdian).setOnClickListener(this);
 
 
 
@@ -874,11 +923,44 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                 mLocaionPro.reCalue();
                 break;
 
+            case R.id.btn_chongdian:
+                isStubPower = !isStubPower;
+                changeStubPower();
+                break;
+
             default:
                 break;
 
         }
     }
+
+    private void changeStubPower(){
+
+        if (isStubPower){
+            mStubImg.setImageResource(R.drawable.icon_power);
+
+            if (mLocaionPro!=null){
+                mLocaionPro.addStubGroupListener(xpStubGroupListener);
+                mLocaionPro.getStubGroups();
+            }
+        }else {
+            mPowerPoints.clear();
+            for (Marker marker : mStubMarkers){
+                marker.remove();
+            }
+            mStubMarkers.clear();
+            mStubImg.setImageResource(R.drawable.icon_power_false);
+            if (mLocaionPro!=null){
+                mLocaionPro.removeStubGroupListener(xpStubGroupListener);
+            }
+
+
+        }
+
+    }
+
+
+
 
     private void watchAll(){
         try {
@@ -1204,6 +1286,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onDestroyView() {
+        mLocaionPro.removeStubGroupListener(xpStubGroupListener);
         mLocaionPro = null;
         super.onDestroyView();
     }
@@ -1612,6 +1695,17 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         mTxMarkTitle2       = (TextView) mMarkInfoView2.findViewById(R.id.tx_tip_show);
     }
 
+    private int isOneOfStubMarker(Marker marker){
+        int k = -1;
+        for(int i =0;i<mStubMarkers.size();i++){
+            if (marker.getId() == mStubMarkers.get(i).getId()){
+                k = i;
+                break;
+            }
+        }
+        return k;
+    }
+
 
     AMap.InfoWindowAdapter infoWindowAdapter = new AMap.InfoWindowAdapter() {
         @Override
@@ -1643,10 +1737,20 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
             LogUtils.d(TAG,"marker0:"+marker+"\nwayPoi:"+markerWayPoi);
 //            markerWayPoi.showInfoWindow();
-
+            int one ;
 
             if (marker.equals(markerWayPoi)) {
                 markerWayPoi.showInfoWindow();
+                return true;
+            }else if ((one = isOneOfStubMarker(marker))!=-1){
+//                clearChangeMarker();
+//                marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_power_in_map));
+//                clickOne = one;
+//                PowerPoint powerPoint = mPowerPoints.get(one);
+//                mAMap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(powerPoint.getLat(),powerPoint.getLon())));
+//                clickStub = true;
+                LatLng latLng = marker.getPosition();
+                onMapLongClick(latLng);
                 return true;
             }
 
