@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -19,22 +18,17 @@ import android.os.Message;
 
 import com.aispeech.aios.common.bean.MapInfo;
 import com.aispeech.aios.common.bean.PoiBean;
-import com.aispeech.aios.common.manage.AIOSManager;
 import com.aispeech.aios.common.property.MapProperty;
-import com.aispeech.aios.sdk.AIOSForCarSDK;
 import com.aispeech.aios.sdk.listener.AIOSMapListener;
 import com.aispeech.aios.sdk.manager.AIOSMapManager;
 import com.aispeech.aios.sdk.manager.AIOSSettingManager;
 import com.amap.api.maps.offlinemap.OfflineMapManager;
-import com.amap.api.navi.TBTEngine;
 import com.amap.api.navi.enums.BroadcastMode;
 import com.amap.api.navi.model.AMapNaviStaticInfo;
-import com.nostra13.universalimageloader.utils.L;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 
 import android.support.annotation.NonNull;
 import android.util.SparseArray;
-import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -57,16 +51,15 @@ import com.amap.api.navi.model.AimLessModeStat;
 import com.amap.api.navi.model.NaviInfo;
 import com.amap.api.navi.model.NaviLatLng;
 import com.amap.api.navi.view.RouteOverLay;
-import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
-import com.autonavi.amap.mapcore.MapTilsCacheAndResManager;
 import com.autonavi.tbt.NaviStaticInfo;
 import com.autonavi.tbt.TrafficFacilityInfo;
 import com.xiaopeng.amaplib.util.TTSController;
 import com.xiaopeng.xmapnavi.bean.LocationSaver;
 import com.xiaopeng.xmapnavi.bean.PowerPoint;
+import com.xiaopeng.xmapnavi.presenter.ICarControlReple;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
 import com.xiaopeng.xmapnavi.presenter.IMusicPoiProvider;
 import com.xiaopeng.xmapnavi.presenter.IRoutePower;
@@ -150,6 +143,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private NaviInfo naviInfoSave ;
     private IStubGroupProvider mStubGroupProvider;
     private IMusicPoiProvider mMusicPoiProvider;
+
+    private ICarControlReple mCarControlReple;
     public static void init(Context context) {
         mContext = context;
         mLp      = new LocationProvider(context);
@@ -432,6 +427,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
         initAiosListener();
         initBroadCast();
+        mCarControlReple = new CarControlReple();
+        mCarControlReple.init(context);
     }
 
     private void initAiosListener(){
@@ -563,7 +560,6 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
                 if (mMusicPoiProvider!=null){
                     mMusicPoiProvider.sendProvide(aMapLocation);
                 }
-//                Toast.makeText(mContext,"bearing:"+aMapLocation.getBearing(),Toast.LENGTH_SHORT).show();
                 String errText = "定位成功," + aMapLocation.getAddress()+ ": \n lat:" + aMapLocation.getLatitude()+"\n lon :"+aMapLocation.getLongitude();
                 LogUtils.e("AmapErr",errText);
 //                try {
@@ -1163,6 +1159,11 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public NaviInfo getNaviInfo() {
         return naviInfoSave;
+    }
+
+    @Override
+    public ICarControlReple getCarControlReple() {
+        return mCarControlReple;
     }
 
 

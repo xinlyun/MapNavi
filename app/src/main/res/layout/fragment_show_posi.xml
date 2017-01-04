@@ -152,6 +152,7 @@
                 android:gravity="center"
                 android:layout_height="71px">
                 <ImageView
+                    android:scaleType="center"
                     android:src="@drawable/icon_search_02"
                     android:layout_width="56px"
                     android:layout_height="56px" />

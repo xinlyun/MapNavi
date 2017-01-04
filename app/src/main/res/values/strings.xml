@@ -95,4 +95,7 @@
     <string name="str_open_time">开放时间</string>
     <string name="stub_grup">充电桩</string>
     <string name="navi_find_way">路径规划</string>
+    <string name="you_will_not_back">您有可能无法返回出发地！</string>
+    <string name="you_will_not_array">您有可能无法到达目的地！</string>
+    <string name="you_will_not_enage">预计到达目的地时续航不足，请及时充电。</string>
 </resources>

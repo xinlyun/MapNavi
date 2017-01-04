@@ -78,6 +78,7 @@
     <color name="text_blue">#4f9bfe</color>
 
     <color name="line_red">#ff2222</color>
+    <color name="text_red_power">#f10a0a</color>
     <color name="grey_bg_color">#f7f7f7</color>
     <color name="grey_bg_color_0">#eeeeee</color>
     <color name="gray_text_color">#a3a3a3</color>
@@ -88,6 +89,7 @@
     <color name="text_blue_0">#00c6dd</color>
     <color name="f0f0f0">#f0f0f0</color>
     <color name="text_green">#48cb08</color>
+    <color name="text_green_power">#07d16c</color>
     <color name="text_origer">#ff8900</color>
     <color name="f1f1f1">#f1f1f1</color>
     <color name="text_666">#666666</color>

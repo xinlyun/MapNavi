@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -55,11 +54,11 @@ import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
+import com.xiaopeng.xmapnavi.presenter.ICarControlReple;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.utils.Utils;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.BaseFuncActivityInteface;
-import com.xiaopeng.xmapnavi.view.appwidget.activity.RadarNaviActivity;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.RouteNaviActivity;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.NaviPathAdapter;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.LikeChangeDialog;
@@ -90,29 +89,20 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     private boolean isTouch = false;
     //    private List<RouteOverLay> saveOverLay = new ArrayList<>();
     private LikeChangeDialog mSelectLikeDialog;
-    private BaseFuncActivityInteface mActivity;
-    CameraUpdate watchUpdate;
-    private List<MRouteOverLay> mRouteOverLays = new ArrayList<>();
-    private HashMap<Integer,MRouteOverLay> mRouteHash = new HashMap<>();
-    private boolean isStart = false;
-    public void setMapView(MapView mapView){
-        mAmapView = mapView;
-        mAMap = mAmapView.getMap();
 
-        mAMap.setMapType(AMap.MAP_TYPE_NAVI);
-    }
+    private BaseFuncActivityInteface mActivity;
+
+    CameraUpdate watchUpdate;
+
+    private List<MRouteOverLay> mRouteOverLays = new ArrayList<>();
+
+    private HashMap<Integer,MRouteOverLay> mRouteHash = new HashMap<>();
+
+    private boolean isStart = false;
 
     private RouteOverLay mOnlyOverLay;
 
-    public void setPosiFromTo(LatLonPoint fromPoint, LatLonPoint toPoint){
-        LogUtils.d(TAG,"setPosiFromTo:"+"from:"+fromPoint+"\nto:"+toPoint);
-        this.fromPoint = fromPoint;
-        this.toPoint = toPoint;
-        startPoi.clear();
-        startPoi.add(new NaviLatLng(fromPoint.getLatitude(),fromPoint.getLongitude()));
-        endPoi.clear();
-        endPoi.add(new NaviLatLng(toPoint.getLatitude(),toPoint.getLongitude()));
-    }
+
 
     private ILocationProvider mLocaionPro;
     private View rootView;
@@ -121,11 +111,6 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     private List<LatLng> markers = new ArrayList<>();
     private List<Integer> numSave = new ArrayList<>();
     private Marker mMarker;
-
-
-    /**
-     * 保存当前算好的路线
-     */
 
 
     /**
@@ -167,6 +152,27 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     private HashMap<Integer,RouteOverLay> routeMap = new HashMap<>();
     private List<RouteOverLay> routeOverLays = new ArrayList<>();
 
+    private ICarControlReple mCarControlReple;
+
+    private TextView mTvNorLenght,mTvNorMsg;
+
+    public void setMapView(MapView mapView){
+        mAmapView = mapView;
+        mAMap = mAmapView.getMap();
+
+        mAMap.setMapType(AMap.MAP_TYPE_NAVI);
+    }
+
+    public void setPosiFromTo(LatLonPoint fromPoint, LatLonPoint toPoint){
+        LogUtils.d(TAG,"setPosiFromTo:"+"from:"+fromPoint+"\nto:"+toPoint);
+        this.fromPoint = fromPoint;
+        this.toPoint = toPoint;
+        startPoi.clear();
+        startPoi.add(new NaviLatLng(fromPoint.getLatitude(),fromPoint.getLongitude()));
+        endPoi.clear();
+        endPoi.add(new NaviLatLng(toPoint.getLatitude(),toPoint.getLongitude()));
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         BugHunter.countTimeStart(BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
@@ -182,6 +188,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mLocaionPro = LocationProvider.getInstence(getActivity());
+        mCarControlReple = mLocaionPro.getCarControlReple();
         rootView = inflater.inflate(R.layout.fragment_calue_navi,container,false);
         initView();
         return rootView;
@@ -271,9 +278,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     public void onResume() {
         super.onResume();
         BugHunter.countTimeEnd(getActivity().getApplication(),BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
-//        mAMap.setMapType(AMap.MAP_TYPE_NAVI);
         mAMap.setMapType(AMap.MAP_TYPE_NAVI);
-//        mAMap.setMapCustomEnable(true);
         mAMap.setMapTextZIndex(0);
 
     }
@@ -290,6 +295,8 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         mBtnStartNavi       = (LinearLayout) findViewById(R.id.btn_start_navi);
         mIvLKicon           = (ImageView) findViewById(R.id.iv_lukuang_icon);
         mTxBilici           = (TextView) findViewById(R.id.tx_bilici);
+        mTvNorLenght        = (TextView) findViewById(R.id.tv_nor_length);
+        mTvNorMsg           = (TextView) findViewById(R.id.tv_nor_str);
         //--listener--//
         mBtnStartNavi       .setOnClickListener(this);
         findViewById(R.id.btn_start_route_navi).setOnClickListener(this);
@@ -411,6 +418,31 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                     int cost = paths.get(ints[0]).getTollCost();
                     String msgShow = "花费约" + cost + "元 ,红绿灯" + traListhNum + "个";
                     mTvShowMsg.setText(msgShow);
+
+                    int lenght = paths.get(ints[0]).getAllLength();
+                    lenght = lenght/1000;
+                    int poLength = mCarControlReple.getCarTralLenght();
+                    int norLength = poLength - lenght;
+                    mTvNorLenght.setText(""+norLength+"km");
+
+                    if ( norLength < lenght){
+                        mTvNorMsg.setText(R.string.you_will_not_back);
+                    }else {
+                        mTvNorMsg.setText("");
+                    }
+
+                    if (norLength >= 60){
+                        mTvNorLenght.setTextColor(getResources().getColor(R.color.text_green_power));
+                    }else if (norLength >= 30){
+                        mTvNorLenght.setTextColor(getResources().getColor(R.color.text_origer));
+                    }else if (norLength >= 0){
+                        mTvNorLenght.setTextColor(getResources().getColor(R.color.text_red_power));
+                        mTvNorMsg.setText(R.string.you_will_not_enage);
+                    }else {
+                        mTvNorLenght.setTextColor(getResources().getColor(R.color.text_red_power));
+                        mTvNorMsg.setText(R.string.you_will_not_array);
+                    }
+
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -607,6 +639,30 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             int cost = path.getTollCost();
             String msgShow = "花费约" + cost + "元 ,红绿灯" + traListhNum + "个";
             mTvShowMsg.setText(msgShow);
+
+            int lenght = path.getAllLength();
+            lenght = lenght/1000;
+            int poLength = mCarControlReple.getCarTralLenght();
+            int norLength = poLength - lenght;
+            mTvNorLenght.setText(""+norLength+"km");
+            if ( norLength < lenght){
+                mTvNorMsg.setText(R.string.you_will_not_back);
+            }else {
+                mTvNorMsg.setText("");
+            }
+            if (norLength >= 60){
+                mTvNorLenght.setTextColor(getResources().getColor(R.color.text_green_power));
+            }else if (norLength >= 30){
+                mTvNorLenght.setTextColor(getResources().getColor(R.color.text_origer));
+            }else if (norLength >= 0){
+                mTvNorLenght.setTextColor(getResources().getColor(R.color.text_red_power));
+                mTvNorMsg.setText(R.string.you_will_not_enage);
+            }else if (norLength < 0){
+                mTvNorLenght.setTextColor(getResources().getColor(R.color.text_red_power));
+                mTvNorMsg.setText(R.string.you_will_not_array);
+            }
+
+
             LogUtils.d(TAG, "watchAll:changeRoute");
             watchAll();
         }catch (Exception e){
@@ -699,7 +755,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         }
     };
 
-    private Handler deletExit = new Handler(){
+    private Handler deleyExit = new Handler(){
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -722,7 +778,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                 intent.putExtra("gps", true);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                 startActivity(intent);
-                deletExit.sendEmptyMessageDelayed(0,1500);
+                deleyExit.sendEmptyMessageDelayed(0,1500);
                 break;
             case R.id.btn_start_route_navi:
                 mAMap.clear();
@@ -905,6 +961,9 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         mTxMarkTitle.setText(R.string.loading_hard);
     }
 
+    /**
+     * 通过汽车路线计算出全览视角的LatLngBounds数据
+     */
     class WatchSee extends Thread{
         @Override
         public void run() {
@@ -1116,9 +1175,6 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     @Override
     public void onDestroyView() {
         mLocaionPro = null;
-        if (mAMap!=null) {
-            mAMap.setMapCustomEnable(false);
-        }
         super.onDestroyView();
     }
 
@@ -1462,13 +1518,9 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             String poiName;
             if (address.getAois()!=null && address.getAois().size()>0) {
                 AoiItem aoiItem = address.getAois().get(0);
-
                 poiName = aoiItem.getAoiName();
-
                 mTxMarkTitle2.setText(poiName);
-
             }else {
-
                 poiName = getUsefulInfo(address);
                 if (poiName.length()<3){
                     poiName = getString(R.string.unknow_road);
@@ -1503,7 +1555,6 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     }
 
     private void addWayPoi(){
-        //TODO
         LatLng latLng  = mWayPoiMarker.getPosition();
         mWayPoiMarker.hideInfoWindow();
         mWayPoiMarker.remove();
@@ -1519,15 +1570,16 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
     private void initMarkInfo(){
         mMarkInfoView       = getActivity().getLayoutInflater().inflate(R.layout.layout_tip_show_1,null);
-        mTxMarkTitle        = (TextView) mMarkInfoView.findViewById(R.id.tx_tip_show);
-        mTxMarkTitle        .setOnClickListener(this);
         mMarkInfoView       .findViewById(R.id.btn_begin_add_way).setOnClickListener(this);
         mMarkInfoView.findViewById(R.id.btn_little_begin_navi).setOnClickListener(this);
 
+        mTxMarkTitle        = (TextView) mMarkInfoView.findViewById(R.id.tx_tip_show);
+        mTxMarkTitle        .setOnClickListener(this);
+
         mMarkInfoView2      = getActivity().getLayoutInflater().inflate(R.layout.layout_tip_show_2,null);
         mMarkInfoView2      .findViewById(R.id.btn_begin_add_way_2).setOnClickListener(this);
-        mTxMarkTitle2       = (TextView) mMarkInfoView2.findViewById(R.id.tx_tip_show);
 
+        mTxMarkTitle2       = (TextView) mMarkInfoView2.findViewById(R.id.tx_tip_show);
     }
 
 

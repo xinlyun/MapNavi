@@ -100,4 +100,5 @@ public interface ILocationProvider {
     void getStubGroups(String city);
     void getStubGroups();
     NaviInfo getNaviInfo();
+    ICarControlReple getCarControlReple();
 }

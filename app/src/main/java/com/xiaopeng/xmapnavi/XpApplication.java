@@ -55,6 +55,7 @@ public class XpApplication extends LibScuApplication {
         }catch (Exception e){
             e.printStackTrace();
         }
+        sApplication = XpApplication.this;
         AMapNavi.setApiKey(this,"518079e13164d2910ff81c078e073bcd");
         try {
             ActiveAndroid.initialize(this);
@@ -93,7 +94,7 @@ public class XpApplication extends LibScuApplication {
             super.handleMessage(msg);
             try {
                 CrashReport.initCrashReport(XpApplication.this, "ae6efa93c1", true);
-                sApplication = XpApplication.this;
+
                 int Vehicle_id = XPAppSharedPreferenceHelper.getInstance(XpApplication.this).getVehicleId();
                 vehicle_id = Vehicle_id;
                 Vehicle_id = Vehicle_id%100;
