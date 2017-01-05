@@ -560,8 +560,9 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
                 if (mMusicPoiProvider!=null){
                     mMusicPoiProvider.sendProvide(aMapLocation);
                 }
-                String errText = "定位成功," + aMapLocation.getAddress()+ ": \n lat:" + aMapLocation.getLatitude()+"\n lon :"+aMapLocation.getLongitude();
-                LogUtils.e("AmapErr",errText);
+//                String errText = "定位成功," + aMapLocation.getAddress()+ ": \n lat:" + aMapLocation.getLatitude()+"\n lon :"+aMapLocation.getLongitude();
+//                LogUtils.e("AmapErr",errText);
+
 //                try {
 //                    MyLatLng myLatLng = new MyLatLng(mAmapLocation.getLongitude(), mAmapLocation.getLatitude());
 //                    MyLatLng myLatLng1 = new MyLatLng(aMapLocation.getLongitude(), aMapLocation.getLatitude());

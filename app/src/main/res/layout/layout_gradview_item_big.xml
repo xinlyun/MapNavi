@@ -2,10 +2,10 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="916px"
-    android:paddingLeft="220px"
-    android:paddingRight="220px"
-    android:layout_height="150px">
+
+    android:layout_height="92px">
     <ImageView
+        android:visibility="gone"
         android:id="@+id/img_bg"
         android:scaleType="fitXY"
         android:layout_width="match_parent"
@@ -15,34 +15,43 @@
 
         android:orientation="vertical" android:layout_width="match_parent"
 
-        android:layout_height="150px">
+        android:layout_height="92px">
         <TextView
-            android:textSize="22px"
-            android:layout_marginTop="18px"
+            android:textSize="20px"
+
             android:textColor="@color/a3a3a3"
             android:id="@+id/tv_type_show"
-            android:gravity="center"
-            android:text="用时最少"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:text="40分钟"
-            android:layout_marginTop="2px"
-            android:textSize="34px"
-            android:textColor="@color/black"
-            android:id="@+id/tv_msg_show"
 
-            android:gravity="center"
+            android:text="推荐路线"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-        <TextView
-            android:text="30公里77米"
-            android:textSize="22px"
-            android:textColor="@color/a3a3a3"
-            android:id="@+id/tv_type_show_2"
-            android:layout_marginTop="2px"
-            android:gravity="center"
+        <LinearLayout
+            android:layout_marginTop="6px"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content">
+            <TextView
+                android:text="40分钟"
+
+                android:textSize="30px"
+                android:textColor="@color/black"
+                android:id="@+id/tv_msg_show"
+
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_marginLeft="20px"
+                android:text="30公里77米"
+                android:textSize="22px"
+                android:textColor="@color/a3a3a3"
+                android:id="@+id/tv_type_show_2"
+                android:layout_marginTop="2px"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+
     </LinearLayout>
 </RelativeLayout>

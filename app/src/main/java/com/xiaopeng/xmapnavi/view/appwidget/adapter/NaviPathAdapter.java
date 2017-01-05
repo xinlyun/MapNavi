@@ -201,9 +201,11 @@ public class NaviPathAdapter extends ArrayAdapter{
         itemHolder.tvShowMsg.setText(timeString);
         itemHolder.tvShowDis.setText(lengthStr);
         if (index == position){
-            itemHolder.tvShowDis.setTextColor(mContext.getResources().getColor(R.color.white));
-            itemHolder.tvShowType.setTextColor(mContext.getResources().getColor(R.color.white));
-            itemHolder.tvShowMsg.setTextColor(mContext.getResources().getColor(R.color.white));
+            if (ints.length>1) {
+                itemHolder.tvShowDis.setTextColor(mContext.getResources().getColor(R.color.white));
+                itemHolder.tvShowType.setTextColor(mContext.getResources().getColor(R.color.white));
+                itemHolder.tvShowMsg.setTextColor(mContext.getResources().getColor(R.color.white));
+            }
         }else {
             itemHolder.tvShowDis.setTextColor(mContext.getResources().getColor(R.color.gray_btn_bg_pressed_color));
             itemHolder.tvShowType.setTextColor(mContext.getResources().getColor(R.color.gray_btn_bg_pressed_color));

@@ -476,12 +476,22 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             @Override
             public void run() {
                 try {
-                    int traListhNum = getTrafficLightNum(paths.get(ints[0]));
-                    int cost = paths.get(ints[0]).getTollCost();
+                    LogUtils.d(TAG,"path?:"+paths);
+                    LogUtils.d(TAG,"ints length?:"+ints.length+"\n"+ints[0]);
+
+                    AMapNaviPath path ;
+                    if (ints.length>1){
+                        path = paths.get(ints[0]);
+                    }else {
+                        path = mLocaionPro.getNaviPath();
+                    }
+
+                    int traListhNum = getTrafficLightNum(path);
+                    int cost = path.getTollCost();
                     String msgShow = "花费约" + cost + "元 ,红绿灯" + traListhNum + "个";
                     mTvShowMsg.setText(msgShow);
 
-                    int lenght = paths.get(ints[0]).getAllLength();
+                    int lenght = path.getAllLength();
                     lenght = lenght/1000;
                     int poLength = mCarControlReple.getCarTralLenght();
                     int norLength = poLength - lenght;

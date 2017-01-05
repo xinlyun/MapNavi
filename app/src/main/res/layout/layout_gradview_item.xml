@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="440px"
     android:minWidth="326px"
-    android:layout_height="150px">
+    android:layout_height="92px">
     <ImageView
         android:id="@+id/img_bg"
         android:scaleType="fitXY"
@@ -15,33 +15,53 @@
         android:orientation="vertical" android:layout_width="match_parent"
 
         android:layout_height="150px">
-        <TextView
-            android:textSize="22px"
-            android:layout_marginTop="18px"
-            android:textColor="@color/a3a3a3"
-            android:id="@+id/tv_type_show"
-            android:gravity="center"
-            android:text="用时最少"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+
         <TextView
             android:text="40分钟"
-            android:layout_marginTop="2px"
-            android:textSize="34px"
+            android:layout_marginTop="8px"
+            android:textSize="30px"
             android:textColor="@color/black"
             android:id="@+id/tv_msg_show"
 
             android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-        <TextView
-            android:text="30公里77米"
-            android:textSize="22px"
-            android:textColor="@color/a3a3a3"
-            android:id="@+id/tv_type_show_2"
-            android:layout_marginTop="2px"
+        <LinearLayout
+            android:layout_marginTop="6px"
             android:gravity="center"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_weight="1"
+                android:textSize="20px"
+
+                android:textColor="@color/a3a3a3"
+                android:id="@+id/tv_type_show"
+                android:gravity="center_vertical|right"
+                android:text="用时最少"
+                android:layout_marginRight="18px"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <ImageView
+
+                android:background="@color/gray_btn_bg_pressed_color"
+                android:layout_width="1px"
+                android:layout_height="match_parent" />
+            <TextView
+
+                android:layout_weight="1"
+                android:layout_marginLeft="18px"
+                android:text="30公里77米"
+                android:textSize="20px"
+                android:textColor="@color/a3a3a3"
+                android:id="@+id/tv_type_show_2"
+
+                android:gravity="center_vertical|left"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+
     </LinearLayout>
 </RelativeLayout>

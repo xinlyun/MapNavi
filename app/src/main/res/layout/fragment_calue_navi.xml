@@ -36,12 +36,12 @@
                 <GridView
                     android:columnWidth="456px"
                     android:listSelector="@color/alpha_00"
-                    android:layout_marginTop="12px"
+                    android:layout_marginTop="72px"
                     android:background="@color/trans_half_white"
                     android:id="@+id/gv_show_an"
                     android:numColumns="auto_fit"
                     android:layout_width="912px"
-                    android:layout_height="150px"
+                    android:layout_height="92px"
 
                     >
 

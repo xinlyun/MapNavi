@@ -490,13 +490,17 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
             case R.id.btn_collect_stub:
                 try {
                     PowerPoint powerPoint = mPowerPoints.get(clickOne);
+
                     List<PowerPoint> list = mCollectDateHelper.getPowerPointById(powerPoint.getPoiId());
+                    LogUtils.d(TAG,"powerPoint id:"+powerPoint.getPoiId());
                     if(list!=null){
+                        LogUtils.d(TAG,"delete collect");
                         mImgCollectStub.setImageResource(R.drawable.icon_collect_2);
                         for (PowerPoint po:list){
                             po.delete();
                         }
                     }else {
+                        LogUtils.d(TAG,"is collect");
                         mImgCollectStub.setImageResource(R.drawable.icon_collect_1);
                         powerPoint.save();
                     }
