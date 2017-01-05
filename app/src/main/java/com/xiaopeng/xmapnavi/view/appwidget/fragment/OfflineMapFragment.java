@@ -21,6 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amap.api.location.AMapLocation;
 import com.amap.api.maps.AMapException;
 import com.amap.api.maps.offlinemap.OfflineMapCity;
 import com.amap.api.maps.offlinemap.OfflineMapManager;
@@ -83,6 +84,10 @@ public class OfflineMapFragment extends Fragment implements
 
     private boolean isLoading = false;
 
+    private TextView mTvNowCity,mTvCityBig,mTvState;
+    private String cityName;
+    private OfflineMapCity mCity;
+
     private Handler handler = new Handler() {
 
         @Override
@@ -137,8 +142,16 @@ public class OfflineMapFragment extends Fragment implements
 //        setContentView(R.layout.offline_map_layout);
         amapManager = LocationProvider.getInstence(getActivity()).getOfflineMapManager();
         LocationProvider.getInstence(getActivity()).setOfflineMapListner(this);
-//		initDialog();
 
+//		initDialog();
+        initNowPosi();
+
+    }
+
+    private void initNowPosi(){
+        AMapLocation location = LocationProvider.getInstence(getActivity()).getAmapLocation();
+        cityName = location.getCity();
+        mCity = amapManager.getItemByCityName(cityName);
 
     }
 
@@ -245,6 +258,56 @@ public class OfflineMapFragment extends Fragment implements
         mContentViewPage.setCurrentItem(0);
         mContentViewPage.setOnPageChangeListener(this);
 
+        mTvNowCity      = (TextView) findViewById(R.id.tv_city_name);
+        mTvCityBig      = (TextView) findViewById(R.id.tv_big_num);
+        mTvState        = (TextView) findViewById(R.id.tv_now_state);
+
+        mTvNowCity.setText(cityName);
+        double size = ((int) (mCity.getSize() / 1024.0 / 1024.0 * 100)) / 100.0;
+        mTvCityBig.setText(String.valueOf(size) + "MB");
+
+        updateCity();
+        mTvState.setOnClickListener(this);
+    }
+
+    Handler refreshHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            updateCity();
+        }
+    };
+
+
+    private void updateCity(){
+        switch (mCity.getState()){
+            case OfflineMapStatus.CHECKUPDATES:
+            case OfflineMapStatus.NEW_VERSION:
+            case OfflineMapStatus.STOP:
+            case OfflineMapStatus.PAUSE:
+            case OfflineMapStatus.START_DOWNLOAD_FAILD:
+                mTvState.setText("下载");
+                mTvState.setTextColor(getResources().getColor(R.color.text_blue));
+                break;
+            case OfflineMapStatus.LOADING:
+            case OfflineMapStatus.EXCEPTION_NETWORK_LOADING:
+                mTvState.setText("下载中...");
+                mTvState.setTextColor(getResources().getColor(R.color.text_blue));
+                refreshHandler.sendEmptyMessageDelayed(0,3000);
+                break;
+
+            case OfflineMapStatus.UNZIP:
+                mTvState.setText("解压中...");
+                mTvState.setTextColor(getResources().getColor(R.color.text_blue));
+                refreshHandler.sendEmptyMessageDelayed(0,3000);
+                break;
+
+            default:
+                mTvState.setText("已下载");
+                mTvState.setTextColor(getResources().getColor(R.color.a3a3a3));
+                break;
+
+        }
     }
 
     /**
@@ -407,6 +470,7 @@ public class OfflineMapFragment extends Fragment implements
     public void onDestroy() {
         super.onDestroy();
         amapManager = null;
+        refreshHandler.removeMessages(0);
         LocationProvider.getInstence(getActivity()).setOfflineMapListner(null);
         if(initDialog != null) {
             initDialog.dismiss();
@@ -440,31 +504,60 @@ public class OfflineMapFragment extends Fragment implements
         switch (status) {
             case OfflineMapStatus.SUCCESS:
                 // changeOfflineMapTitle(OfflineMapStatus.SUCCESS, downName);
+                if (downName.equals(cityName)){
+                    mTvState.setText("已下载");
+                    mTvState.setTextColor(getResources().getColor(R.color.a3a3a3));
+                }
                 break;
             case OfflineMapStatus.LOADING:
                 Log.d("amap-download", "download: " + completeCode + "%" + ","
                         + downName);
+                if (downName.equals(cityName)){
+                    mTvState.setText("下载中...");
+                    mTvState.setTextColor(getResources().getColor(R.color.a3a3a3));
+                }
                 // changeOfflineMapTitle(OfflineMapStatus.LOADING, downName);
                 break;
             case OfflineMapStatus.UNZIP:
                 Log.d("amap-unzip", "unzip: " + completeCode + "%" + "," + downName);
+                if (downName.equals(cityName)){
+                    mTvState.setText("解压中...");
+                    mTvState.setTextColor(getResources().getColor(R.color.a3a3a3));
+                }
                 // changeOfflineMapTitle(OfflineMapStatus.UNZIP);
                 // changeOfflineMapTitle(OfflineMapStatus.UNZIP, downName);
                 break;
             case OfflineMapStatus.WAITING:
                 Log.d("amap-waiting", "WAITING: " + completeCode + "%" + ","
                         + downName);
+                if (downName.equals(cityName)){
+                    mTvState.setText("等待中...");
+                    mTvState.setTextColor(getResources().getColor(R.color.a3a3a3));
+                }
                 break;
             case OfflineMapStatus.PAUSE:
                 Log.d("amap-pause", "pause: " + completeCode + "%" + "," + downName);
+                if (downName.equals(cityName)){
+                    mTvState.setText("暂停");
+                    mTvState.setTextColor(getResources().getColor(R.color.text_blue));
+                }
                 break;
             case OfflineMapStatus.STOP:
+                if (downName.equals(cityName)){
+                    mTvState.setText("停止");
+                    mTvState.setTextColor(getResources().getColor(R.color.text_blue));
+                }
                 break;
             case OfflineMapStatus.ERROR:
                 Log.e("amap-download", "download: " + " ERROR " + downName);
+                if (downName.equals(cityName)){
+                    mTvState.setText("停止");
+                    mTvState.setTextColor(getResources().getColor(R.color.text_blue));
+                }
                 break;
             case OfflineMapStatus.EXCEPTION_AMAP:
                 Log.e("amap-download", "download: " + " EXCEPTION_AMAP " + downName);
+
                 break;
             case OfflineMapStatus.EXCEPTION_NETWORK_LOADING:
                 Log.e("amap-download", "download: " + " EXCEPTION_NETWORK_LOADING "
@@ -518,6 +611,21 @@ public class OfflineMapFragment extends Fragment implements
             // 返回
 //            finish();
             ((BaseFuncActivityInteface)getActivity()).exitFragment();
+        }
+        switch (v.getId()){
+            case R.id.tv_now_state:
+                try {
+
+                    if (mCity.getState()!=OfflineMapStatus.LOADING) {
+                        mTvState.setTextColor(getResources().getColor(R.color.text_blue));
+                        mTvState.setText("下载中...");
+                    }
+                    amapManager.downloadByCityName(cityName);
+                    refreshHandler.sendEmptyMessageDelayed(0,3000);
+                } catch (AMapException e) {
+                    e.printStackTrace();
+                }
+                break;
         }
 
     }
