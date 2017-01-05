@@ -49,13 +49,13 @@
 
         />
 
-    <com.xiaopeng.xmapnavi.view.appwidget.selfview.MTrafficBarView
-        android:id="@+id/tbv_show"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="-200px"
-        android:layout_marginTop="20px"
-        android:layout_width="45px"
-        android:layout_height="500px" />
+    <!--<com.xiaopeng.xmapnavi.view.appwidget.selfview.MTrafficBarView-->
+        <!--android:id="@+id/tbv_show"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_marginRight="-200px"-->
+        <!--android:layout_marginTop="20px"-->
+        <!--android:layout_width="45px"-->
+        <!--android:layout_height="500px" />-->
     <com.xiaopeng.xmapnavi.view.appwidget.selfview.MTrafficBarView2
         android:id="@+id/tbv_show_1"
         android:layout_alignParentRight="true"
