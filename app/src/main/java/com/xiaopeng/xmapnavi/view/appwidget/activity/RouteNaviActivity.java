@@ -93,7 +93,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	private static final int NEW_HEIDHT = 1147;
 	private static final int RIGHT_WIDHT = 500;
 	private static final int TITLE_NUM = 39;
-	private MTrafficBarView mTrafficBarView ;
+//	private MTrafficBarView mTrafficBarView ;
 	private MTrafficBarView2 mTrafficBarView2;
 
 	private TextView mTxBilici,mTxBilici1;
@@ -199,7 +199,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		mDrawWayView	.setAMapNaviView(mAMapNaviView);
 		mZoomInIntersectionView = (ImageView) findViewById(R.id.myZoomInIntersectionView);
 		mRlChange		= (RelativeLayout) findViewById(R.id.rv_be_change);
-		mTrafficBarView	= (MTrafficBarView) findViewById(R.id.tbv_show);
+//		mTrafficBarView	= (MTrafficBarView) findViewById(R.id.tbv_show);
 		mTrafficBarView2 = (MTrafficBarView2) findViewById(R.id.tbv_show_1);
 		mTxBilici		= (TextView) findViewById(R.id.tx_bilici);
 		mTxBilici1		= (TextView) findViewById(R.id.tx_bilici_1);
@@ -218,7 +218,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		findViewById(R.id.btn_lukuang).setOnClickListener(this);
 		findViewById(R.id.btn_see_watch).setOnClickListener(this);
 		findViewById(R.id.navi_map_view_0).setOnClickListener(this);
-		mTrafficBarView.setTrafficListener(trafficBarListener);
+//		mTrafficBarView.setTrafficListener(trafficBarListener);
 		mSettingDialog 	= new RouteNaviSettingDialog(this);
 		mSettingDialog	.setOnDialogListener(dialogListener);
 		mTxSeeWatch.postDelayed(new Runnable() {
@@ -316,7 +316,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		mAMapNaviView.setViewOptions(viewOptions);
 		mNextView = (NextTurnTipView) findViewById(R.id.nttv_navi);
 		mAMapNaviView.setLazyNextTurnTipView(mNextView);
-		mAMapNaviView.setLazyTrafficBarView(mTrafficBarView);
+//		mAMapNaviView.setLazyTrafficBarView(mTrafficBarView);
 
 	}
 
@@ -508,6 +508,19 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		}
 	}
 
+	@Override
+	public void onNaviTrafficStatusUpdate(List<AMapTrafficStatus> date,int remainingDistance) {
+		mTrafficBarView2.update(date,remainingDistance);
+		if (isFirstTime){
+			isFirstTime = false;
+		}else {
+			if (mAmap!=null){
+				mAmap.clear();
+			}
+			showPathInListtle();
+		}
+	}
+
 	Handler delectMissLayout = new Handler(){
 		@Override
 		public void handleMessage(Message msg) {
@@ -667,13 +680,14 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 					routeOverLay.addToMap();
 					NaviLatLng fromPoint = path.getStartPoint();
 					NaviLatLng toPoint = path.getEndPoint();
-					if (toPoint!=null && fromPoint!=null) {
-						LatLngBounds bounds = LatLngBounds.builder().include(new LatLng(fromPoint.getLatitude(), fromPoint.getLongitude()))
-								.include(new LatLng(toPoint.getLatitude(), toPoint.getLongitude())).build();
-						CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, 30);
-						mAmap.animateCamera(update,cancelableCallback);
-
-					}
+					routeOverLay.zoomToSpan(20);
+//					if (toPoint!=null && fromPoint!=null) {
+//						LatLngBounds bounds = LatLngBounds.builder().include(new LatLng(fromPoint.getLatitude(), fromPoint.getLongitude()))
+//								.include(new LatLng(toPoint.getLatitude(), toPoint.getLongitude())).build();
+//						CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, 30);
+//						mAmap.animateCamera(update,cancelableCallback);
+//
+//					}
 				}
 
 			}
@@ -949,7 +963,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 							mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
 						}
 					}
-				}, 3000);
+				}, 400);
 			}
 		}
 
@@ -977,7 +991,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 							mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
 						}
 					}
-				}, 150);
+				}, 400);
 			}
 		}
 

@@ -27,11 +27,11 @@ import java.util.List;
 public class MTrafficBarView extends TrafficBarView {
     private XpTrafficBarListener mListener;
     public MTrafficBarView(Context var1, AttributeSet var2, int var3) {
-        super(var1, var2, var3);
+            super(var1, var2, var3);
     }
 
     public MTrafficBarView(Context var1, AttributeSet var2) {
-        super(var1, var2);
+            super(var1, var2);
     }
 
     public MTrafficBarView(Context var1) {
@@ -40,10 +40,15 @@ public class MTrafficBarView extends TrafficBarView {
 
     @Override
     public void update(List<AMapTrafficStatus> list, int i) {
-        super.update(list, i);
-        if (mListener!=null){
-            mListener.trafficUpdate(list,i);
+        try {
+            if (mListener!=null){
+                mListener.trafficUpdate(list,i);
+            }
+            super.update(list, i);
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
     }
 
     public void setTrafficListener(XpTrafficBarListener listener){

@@ -20,6 +20,7 @@ import com.amap.api.navi.AMapNavi;
 import com.amap.api.navi.enums.NaviType;
 import com.amap.api.navi.model.AMapLaneInfo;
 import com.amap.api.navi.model.AMapNaviCross;
+import com.amap.api.navi.model.AMapTrafficStatus;
 import com.amap.api.navi.view.RouteOverLay;
 import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.lib.utils.utils.LogUtils;
@@ -656,6 +657,11 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
 
     @Override
     public void showLaneInfo(AMapLaneInfo[] var1, byte[] var2, byte[] var3) {
+
+    }
+
+    @Override
+    public void onNaviTrafficStatusUpdate(List<AMapTrafficStatus> date,int remainingDistance) {
 
     }
 
