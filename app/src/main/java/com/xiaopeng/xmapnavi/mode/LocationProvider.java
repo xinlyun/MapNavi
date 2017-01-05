@@ -29,6 +29,7 @@ import com.amap.api.maps.offlinemap.OfflineMapManager;
 import com.amap.api.navi.TBTEngine;
 import com.amap.api.navi.enums.BroadcastMode;
 import com.amap.api.navi.model.AMapNaviStaticInfo;
+import com.amap.api.navi.model.AMapTrafficStatus;
 import com.nostra13.universalimageloader.utils.L;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 
@@ -147,6 +148,11 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private NaviInfo naviInfoSave ;
     private IStubGroupProvider mStubGroupProvider;
     private IMusicPoiProvider mMusicPoiProvider;
+
+    private boolean isNaviing = false;
+
+    private int remainingDistance;
+
     public static void init(Context context) {
         mContext = context;
         mLp      = new LocationProvider(context);
@@ -277,6 +283,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     public void calueRunWay(List<NaviLatLng> startList,List<NaviLatLng> wayList,List<NaviLatLng> endList) {
 //        if (isCalueIng)return;
         aMapNavi.stopNavi();
+        isNaviing = false;
         if (avoidhightspeed && hightspeed) {
             LogUtils.d(TAG,"不走高速与高速优先不能同时为true.");
         }
@@ -598,7 +605,19 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public void onTrafficStatusUpdate() {
-        LogUtils.d(NAVI_TAG,"onTrafficStatusUpdate");
+        try {
+            LogUtils.d(NAVI_TAG, "onTrafficStatusUpdate");
+            int end = aMapNavi.getNaviPath().getAllLength();
+            int start = end - remainingDistance;
+            List<AMapTrafficStatus> remainingRoadCondition = aMapNavi.getTrafficStatuses(start, end);
+            for (XpNaviInfoListener xpNaviInfoListener : mNaviInfoListners){
+                xpNaviInfoListener.onNaviTrafficStatusUpdate(remainingRoadCondition,remainingDistance);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -683,6 +702,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void onNaviInfoUpdate(NaviInfo naviInfo) {
 //        LogUtils.d(NAVI_TAG,"onNaviInfoUpdate");
+        remainingDistance = naviInfo.getPathRetainDistance();
         naviInfoSave = naviInfo;
         if (naviInfo!=null) {
             if (naviInfo.getCurStepRetainDistance()>2000){
@@ -913,12 +933,25 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     public boolean startNavi(int var1) {
         aMapNavi.stopAimlessMode();
         aMapNavi.setEmulatorNaviSpeed(EMULATOR_NAVISPEED);
-        return aMapNavi.startNavi(var1);
+        boolean like = aMapNavi.startNavi(var1);
+        isNaviing = true;
+        handler.sendEmptyMessageDelayed(0,3000);
+
+        return like;
     }
+
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            onTrafficStatusUpdate();
+        }
+    };
 
     @Override
     public void stopNavi() {
         aMapNavi.stopNavi();
+        isNaviing = false;
         aMapNavi.startAimlessMode(AIM_STATE);
         mSendNaviBroad.stopNavi();
     }
@@ -1008,21 +1041,27 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
             if (isCalueIng)return false;
             isCalueIng = true;
             deleyNewO.sendEmptyMessageDelayed(0,20 * 1000);
-//            AMapNaviPath path = aMapNavi.getNaviPath();
-//            List<NaviLatLng> endPois = new ArrayList<>();
-//            endPois.add(path.getEndPoint());
-//            List<NaviLatLng> startPoi = new ArrayList<>();
-//            startPoi.add(path.getStartPoint());
-//            List<NaviLatLng> wayPoi = new ArrayList<>();
-//            wayPoi.addAll(path.getWayPoint());
 //
-//            aMapNavi.stopNavi();
-//            int trueAvi = aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, false);
-//            int falseAvi = aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, true);
-//            LogUtils.d(TAG,"\ntrueAvi:"+trueAvi+"\nfalseAvi:"+falseAvi);
-//            return aMapNavi.calculateDriveRoute(startPoi, endPois, wayPoi, falseAvi);
-
-            return aMapNavi.reCalculateRoute(aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, true));
+            if (isNaviing) {
+                boolean isCan = aMapNavi.reCalculateRoute(aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, true));
+                if (!isCan){
+                    isNaviing = false;
+                }
+                return isCan;
+            }else {
+                AMapNaviPath path = aMapNavi.getNaviPath();
+                List<NaviLatLng> endPois = new ArrayList<>();
+                endPois.add(path.getEndPoint());
+                List<NaviLatLng> startPoi = new ArrayList<>();
+                startPoi.add(path.getStartPoint());
+                List<NaviLatLng> wayPoi = new ArrayList<>();
+                wayPoi.addAll(path.getWayPoint());
+                aMapNavi.stopNavi();
+                int trueAvi = aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, false);
+                int falseAvi = aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, true);
+                LogUtils.d(TAG,"\ntrueAvi:"+trueAvi+"\nfalseAvi:"+falseAvi);
+                return aMapNavi.calculateDriveRoute(startPoi, endPois, wayPoi, falseAvi);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1195,7 +1234,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 //                    Intent dialogIntent = new Intent();
 //                    dialogIntent.setClassName("com.xiaopeng.xmapnavi","com.xiaopeng.xmapnavi.view.appwidget.activity.MainActivity");
 //                    if (!(mContext instanceof MainActivity)) {
-                        dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    dialogIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //                    }
                     mContext.getApplicationContext().startActivity(dialogIntent);
                     break;

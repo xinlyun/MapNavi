@@ -14,6 +14,7 @@ import com.amap.api.navi.model.AMapLaneInfo;
 import com.amap.api.navi.model.AMapNaviCross;
 import com.amap.api.navi.model.AMapNaviLocation;
 import com.amap.api.navi.model.AMapNaviTrafficFacilityInfo;
+import com.amap.api.navi.model.AMapTrafficStatus;
 import com.amap.api.navi.model.NaviInfo;
 import com.autonavi.tbt.TrafficFacilityInfo;
 import com.xiaopeng.lib.scu.AbsCarControlCallback;
@@ -27,6 +28,8 @@ import com.xiaopeng.xmapnavi.presenter.callback.XpAimNaviMsgListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviInfoListener;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.AskDialogActivity;
+
+import java.util.List;
 
 /**
  * Created by linzx on 2016/12/24.
@@ -199,6 +202,11 @@ public class LocationForICU implements ILocationForICU {
 
         @Override
         public void showLaneInfo(AMapLaneInfo[] var1, byte[] var2, byte[] var3) {
+
+        }
+
+        @Override
+        public void onNaviTrafficStatusUpdate(List<AMapTrafficStatus> date, int remainingDistance) {
 
         }
     };
