@@ -10,6 +10,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 23
         versionCode 1
+
         versionName "3.3.19.3"
         multiDexEnabled true
     }
@@ -91,6 +92,6 @@ dependencies {
         exclude group: 'com.google.code.gson'
 //        , module: 'gson-parent'
     })
-    compile files('libs/aios-sdk.161202.266.jar')
     compile files('libs/zixing-core-3.2.0.jar')
+    compile files('libs/aios-sdk.170105.1.jar')
 }
