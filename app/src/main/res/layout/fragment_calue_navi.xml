@@ -98,7 +98,7 @@
             </LinearLayout>
             <ImageView
                 android:layout_marginTop="10px"
-                android:background="@color/a3a3a3"
+                android:background="@color/gray_btn_bg_pressed_color"
                 android:layout_width="match_parent"
                 android:layout_height="1px" />
             <LinearLayout
