@@ -531,6 +531,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                     }
                 }, 400);
             }else {
+                mLocaionPro.selectRouteId(ints[0]);
                 AMapNaviPath path = mLocaionPro.getNaviPath();
                 /**
                  * 单路径不需要进行路径选择，直接传入－1即可
@@ -540,6 +541,26 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                 ints = new int[]{-1};
                 routeMap.put(-1,routeOverLay);
                 routeOverLays.add(routeOverLay);
+
+                mAmapView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (ints==null || ints.length == 0)return;
+                            adapter = new NaviPathAdapter(getActivity(), R.layout.layout_gradview_item);
+                            adapter.setDate(paths, ints);
+
+                            mGvShowNaviPaths.setAdapter(adapter);
+                            mGvShowNaviPaths.setNumColumns(1);
+                            mGvShowNaviPaths.setOnItemClickListener(mClickPathItemListner);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, 400);
+
+
+
             }
 
 //            mAmapView.postDelayed(new Runnable() {
