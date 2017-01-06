@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.WindowManager;
 
 import com.amap.api.location.AMapLocation;
+import com.amap.api.maps.AMap;
 import com.amap.api.maps.MapView;
 import com.amap.api.navi.model.NaviLatLng;
 import com.amap.api.services.core.LatLonPoint;
@@ -24,9 +25,10 @@ import java.util.List;
  * Created by linzx on 2016/11/23.
  */
 
-public class RadarNaviActivity extends Activity implements BaseFuncActivityInteface{
+public class RadarNaviActivity extends Activity implements BaseFuncActivityInteface,AMap.OnMapLoadedListener{
     private MapView mapView;
     private RadarNaviFragment radarNaviFragment;
+    private AMap aMap;
 //    private ILocationProvider mProvider;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +39,8 @@ public class RadarNaviActivity extends Activity implements BaseFuncActivityIntef
         mapView.onCreate(savedInstanceState);
         radarNaviFragment = new RadarNaviFragment();
         radarNaviFragment.setMapView(mapView);
-
+        aMap = mapView.getMap();
+        aMap.setOnMapLoadedListener(this);
     }
 
     @Override
@@ -49,13 +52,22 @@ public class RadarNaviActivity extends Activity implements BaseFuncActivityIntef
     @Override
     protected void onResume() {
         super.onResume();
-        mapView.onResume();
+//        mapView.onResume();
+        mapView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (aMap.getMapType()!=AMap.MAP_TYPE_NAVI) {
+                    aMap.setMapType(AMap.MAP_TYPE_NAVI);
+                }
+            }
+        },3 * 1000);
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mapView.onPause();
+//        mapView.onPause();
     }
 
     private void initView(){
@@ -154,5 +166,15 @@ public class RadarNaviActivity extends Activity implements BaseFuncActivityIntef
     @Override
     public int getFragmentNum() {
         return 1;
+    }
+
+    @Override
+    public void onMapLoaded() {
+        mapView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                aMap.setMapType(AMap.MAP_TYPE_NAVI);
+            }
+        },2000);
     }
 }
