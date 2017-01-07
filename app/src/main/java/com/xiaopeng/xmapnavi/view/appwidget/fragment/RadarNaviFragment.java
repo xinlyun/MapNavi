@@ -22,6 +22,7 @@ import com.amap.api.navi.model.AMapLaneInfo;
 import com.amap.api.navi.model.AMapNaviCross;
 import com.amap.api.navi.model.AMapTrafficStatus;
 import com.amap.api.navi.view.RouteOverLay;
+import com.xiaopeng.amaplib.util.AMapUtil;
 import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 
@@ -611,11 +612,12 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
                     mTvShowMsg.setText(str);
                 }else {
                     int dis = naviInfo.getPathRetainDistance();
-                    dis = dis / 1000;
-                    DecimalFormat df = new DecimalFormat("0.0");
-                    String result = df.format(dis);
-                    String lenght = "" + result + "公里";
-                    mTxShowShengyu.setText(lenght);
+//                    dis = dis / 1000;
+//                    DecimalFormat df = new DecimalFormat("0.0");
+//                    String result = df.format(dis);
+//                    String lenght = "" + result + "公里";
+                    String string = AMapUtil.getFriendlyLength(dis);
+                    mTvShowMsg.setText(string);
                 }
             }
             String str2 = "进入" + naviInfo.getNextRoadName();

@@ -160,17 +160,35 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 
 			mNaviAmap.setOnCameraChangeListener(this);
 //			mAMapNaviView.setLazyNextTurnTipView((NextTurnTipView) findViadewById(R.id.myNextTurnTipView));
-			boolean gps = getIntent().getBooleanExtra("gps", true);
-			if (gps) {
+
+			mAMapNaviView.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					boolean gps = getIntent().getBooleanExtra("gps", true);
+					if (gps) {
 //				mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
-			mLocationPro.startNavi(AMapNavi.GPSNaviMode);
-			} else {
-				mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
-			}
+						mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
+					} else {
+						mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
+					}
+					mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
+					changeMapType.sendEmptyMessageDelayed(0,800);
+				}
+			},2000);
+
+
 			initMap();
 
 		}
 	}
+
+	Handler changeMapType = new Handler(){
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
+		}
+	};
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
@@ -674,14 +692,14 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 				if ((path = mLocationPro.getNaviPath())!=null) {
 					LogUtils.d(TAG,"path :have");
 					RouteOverLay routeOverLay = new RouteOverLay(mAmap, path, RouteNaviActivity.this);
-					routeOverLay.setStartPointBitmap(BitmapFactory.decodeResource(RouteNaviActivity.this.getResources(), R.drawable.icon_from_poi));
-					routeOverLay.setWayPointBitmap(BitmapFactory.decodeResource(RouteNaviActivity.this.getResources(), R.drawable.icon_way_poi));
-					routeOverLay.setEndPointBitmap(BitmapFactory.decodeResource(RouteNaviActivity.this.getResources(), R.drawable.icon_end_poi));
+					routeOverLay.setStartPointBitmap(BitmapFactory.decodeResource(RouteNaviActivity.this.getResources(), R.drawable.icon_startpoi_little));
+					routeOverLay.setWayPointBitmap(BitmapFactory.decodeResource(RouteNaviActivity.this.getResources(), R.drawable.icon_waypoi_little));
+					routeOverLay.setEndPointBitmap(BitmapFactory.decodeResource(RouteNaviActivity.this.getResources(), R.drawable.icon_endpoi_little));
 					routeOverLay.setTrafficLine(true);
 					routeOverLay.addToMap();
 					NaviLatLng fromPoint = path.getStartPoint();
 					NaviLatLng toPoint = path.getEndPoint();
-					routeOverLay.zoomToSpan(20);
+					routeOverLay.zoomToSpan(30);
 //					if (toPoint!=null && fromPoint!=null) {
 //						LatLngBounds bounds = LatLngBounds.builder().include(new LatLng(fromPoint.getLatitude(), fromPoint.getLongitude()))
 //								.include(new LatLng(toPoint.getLatitude(), toPoint.getLongitude())).build();

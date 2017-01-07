@@ -108,7 +108,7 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
         super.onCreate(savedInstanceState);
         mActivity = (BaseFuncActivityInteface) getActivity();
         mLocationProvider = LocationProvider.getInstence(getActivity());
-
+        mLocationProvider    .stopNavi();
         mCity = mLocationProvider.getAmapLocation().getCity();
     }
 
