@@ -420,8 +420,10 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
 
     @Override
     public void startFragmentReplace(Fragment fragment) {
-        mFragments.remove(mFragments.size()-1);
-        startFragment(fragment);
+        if (mFragments.size() > 1) {
+            mFragments.remove(mFragments.size() - 1);
+            startFragment(fragment);
+        }
     }
 
     @Override

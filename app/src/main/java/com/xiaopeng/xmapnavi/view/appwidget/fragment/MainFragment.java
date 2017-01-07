@@ -194,6 +194,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                 .setShadowDy(0)
                 .setShadowRadius(UIUtils.dip2px(getActivity(),5));
         mLocationProvider    = LocationProvider.getInstence(getActivity());
+        mLocationProvider    .stopNavi();
         getSensorList();
     }
 
