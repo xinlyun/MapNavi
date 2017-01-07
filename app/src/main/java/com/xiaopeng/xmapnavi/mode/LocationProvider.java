@@ -13,6 +13,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -33,6 +35,7 @@ import com.amap.api.navi.model.AMapTrafficStatus;
 import com.nostra13.universalimageloader.utils.L;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.util.SparseArray;
 import android.widget.Toast;
@@ -80,9 +83,12 @@ import com.xiaopeng.xmapnavi.presenter.callback.XpNaviInfoListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpRouteListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSensorListener;
+import com.xiaopeng.xmapnavi.utils.Utils;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.MainActivity;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -152,6 +158,10 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private boolean isNaviing = false;
 
     private int remainingDistance;
+
+    private ConnectivityManager mConnectivityManager; // To check for connectivity changes
+
+    private long saveRightTime = 0;
 
     public static void init(Context context) {
         mContext = context;
@@ -380,6 +390,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         mSensorListners     = new ArrayList<>();
         mCollectListeners   = new ArrayList<>();
         mAimNaviListeners   = new ArrayList<>();
+        mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         mSendNaviBroad = new SendNaviBroad();
         mSendNaviBroad  .initBroad(context);
         SharedPreferences sharedPreferences = context.getSharedPreferences("myown",Context.MODE_PRIVATE);
@@ -562,7 +573,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
                 }
 //                Toast.makeText(mContext,"bearing:"+aMapLocation.getBearing(),Toast.LENGTH_SHORT).show();
                 String errText = "定位成功," + aMapLocation.getAddress()+ ": \n lat:" + aMapLocation.getLatitude()+"\n lon :"+aMapLocation.getLongitude();
-                LogUtils.e("AmapErr",errText);
+//                LogUtils.e("AmapErr",errText);
+                saveRightTime = aMapLocation.getTime() ;
 //                try {
 //                    MyLatLng myLatLng = new MyLatLng(mAmapLocation.getLongitude(), mAmapLocation.getLatitude());
 //                    MyLatLng myLatLng1 = new MyLatLng(aMapLocation.getLongitude(), aMapLocation.getLatitude());
@@ -673,6 +685,13 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         LogUtils.d(NAVI_TAG,"onCalculateRouteFailure i="+i);
         for (XpNaviCalueListener listener:mNaviCalueListeners){
             listener.onCalculateRouteFailure();
+        }
+        if (i == 2){
+            try{
+                tryToGetRightTime();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 
@@ -1307,6 +1326,28 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         }
 
     };
+
+    /**
+     * Query's the NetworkInfo via ConnectivityManager
+     * to return the current connected state
+     *
+     * @return boolean true if we are connected false otherwise
+     */
+    private boolean isNetworkAvailable() {
+        NetworkInfo info = mConnectivityManager.getActiveNetworkInfo();
+
+        return (info == null) ? false : info.isConnected();
+    }
+
+
+    private void tryToGetRightTime() throws IOException, InterruptedException {
+        if (isNetworkAvailable() && saveRightTime!=0){
+            Date date = new Date(saveRightTime);
+            LogUtils.d(TAG,"setTime:"+saveRightTime+"\ndate:"+date);
+            Utils.requestPermission();
+            SystemClock.setCurrentTimeMillis(saveRightTime);
+        }
+    }
 
 
 
