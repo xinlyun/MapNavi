@@ -59,4 +59,8 @@ public class MTrafficBarView extends TrafficBarView {
         void trafficUpdate(List<AMapTrafficStatus> list, int i);
     }
 
+    @Override
+    public void recycleResource() {
+        super.recycleResource();
+    }
 }

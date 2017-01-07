@@ -937,7 +937,9 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public void selectRouteId(int id) {
-        aMapNavi.selectRouteId(id);
+        if (id != -1) {
+            aMapNavi.selectRouteId(id);
+        }
     }
 
     @Override

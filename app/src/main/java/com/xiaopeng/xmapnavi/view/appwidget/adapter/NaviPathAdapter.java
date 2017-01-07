@@ -42,6 +42,7 @@ public class NaviPathAdapter extends ArrayAdapter{
     }
 
     public void setDate(HashMap<Integer,AMapNaviPath> hashMap,int[] ints){
+        index = 0;
         this.ints = ints;
         if (viewHashMap == null){
             viewHashMap = new HashMap<>();

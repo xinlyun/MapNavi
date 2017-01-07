@@ -369,6 +369,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		mTrafficBarView2.recycleResource();
 		mAMapNaviView.onDestroy();
 		mTmap.onDestroy();
 

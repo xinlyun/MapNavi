@@ -332,8 +332,10 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
             LogUtils.d(TAG, "mlocation:" + aMapLocation);
             LogUtils.d(TAG, "mlocation:Angle:" + aMapLocation.getBearing());
             mLocationMarker.setPosition(new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude()));
-
-            mLocationMarker.setRotateAngle(aMapLocation.getBearing());
+            float bearing = aMapLocation.getBearing();
+            if (bearing != 0.0f) {
+                mLocationMarker.setRotateAngle(bearing);
+            }
         }
 
         if (fromPoint != null) {
