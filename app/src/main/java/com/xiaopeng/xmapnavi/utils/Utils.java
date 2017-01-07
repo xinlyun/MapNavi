@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,10 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
+
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
 
 
 public class Utils {
@@ -261,6 +266,73 @@ public class Utils {
         Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
         return bitmap;
+    }
+
+
+    public static void requestPermission() throws InterruptedException, IOException {
+        new RunThread().start();
+        createSuProcess("chmod 666 /dev/alarm").waitFor();
+
+
+    }
+
+    static class RunThread extends Thread{
+
+        RunThread(){
+
+        }
+
+        @Override
+        public void run() {
+            Process proc = null;
+            try {
+                proc = Runtime.getRuntime().exec("chmod 666 /dev/alarm");
+//                proc.waitFor();
+                // proc = Runtime.getRuntime().exec("/bin/bash", null, new File("/bin"));           //Linux中使用
+                // 至于windows，由于没有bash，和sh 所以这种方式可能行不通
+                Log.d("DisChange", "changing");
+                proc.waitFor();
+                Log.d("DisChange", "changing out");
+                proc.destroy();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+//
+
+
+        }
+    }
+
+    static Process createSuProcess() throws IOException  {
+        File rootUser = new File("/system/xbin/ru");
+        if(rootUser.exists()) {
+            return Runtime.getRuntime().exec(rootUser.getAbsolutePath());
+        } else {
+            return Runtime.getRuntime().exec("su");
+        }
+    }
+
+    static Process createSuProcess(String cmd) throws IOException {
+
+        DataOutputStream os = null;
+        Process process = createSuProcess();
+
+        try {
+            os = new DataOutputStream(process.getOutputStream());
+            os.writeBytes(cmd + "\n");
+            os.writeBytes("exit $?\n");
+        } finally {
+            if(os != null) {
+                try {
+                    os.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+
+        return process;
     }
 
 
