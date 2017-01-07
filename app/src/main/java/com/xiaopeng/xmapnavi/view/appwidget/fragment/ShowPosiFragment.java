@@ -161,6 +161,7 @@ public class ShowPosiFragment extends Fragment implements XpLocationListener
         mActivity = (BaseFuncActivityInteface) getActivity();
         super.onCreate(savedInstanceState);
         mLocationPro    = LocationProvider.getInstence(this.getActivity());
+        mLocationPro    .stopNavi();
         lp          = Utils.getLatLonFromLocation(mLocationPro.getAmapLocation());
         dateHelper = new DateHelper();
 

@@ -628,10 +628,10 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                 /**
                  * 单路径不需要进行路径选择，直接传入－1即可
                  */
-                RouteOverLay routeOverLay = drawRoutes(-1, path);
+                RouteOverLay routeOverLay = drawRoutes(ints[0], path);
                 routeOverLay.setTransparency(1.0f);
-                ints = new int[]{-1};
-                routeMap.put(-1,routeOverLay);
+//                ints = new int[]{-1};
+                routeMap.put(ints[0],routeOverLay);
                 routeOverLays.add(routeOverLay);
 
                 mAmapView.postDelayed(new Runnable() {
@@ -689,10 +689,10 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             /**
              * 单路径不需要进行路径选择，直接传入－1即可
              */
-            RouteOverLay routeOverLay = drawRoutes(-1, path);
+            RouteOverLay routeOverLay = drawRoutes(ints[0], path);
             routeOverLay.setTransparency(1.0f);
-            ints = new int[]{-1};
-            routeMap.put(-1,routeOverLay);
+//            ints = new int[]{-1};
+            routeMap.put(ints[0],routeOverLay);
             routeOverLays.add(routeOverLay);
         }
 
@@ -1042,10 +1042,10 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                                 /**
                                  * 单路径不需要进行路径选择，直接传入－1即可
                                  */
-                                RouteOverLay routeOverLay = drawRoutes(-1, path);
+                                RouteOverLay routeOverLay = drawRoutes(ints[0], path);
                                 routeOverLay.setTransparency(1.0f);
-                                ints = new int[]{-1};
-                                routeMap.put(-1,routeOverLay);
+//                                ints = new int[]{-1};
+                                routeMap.put(ints[0],routeOverLay);
                                 routeOverLays.add(routeOverLay);
                             }
                             mActivity.dismissDeleyDialog();
@@ -1210,10 +1210,10 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                              * 单路径不需要进行路径选择，直接传入－1即可
                              */
                             LogUtils.d(TAG,"only one path:"+path);
-                            RouteOverLay routeOverLay = drawRoutes(-1, path);
+                            RouteOverLay routeOverLay = drawRoutes(ints[0], path);
                             routeOverLay.setTransparency(1.0f);
-                            ints = new int[]{-1};
-                            routeMap.put(-1,routeOverLay);
+//                            ints = new int[]{-1};
+                            routeMap.put(ints[0],routeOverLay);
                             routeOverLays.add(routeOverLay);
                         }
                         mActivity.dismissDeleyDialog();
@@ -1273,10 +1273,10 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                      * 单路径不需要进行路径选择，直接传入－1即可
                      */
                     LogUtils.d(TAG,"only one path:"+path);
-                    RouteOverLay routeOverLay = drawRoutes(-1, path);
+                    RouteOverLay routeOverLay = drawRoutes(ints[0], path);
                     routeOverLay.setTransparency(1.0f);
-                    ints = new int[]{-1};
-                    routeMap.put(-1,routeOverLay);
+//                    ints = new int[]{-1};
+                    routeMap.put(ints[0],routeOverLay);
                     routeOverLays.add(routeOverLay);
                 }
                 mActivity.dismissDeleyDialog();

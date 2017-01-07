@@ -287,9 +287,13 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         return true;
     }
 
+    private long lastCalueTime = 0;
+
     @Override
     public void calueRunWay(List<NaviLatLng> startList,List<NaviLatLng> wayList,List<NaviLatLng> endList) {
 //        if (isCalueIng)return;
+        if ((System.currentTimeMillis() - lastCalueTime) < 500)return;
+        lastCalueTime = System.currentTimeMillis();
         aMapNavi.stopNavi();
         isNaviing = false;
         if (avoidhightspeed && hightspeed) {

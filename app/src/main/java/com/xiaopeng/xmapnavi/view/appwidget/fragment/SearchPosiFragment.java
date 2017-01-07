@@ -80,6 +80,7 @@ public class SearchPosiFragment extends Fragment implements XpSearchListner
         super.onCreate(savedInstanceState);
         mLocationProvider = LocationProvider.getInstence(getActivity());
         mLocation = mLocationProvider.getAmapLocation();
+        mLocationProvider    .stopNavi();
         mCity = mLocation.getCity();
         mDateHelper = new DateHelper();
         mDateHelper.setHisDateListner(this);
