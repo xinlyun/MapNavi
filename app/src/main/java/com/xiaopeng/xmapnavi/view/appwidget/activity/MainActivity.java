@@ -344,6 +344,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
             transaction.replace(R.id.ll_show_fragment,tFragment);
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
             transaction.commit();
+
         }
         if (mFragments.size() > 0) {
             Fragment fragment = mFragments.get(mFragments.size() - 1);
@@ -464,6 +465,10 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
         return mFragments.size();
     }
 
+    @Override
+    public void exitFragmentDeley() {
+        handler.sendEmptyMessageDelayed(0,200);
+    }
 
 
     @Override
@@ -697,5 +702,13 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
         startFragment(searchCollectFragment);
     }
 
+
+    Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            exitFragment();
+        }
+    };
 
 }

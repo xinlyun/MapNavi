@@ -25,5 +25,7 @@ public interface BaseFuncActivityInteface {
     void showCollectDialog();
     int getFragmentNum();
 
+    void exitFragmentDeley();
+
 
 }

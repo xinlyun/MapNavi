@@ -876,12 +876,22 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             case R.id.btn_start_navi:
                 isFirst = true;
                 watchUpdate = null;
+                if (mActivity.getFragmentNum()!=2) {
+                    mActivity.exitFragmentDeley();
+                    Intent intent = new Intent(getActivity(), RouteNaviActivity.class);
+                    intent.putExtra("gps", true);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    startActivity(intent);
+                }else{
 
-                Intent intent = new Intent(getActivity(),RouteNaviActivity.class);
-                intent.putExtra("gps", true);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(intent);
-                deleyExit.sendEmptyMessageDelayed(0,1500);
+                    Intent intent = new Intent(getActivity(), RouteNaviActivity.class);
+                    intent.putExtra("gps", true);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    startActivity(intent);
+                    mActivity.exitFragment();
+                }
+
+//                deleyExit.sendEmptyMessageDelayed(0,1500);
                 break;
             case R.id.btn_start_route_navi:
                 mAMap.clear();

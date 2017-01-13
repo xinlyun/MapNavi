@@ -169,6 +169,11 @@ public class RadarNaviActivity extends Activity implements BaseFuncActivityIntef
     }
 
     @Override
+    public void exitFragmentDeley() {
+
+    }
+
+    @Override
     public void onMapLoaded() {
         mapView.postDelayed(new Runnable() {
             @Override
