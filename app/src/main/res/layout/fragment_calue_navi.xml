@@ -233,14 +233,15 @@
                 android:id="@+id/btn_pianhao"
                 android:background="@drawable/text_trans_bg"
                 android:orientation="vertical"
+                android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="90px">
                 <ImageView
-                    android:layout_marginTop="2px"
-                    android:layout_height="56px"
+
+                    android:layout_height="48px"
                     android:scaleType="center"
                     android:src="@drawable/icon_like"
-                    android:layout_width="match_parent"
+                    android:layout_width="48px"
                      />
                 <TextView
 
@@ -262,14 +263,15 @@
                 android:id="@+id/btn_add_way_poi"
                 android:background="@drawable/text_trans_bg"
                 android:orientation="vertical"
+                android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="90px">
                 <ImageView
                     android:scaleType="center"
                     android:src="@drawable/icon_way_poi_small"
-                    android:layout_width="match_parent"
-                    android:layout_marginTop="2px"
-                    android:layout_height="56px" />
+                    android:layout_width="48px"
+
+                    android:layout_height="48px" />
                 <TextView
                     android:textSize="18px"
                     android:gravity="center_horizontal"
@@ -286,6 +288,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px" />
             <LinearLayout
+                android:gravity="center"
                 android:id="@+id/btn_lukuang"
                 android:background="@drawable/text_trans_bg"
                 android:orientation="vertical"
@@ -295,9 +298,8 @@
                     android:scaleType="center"
                     android:id="@+id/iv_lukuang_icon"
                     android:src="@drawable/icon_lukuang_01"
-                    android:layout_width="match_parent"
-                    android:layout_marginTop="2px"
-                    android:layout_height="56px" />
+                    android:layout_width="48px"
+                    android:layout_height="48px" />
                 <TextView
                     android:textSize="18px"
                     android:gravity="center_horizontal"
@@ -317,6 +319,7 @@
                 android:id="@+id/btn_chongdian"
                 android:background="@drawable/text_trans_bg"
                 android:orientation="vertical"
+                android:gravity="center"
                 android:layout_width="match_parent"
                 android:layout_height="90px">
 
@@ -324,9 +327,8 @@
                     android:scaleType="center"
                     android:id="@+id/iv_stub_show"
                     android:src="@drawable/icon_power_false"
-                    android:layout_width="match_parent"
-                    android:layout_marginTop="2px"
-                    android:layout_height="56px" />
+                    android:layout_width="48px"
+                    android:layout_height="48px" />
 
                 <TextView
                     android:textSize="18px"

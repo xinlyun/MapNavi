@@ -195,10 +195,14 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
 
     private LinearLayout mDown2Layout;
-    private TextView mTvStubName,mTvStubDis,mTvStubAddress,mTvKuai,mTvMan,mTvStubYunyin,mTvStubPower,mTvStubStop,mTvStubOpen;
+    private TextView mTvStubName,mTvStubDis,mTvStubAddress,mTvKuai,mTvMan,mTvStubYunyin,mTvStubPower,mTvStubStop,mTvStubOpen,mTvKuaiTotal,mTvManTotal;
     private ImageView mImgCollectStub;
 
     private boolean isMapDown = false;
+    private boolean isStubPower = false;
+
+    private ImageView mStubImg;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -307,8 +311,10 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         mTvStubOpen         = (TextView) findViewById(R.id.tv_open_time);
         mTvKuai             = (TextView) findViewById(R.id.tv_kuai_msg);
         mTvMan              = (TextView) findViewById(R.id.tv_man_msg);
+        mTvKuaiTotal        = (TextView) findViewById(R.id.tv_kuai_total);
+        mTvManTotal         = (TextView) findViewById(R.id.tv_man_total);
         mImgCollectStub     = (ImageView) findViewById(R.id.btn_collect_stub);
-
+        mStubImg            = (ImageView) findViewById(R.id.iv_stub_show);
 
         findViewById(R.id.d3_setting).setOnClickListener(this);
         findViewById(R.id.d3_lukuang).setOnClickListener(this);
@@ -324,6 +330,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         findViewById(R.id.btn_collect).setOnClickListener(this);
         findViewById(R.id.btn_setting).setOnClickListener(this);
         findViewById(R.id.btn_navi_to_stub).setOnClickListener(this);
+        findViewById(R.id.d3_power).setOnClickListener(this);
         mLoveBtn        = (ImageView) findViewById(R.id.btn_collect);
         mImgCollectStub     .setOnClickListener(this);
         initMarkInfo();
@@ -511,6 +518,10 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
                 break;
 
+            case R.id.d3_power:
+                isStubPower = !isStubPower;
+                changeStubPower();
+                break;
 
             default:
                 break;
@@ -529,8 +540,10 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         if (powerPoint!=null) {
             mTvStubName.setText(powerPoint.getName());
             mTvStubAddress.setText(powerPoint.getAddress());
-            mTvKuai     .setText("快充：空闲"+powerPoint.getAcIdleCnt());
-            mTvMan      .setText("慢充：空闲"+powerPoint.getDcIdleCnt());
+            mTvKuai     .setText(""+powerPoint.getAcIdleCnt());
+            mTvKuaiTotal.setText("/"+powerPoint.getAcCnt());
+            mTvMan      .setText(""+powerPoint.getDcIdleCnt());
+            mTvManTotal .setText("/"+powerPoint.getDcCnt());
 //            mTvStubYunyin.setText("");
             mTvStubPower.setText(powerPoint.getElectricFee()+"元/度");
             mTvStubStop.setText(powerPoint.getServiceFee()+"元/小时");
@@ -677,6 +690,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         }else if ((one = isOneOfStubMarker(marker))!=-1){
             clearChangeMarker();
             marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_power_in_map));
+
             clickOne = one;
             PowerPoint powerPoint = mPowerPoints.get(one);
             mAmap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(powerPoint.getLat(),powerPoint.getLon())));
@@ -843,12 +857,12 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                 if (mWatchStyle == WATCH_NORTH) {
                     mLocationMarker = mAmap.addMarker(new MarkerOptions()
                             .icon(BitmapDescriptorFactory
-                                    .fromResource(R.drawable.icon_seewatch_1))
+                                    .fromResource(R.drawable.icon_navi_show_0))
                             .draggable(false));
                 }else {
                     mLocationMarker = mAmap.addMarker(new MarkerOptions()
                             .icon(BitmapDescriptorFactory
-                                    .fromResource(R.drawable.icon_seewatch_0))
+                                    .fromResource(R.drawable.icon_navi_show_1))
                             .draggable(false));
                 }
                 mLocationMarker.setAnchor(0.5f,0.5f);
@@ -993,7 +1007,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         removeLocationMarker();
         mLocationMarker = mAmap.addMarker(new MarkerOptions()
                 .icon(BitmapDescriptorFactory
-                        .fromResource(R.drawable.icon_seewatch_1))
+                        .fromResource(R.drawable.icon_navi_show_0))
                 .draggable(false)
         );
         mLocationMarker.setAnchor(0.5f,0.5f);
@@ -1077,8 +1091,9 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
             }
         },500);
         mCollectDateHelper.getWhereItems();
-        mLocationProvider.addStubGroupListener(mOnStubData);
-        mLocationProvider.getStubGroups();
+        if (isStubPower) {
+            mLocationProvider.getStubGroups();
+        }
     }
 
     @Override
@@ -1086,7 +1101,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         super.onStop();
         try {
 //            mSensorManager.unregisterListener(mySensorEventListener);
-            mLocationProvider.removeStubGroupListener(mOnStubData);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -1162,11 +1176,11 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         removeLocationMarker();
         mLocationMarker = mAmap.addMarker(new MarkerOptions()
                 .icon(BitmapDescriptorFactory
-                        .fromResource(R.drawable.icon_seewatch_1))
+                        .fromResource(R.drawable.icon_navi_show_0))
                 .draggable(false)
         );
         if (mWatchStyle!=WATCH_NORTH){
-            mLocationMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_seewatch_0));
+            mLocationMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_navi_show_1));
         }
         mLocationMarker.setAnchor(0.5f,0.5f);
         mLocationMarker.setVisible(false);
@@ -1227,13 +1241,13 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                         whenNorthChange();
 //
                         if (mLocationMarker!=null){
-                            mLocationMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_seewatch_1));
+                            mLocationMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_navi_show_0));
                             mLocationMarker.setPosition(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
                         }else{
                             removeLocationMarker();
                             mLocationMarker  = mAmap.addMarker(new MarkerOptions()
                                     .icon(BitmapDescriptorFactory
-                                            .fromResource(R.drawable.icon_seewatch_1))
+                                            .fromResource(R.drawable.icon_navi_show_0))
                                     .draggable(false));
                             mLocationMarker.setAnchor(0.5f,0.5f);
                             mLocationMarker.setVisible(false);
@@ -1254,14 +1268,14 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                         mAmap.animateCamera(update1);
                     }
                     if (mLocationMarker!=null){
-                        mLocationMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_seewatch_0));
+                        mLocationMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_navi_show_1));
                         mLocationMarker.setPosition(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
                     }else{
                         removeLocationMarker();
 
                         mLocationMarker  = mAmap.addMarker(new MarkerOptions()
                                 .icon(BitmapDescriptorFactory
-                                        .fromResource(R.drawable.icon_seewatch_0))
+                                        .fromResource(R.drawable.icon_navi_show_1))
                                 .draggable(false));
                         mLocationMarker.setAnchor(0.5f,0.5f);
                         mLocationMarker.setVisible(false);
@@ -1277,13 +1291,13 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                     CameraUpdate update1 = CameraUpdateFactory.changeTilt(45);
                     mAmap.animateCamera(update1);
                     if (mLocationMarker!=null){
-                        mLocationMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_seewatch_0));
+                        mLocationMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.icon_navi_show_1));
                         mLocationMarker.setPosition(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
                     }else{
                         removeLocationMarker();
                         mLocationMarker  = mAmap.addMarker(new MarkerOptions()
                                 .icon(BitmapDescriptorFactory
-                                        .fromResource(R.drawable.icon_seewatch_0))
+                                        .fromResource(R.drawable.icon_navi_show_1))
                                 .draggable(false));
                         mLocationMarker.setAnchor(0.5f,0.5f);
                         mLocationMarker.setVisible(false);
@@ -1722,6 +1736,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         for (PowerPoint powerPoint:mPowerPoints){
             MarkerOptions options = new MarkerOptions();
             options.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_poi_show_stub));
+//            options.zIndex(0);
             LatLng latLng = new LatLng(powerPoint.getLat(),powerPoint.getLon());
             options.position(latLng);
             Marker marker = mAmap.addMarker(options);
@@ -1731,6 +1746,42 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         }
 
     }
+
+    private void changeStubPower(){
+        if (isStubPower){
+            mStubImg.setImageResource(R.drawable.icon_power);
+
+            if (mLocationProvider!=null){
+                mLocationProvider.addStubGroupListener(xpStubGroupListener);
+                mLocationProvider.getStubGroups();
+            }
+        }else {
+            mPowerPoints.clear();
+            for (Marker marker : mStubMarkers){
+                marker.remove();
+            }
+            mStubMarkers.clear();
+            mStubImg.setImageResource(R.drawable.icon_power_false);
+            if (mLocationProvider!=null){
+                mLocationProvider.removeStubGroupListener(xpStubGroupListener);
+            }
+
+
+        }
+    }
+
+    private XpStubGroupListener xpStubGroupListener = new XpStubGroupListener() {
+        @Override
+        public void OnStubData(List<PowerPoint> powerPoints) {
+            mPowerPoints .clear();
+            if (isStubPower) {
+                if (powerPoints != null) {
+                    mPowerPoints.addAll(powerPoints);
+                    initStubMarker();
+                }
+            }
+        }
+    };
 
 
 

@@ -33,30 +33,30 @@
                     android:scaleType="center"
                     android:id="@+id/btn_return"
                     android:src="@drawable/icon_return"
-                    android:layout_width="88px"
+                    android:layout_width="72px"
                     android:layout_height="72px" />
                 <LinearLayout
                     android:orientation="horizontal"
-                    android:background="@drawable/white_backgrouad"
-                    android:layout_width="783px"
-                    android:layout_marginTop="8px"
-                    android:layout_height="56px">
+                    android:background="#f0f0f0"
+                    android:layout_width="796px"
+                    android:layout_marginTop="12px"
+                    android:layout_height="48px">
                     <ImageView
                         android:src="@drawable/icon_search_02"
-                        android:layout_width="56px"
-                        android:layout_height="56px" />
+                        android:layout_width="48px"
+                        android:layout_height="48px" />
                     <TextView
                         android:gravity="center|left"
                         android:textCursorDrawable="@null"
                         android:background="@null"
                         android:id="@+id/edt_show_search"
-                        android:textSize="24px"
+                        android:textSize="22px"
 
                         android:textColor="@color/first_text_color"
                         android:hint="搜索目的地"
 
-                        android:textColorHint="@color/a3a3a3"
-                        android:layout_width="609px"
+                        android:textColorHint="@color/text_666"
+                        android:layout_width="660px"
                         android:layout_height="match_parent" />
                     <Button
                         android:gravity="center"

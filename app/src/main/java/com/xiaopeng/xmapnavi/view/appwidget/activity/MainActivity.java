@@ -525,7 +525,9 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
             @Override
             public void run() {
                 try{
-                    mProgDialog.dismiss();
+                    if (mProgDialog!=null) {
+                        mProgDialog.dismiss();
+                    }
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -684,6 +686,15 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
             mLocationProvider.tryCalueRunWay(endWay);
             showDialogwithOther();
         }
+    }
+
+    @Override
+    public void addPoiCollect() {
+        mCollectDialog.dismiss();
+        SearchCollectFragment searchCollectFragment = new SearchCollectFragment();
+        searchCollectFragment.setRequestCode(SearchCollectFragment.ADD_POI_CODE);
+        searchCollectFragment.setMapView(mapView);
+        startFragment(searchCollectFragment);
     }
 
 

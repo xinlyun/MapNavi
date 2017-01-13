@@ -166,6 +166,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
     private List<Marker> mStubMarkers = new ArrayList<>();
 
+
     public void setMapView(MapView mapView){
         mAmapView = mapView;
         mAMap = mAmapView.getMap();
@@ -213,9 +214,11 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         @Override
         public void OnStubData(List<PowerPoint> powerPoints) {
             mPowerPoints .clear();
-            if (powerPoints!=null) {
-                mPowerPoints.addAll(powerPoints);
-                initStubMarker();
+            if (isStubPower) {
+                if (powerPoints != null) {
+                    mPowerPoints.addAll(powerPoints);
+                    initStubMarker();
+                }
             }
         }
     };
@@ -258,6 +261,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
             mAMap.clear();
             mAMap.setOnCameraChangeListener(this);
+            markerWayPoi = null;
             MarkerOptions options = new MarkerOptions();
             options.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_from_poi));
             options.anchor(0.5f, 1f);
@@ -277,7 +281,9 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             options2.zIndex(3);
             options2.anchor(0.5f, 1f);
 
-            mAMap.setMapType(AMap.MAP_TYPE_NAVI);
+            if (mAMap.getMapType()!=AMap.MAP_TYPE_NAVI) {
+                mAMap.setMapType(AMap.MAP_TYPE_NAVI);
+            }
             mAMap.setOnMapLongClickListener(this);
             mAMap.setOnMarkerClickListener(markerClickListener);
 
@@ -294,7 +300,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             mAMap.setOnPolylineClickListener(polylineClickListener);
 
             wayPoiOptions = new MarkerOptions();
-            wayPoiOptions.anchor(0.5f, 1f);
+            wayPoiOptions.anchor(0.5f, 0.92f);
             wayPoiOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_add_way_poi));
             wayPoiOptions.zIndex(2);
             mAMap.setInfoWindowAdapter(infoWindowAdapter);
@@ -553,6 +559,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         watchAll();
 
         List<NaviLatLng> latLngs = paths.get(ints[0]).getWayPoint();
+        LogUtils.d(TAG,"waypoi?"+latLngs);
         if (latLngs!=null && latLngs.size()>0){
             NaviLatLng naviLatLng = latLngs.get(0);
 
@@ -940,7 +947,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
             case R.id.btn_add_way_poi:
                 SearchCollectFragment searchCollectFragment = new SearchCollectFragment();
-                searchCollectFragment.setRequestCode(2);
+                searchCollectFragment.setRequestCode(SearchCollectFragment.WAY_POI_CODE);
                 searchCollectFragment.setMapView(mAmapView);
                 mActivity.startFragment(searchCollectFragment);
                 break;

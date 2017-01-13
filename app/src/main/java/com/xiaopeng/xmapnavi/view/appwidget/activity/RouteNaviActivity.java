@@ -6,28 +6,38 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aispeech.aios.common.bean.MapInfo;
 import com.aispeech.aios.common.bean.PoiBean;
+import com.amap.api.location.AMapLocation;
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdate;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.TextureMapView;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.LatLngBounds;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.navi.AMapNavi;
 import com.amap.api.navi.AMapNaviView;
 import com.amap.api.navi.AMapNaviViewListener;
@@ -43,15 +53,22 @@ import com.amap.api.navi.view.NextTurnTipView;
 import com.amap.api.navi.view.RouteOverLay;
 import com.amap.api.navi.view.TrafficBarView;
 import com.gc.materialdesign.widgets.ProgressDialog;
+import com.xiaopeng.amaplib.util.AMapUtil;
 import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import com.xiaopeng.xmapnavi.R;
+import com.xiaopeng.xmapnavi.bean.PowerPoint;
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
+import com.xiaopeng.xmapnavi.presenter.ICarControlReple;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
+import com.xiaopeng.xmapnavi.presenter.callback.OnClickRightItem;
 import com.xiaopeng.xmapnavi.presenter.callback.XpAiosMapListener;
+import com.xiaopeng.xmapnavi.presenter.callback.XpCarMsgListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviInfoListener;
+import com.xiaopeng.xmapnavi.presenter.callback.XpStubGroupListener;
 import com.xiaopeng.xmapnavi.utils.Utils;
+import com.xiaopeng.xmapnavi.view.appwidget.adapter.NaviStubAdapater;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.CircleImageView;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.MTrafficBarView;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.MTrafficBarView2;
@@ -70,6 +87,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		, AMap.OnCameraChangeListener{
 	private static final String TAG = "RoteNaviActivity";
 	private static final int UPDATE_LITTLE_MAP = 0;
+	RelativeLayout mLinView;
 	AMapNaviView mAMapNaviView;
 	TextureMapView mTmap;
 	private AMap mAmap;
@@ -93,7 +111,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	private static final int NEW_HEIDHT = 1147;
 	private static final int RIGHT_WIDHT = 500;
 	private static final int TITLE_NUM = 39;
-//	private MTrafficBarView mTrafficBarView ;
+	//	private MTrafficBarView mTrafficBarView ;
 	private MTrafficBarView2 mTrafficBarView2;
 
 	private TextView mTxBilici,mTxBilici1;
@@ -109,12 +127,26 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	private TextView mTxSeeWatch;
 	private ImageView mImgSeeWatch;
 	private int isFollowCar = 1;
-	private ProgressDialog mProgDialog;
+	private ProgressDialog mProgDialog,mProgDialog2;
 	private boolean isFirstTime = true;
 	private boolean isFirstInit = true;
 	private boolean isNotUseLock = false;
 
 	private DriveWayView mDrawWayView;
+	private ImageView mIvShadow;
+
+	private TextView mTvNanoDis0,mTvNanoDis1,mTvArrayTime;
+	private LinearLayout mLlEnage,mLlNoEnage;
+	private ListView mLvShowStub;
+	private ICarControlReple mCarControlPeple;
+
+	private int lenghtDis,lengthNeed;
+	private NaviStubAdapater mStubAdapater;
+
+	private long DEFEA_DELET ;
+
+//	MarkerOptions mStubMarkerOption;
+	Marker mStubMarker;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		BugHunter.countTimeStart(BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
@@ -122,9 +154,12 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_basic_navi);
+		getWindow().setFormat(PixelFormat.TRANSLUCENT);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		saveBundle = savedInstanceState;
 		mLocationPro = LocationProvider.getInstence(this);
+		mCarControlPeple = mLocationPro.getCarControlReple();
+		mLocationPro.addStubGroupListener(mStubGroupListener);
 
 
 
@@ -134,19 +169,38 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	private void initAll(){
 		if (isFirstInit) {
 			isFirstInit = false;
-			mAMapNaviView = (AMapNaviView) findViewById(R.id.navi_view);
-			mAMapNaviView.onCreate(saveBundle);
 
-			initView();
+			mAMapNaviView = new AMapNaviView(this);
+			mAMapNaviView.onCreate(saveBundle);
+			mLinView.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					mLinView.addView(mAMapNaviView);
+
+				}
+			},400);
+			mLinView.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					mIvShadow.setVisibility(View.GONE);
+				}
+			},2000);
+
+//			mAMapNaviView = (AMapNaviView) findViewById(R.id.navi_view);
+
+
+
 			mAMapNaviView.postDelayed(new Runnable() {
 				@Override
 				public void run() {
-					mTmap = (TextureMapView) findViewById(R.id.navi_map_view);
-					mTmap.onCreate(saveBundle);
-					mTmap.setOnClickListener(RouteNaviActivity.this);
-					mAmap = mTmap.getMap();
-					mAmap.setOnMapLoadedListener(RouteNaviActivity.this);
-					mTmap.onResume();
+					if (mTmap==null) {
+						mTmap = (TextureMapView) findViewById(R.id.navi_map_view);
+						mTmap.onCreate(saveBundle);
+						mTmap.setOnClickListener(RouteNaviActivity.this);
+						mAmap = mTmap.getMap();
+						mAmap.setOnMapLoadedListener(RouteNaviActivity.this);
+						mTmap.onResume();
+					}
 
 				}
 			}, 500);
@@ -155,6 +209,8 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			mAMapNaviView.setAMapNaviViewListener(RouteNaviActivity.this);
 			mAMapNaviView.setLockZoom(16);
 			mAMapNaviView.setLockTilt(TITLE_NUM);
+			DEFEA_DELET = mAMapNaviView.getViewOptions().getLockMapDelayed();
+
 			mNaviAmap = mAMapNaviView.getMap();
 			mNaviAmap.setTrafficEnabled(isTraff);
 
@@ -174,7 +230,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 					mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
 					changeMapType.sendEmptyMessageDelayed(0,800);
 				}
-			},2000);
+			},750);
 
 
 			initMap();
@@ -193,6 +249,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
+		saveBundle = outState;
 		if (mTmap!=null) {
 			mTmap.onSaveInstanceState(outState);
 		}
@@ -203,6 +260,8 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	}
 
 	private void initView(){
+		mIvShadow		= (ImageView) findViewById(R.id.navi_see);
+		mLinView = (RelativeLayout) findViewById(R.id.navi_view);
 		mTxLenght 		= (TextView) findViewById(R.id.tx_length);
 //		mTxFrom 		= (TextView) findViewById(R.id.tx_from_road);
 		mTxTo			= (TextView) findViewById(R.id.tx_to_road);
@@ -225,6 +284,15 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		mImgNavi		= (ImageView) findViewById(R.id.img_navi);
 		mImgSeeWatch	= (ImageView) findViewById(R.id.iv_see_watch);
 		mTxSeeWatch		= (TextView) findViewById(R.id.tx_see_watch);
+
+		mTvNanoDis0		= (TextView) findViewById(R.id.tv_nano_dis_0);
+		mTvNanoDis1		= (TextView) findViewById(R.id.tv_nano_dis_1);
+		mTvArrayTime	= (TextView) findViewById(R.id.tv_array_time);
+		mLvShowStub		= (ListView) findViewById(R.id.lv_show_stub);
+		mLlEnage		= (LinearLayout) findViewById(R.id.ll_enage);
+		mLlNoEnage		= (LinearLayout) findViewById(R.id.ll_no_enage);
+
+
 		findViewById(R.id.btn_exit).setOnClickListener(this);
 		findViewById(R.id.btn_rader_nave).setOnClickListener(this);
 		findViewById(R.id.btn_recalue).setOnClickListener(this);
@@ -236,6 +304,8 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		findViewById(R.id.btn_lukuang).setOnClickListener(this);
 		findViewById(R.id.btn_see_watch).setOnClickListener(this);
 		findViewById(R.id.navi_map_view_0).setOnClickListener(this);
+		findViewById(R.id.btn_search_stub).setOnClickListener(this);
+		mLvShowStub		.setOnItemClickListener(onItemClickListener);
 //		mTrafficBarView.setTrafficListener(trafficBarListener);
 		mSettingDialog 	= new RouteNaviSettingDialog(this);
 		mSettingDialog	.setOnDialogListener(dialogListener);
@@ -330,7 +400,8 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		viewOptions.setStartPointBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.icon_from_poi));
 		viewOptions.setEndPointBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.icon_end_poi));
 		viewOptions.setWayPointBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.icon_way_poi));
-
+		viewOptions.setFourCornersBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.img_navi_north_big));
+		viewOptions.setCarBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.img_navi_car_big));
 		mAMapNaviView.setViewOptions(viewOptions);
 		mNextView = (NextTurnTipView) findViewById(R.id.nttv_navi);
 		mAMapNaviView.setLazyNextTurnTipView(mNextView);
@@ -343,6 +414,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		super.onResume();
 		if (mAMapNaviView!=null) {
 			mAMapNaviView.onResume();
+
 			mAMapNaviView.postDelayed(new Runnable() {
 				@Override
 				public void run() {
@@ -368,14 +440,44 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		if (naviInfo!=null) {
 			onNaviInfoUpdate(naviInfo);
 		}
+
+		if (mCarControlPeple!=null){
+			mCarControlPeple.addXpCarMsgListener(mXpCarMsgListener);
+		}
+
+		mAMapNaviView.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				mProgDialog2 = new ProgressDialog(RouteNaviActivity.this,"正在搜索数据");
+//        mProgDialog.setTitle("正在搜索数据...");
+//        mProgDialog.set("正在搜索相关信息....");
+				mProgDialog2.setCancelable(false);
+				mProgDialog2.getWindow().setDimAmount(0.7f);
+				//----init listener ---//
+				mProgDialog2.setOnCancelListener(new DialogInterface.OnCancelListener() {
+					@Override
+					public void onCancel(DialogInterface dialog) {
+
+					}
+				});
+
+			}
+		},2000);
+		mStubAdapater = new NaviStubAdapater(this,R.layout.layout_item_collect_in_setting,mLocationPro.getAmapLocation());
+		mStubAdapater	.setOnClickRightItem(mRightItemListener);
+		mLvShowStub.setAdapter(mStubAdapater);
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
 		try {
+			if (mCarControlPeple!=null){
+				mCarControlPeple.removeXpCarMsgListener(mXpCarMsgListener);
+			}
 			mAMapNaviView.onPause();
 			mTmap.onPause();
+
 		}catch (Exception e){
 			e.printStackTrace();
 		}
@@ -387,6 +489,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		mLocationPro.removeStubGroupListener(mStubGroupListener);
 		mTrafficBarView2.recycleResource();
 		mAMapNaviView.onDestroy();
 		mTmap.onDestroy();
@@ -396,6 +499,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	@Override
 	protected void onStart() {
 		super.onStart();
+		initView();
 		initAll();
 		mLocationPro.addNaviInfoListner(this);
 		mLocationPro.addNaviCalueListner(xpNaviCalueListener);
@@ -462,9 +566,9 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		}
 
 		StringBuffer strRoadNew = new StringBuffer();
-		strRoadNew.append(getString(R.string.from));
-		strRoadNew.append(naviinfo.getCurrentRoadName());
-		strRoadNew.append(getString(R.string.into));
+//		strRoadNew.append(getString(R.string.from));
+//		strRoadNew.append(naviinfo.getCurrentRoadName());
+//		strRoadNew.append(getString(R.string.into));
 		mTxTo.setText(naviinfo.getNextRoadName());
 
 
@@ -490,6 +594,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 
 		int allPathLenght = naviinfo.getPathRetainDistance();
 		StringBuffer strLengthNeed = new StringBuffer();
+		lengthNeed = allPathLenght;
 		if (allPathLenght>=1000){
 			int killMile = allPathLenght/1000;
 			strLengthNeed.append(killMile);
@@ -503,6 +608,8 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 //			strLengthNeed.append(getString(R.string.need));
 		}
 		mTxLenghtNeed.setText(strLengthNeed);
+
+		showEnageMsg();
 	}
 
 	@Override
@@ -515,7 +622,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 
 	@Override
 	public void hideCross() {
-		mZoomInIntersectionView.setVisibility(View.INVISIBLE);
+		mZoomInIntersectionView.setVisibility(View.GONE);
 	}
 
 	@Override
@@ -577,7 +684,12 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 //				mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
 //				isFrist = false;
 //			}
-
+			reLockTime();
+			if (mLvShowStub.getVisibility() == View.VISIBLE){
+				mLvShowStub.setVisibility(View.GONE);
+				showEnageMsg();
+				((TextView)findViewById(R.id.btn_exit)).setText(R.string.exit_navi);
+			}
 
 
 
@@ -603,8 +715,15 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	public void onClick(View view) {
 		switch (view.getId()){
 			case R.id.btn_exit:
-				mLocationPro.stopNavi();
-				finish();
+				if (mLvShowStub.getVisibility() == View.GONE) {
+					mLocationPro.stopNavi();
+					finish();
+				}else {
+					mAMapNaviView.recoverLockMode();
+					mLvShowStub.setVisibility(View.GONE);
+					showEnageMsg();
+					((TextView)findViewById(R.id.btn_exit)).setText(R.string.exit_navi);
+				}
 				break;
 
 			case R.id.btn_rader_nave:
@@ -664,6 +783,11 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 				changeSeeWatch();
 				break;
 
+			case R.id.btn_search_stub:
+				mProgDialog2.show();
+				mLocationPro.getStubGroups();
+				break;
+
 			default:
 				break;
 		}
@@ -682,6 +806,46 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		showPathInListtle();
 
 	}
+
+	private void showEnageMsg(){
+		int allLenght = lenghtDis - lengthNeed;
+		if (allLenght>=60 * 1000){
+			mTvNanoDis0.setTextColor(getResources().getColor(R.color.text_green_2));
+			if (mLvShowStub.getVisibility() ==View.GONE) {
+				mLlEnage.setVisibility(View.VISIBLE);
+				mLlNoEnage.setVisibility(View.GONE);
+			}
+		}else if (allLenght>= 30 * 1000){
+			mTvNanoDis0.setTextColor(getResources().getColor(R.color.text_origer));
+			if (mLvShowStub.getVisibility() ==View.GONE) {
+				mLlEnage.setVisibility(View.VISIBLE);
+				mLlNoEnage.setVisibility(View.GONE);
+			}
+		}else {
+			if (mLvShowStub.getVisibility() ==View.GONE) {
+				mLlEnage.setVisibility(View.GONE);
+				mLlNoEnage.setVisibility(View.VISIBLE);
+			}
+		}
+		boolean isNum = (allLenght > 0);
+		String msg;
+		if (!isNum){
+			allLenght = 0 - allLenght;
+			msg = "-"+AMapUtil.getFriendlyLength(allLenght);
+		}else {
+			msg = AMapUtil.getFriendlyLength(allLenght);
+		}
+		mTvNanoDis0	.setText(msg);
+		mTvNanoDis1.setText(msg);
+
+
+		if(mLvShowStub.getVisibility() == View.GONE){
+
+
+
+		}
+	}
+
 
 	private void showPathInListtle(){
 		mAMapNaviView.postDelayed(new Runnable() {
@@ -954,14 +1118,42 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		}
 	};
 
+	private AMapNaviView mSaveNaviView;
 	XpNaviCalueListener xpNaviCalueListener = new XpNaviCalueListener() {
 		@Override
 		public void onCalculateMultipleRoutesSuccess(int[] ints) {
 			LogUtils.d(TAG,"onCalculateMultipleRoutesSuccess");
+			mIvShadow.setVisibility(View.VISIBLE);
+			mAMapNaviView.setVisibility(View.GONE);
+
+//			mAMapNaviView.onPause();
+//			mAMapNaviView.onDestroy();
+//			mLinView.removeView(mAMapNaviView);
+			mSaveNaviView = mAMapNaviView;
+
+
+
 			deleyHandler2.removeMessages(0);
-			if (mProgDialog!=null){
-				mProgDialog.dismiss();
-			}
+			mLinView.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					if (mProgDialog!=null){
+						mProgDialog.dismiss();
+					}
+					if (mSaveNaviView!=null) {
+						mSaveNaviView.onPause();
+
+						mLinView.removeView(mSaveNaviView);
+						try{
+							mSaveNaviView.onDestroy();
+						}catch (Exception e){
+							e.printStackTrace();
+						}
+						mSaveNaviView = null;
+					}
+				}
+			},2000);
+
 			if (mAmap!=null){
 				mAmap.clear();
 			}
@@ -970,7 +1162,17 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			}catch (Exception e){
 				e.printStackTrace();
 			}
+
 			mLocationPro.selectRouteId(ints[0]);
+
+//			mAMapNaviView = new AMapNaviView(RouteNaviActivity.this);
+//			mLinView.removeAllViews();
+//			mLinView.addView(mAMapNaviView);
+//			mAMapNaviView.onCreate(null);
+
+			isFirstInit = true;
+			initAll();
+
 			boolean isSuccess = mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
 
 			LogUtils.d(TAG,"onCalculateMultipleRoutesSuccess?"+isSuccess);
@@ -1022,6 +1224,127 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			}
 		}
 	};
+
+	private XpCarMsgListener mXpCarMsgListener = new XpCarMsgListener(){
+
+		@Override
+		public void carTrayLenght(int length) {
+			lenghtDis = length;
+			showEnageMsg();
+		}
+	};
+
+	private XpStubGroupListener mStubGroupListener = new XpStubGroupListener() {
+		@Override
+		public void OnStubData(List<PowerPoint> powerPoints) {
+			mProgDialog2.dismiss();
+			if (powerPoints!=null && powerPoints.size()>0){
+				mStubAdapater.setDate(powerPoints);
+				mLvShowStub.setVisibility(View.VISIBLE);
+				mLlEnage.setVisibility(View.GONE);
+				mLlNoEnage.setVisibility(View.GONE);
+				setListViewHeightBasedOnChildren(mLvShowStub);
+				((TextView)findViewById(R.id.btn_exit)).setText(R.string.navi_goon);
+			}
+
+
+		}
+	};
+
+	public void setListViewHeightBasedOnChildren(ListView listView) {
+
+		ListAdapter listAdapter = listView.getAdapter();
+
+		if (listAdapter == null) {
+			return;
+		}
+
+		int totalHeight = 0;
+		if (listAdapter.getCount()<=6){
+			for (int i = 0; i < listAdapter.getCount(); i++) {
+				View listItem = listAdapter.getView(i, null, listView);
+				listItem.measure(0, 0);
+				totalHeight += listItem.getMeasuredHeight();
+			}
+		}else {
+			for (int i = 0; i < 6; i++) {
+				View listItem = listAdapter.getView(i, null, listView);
+				listItem.measure(0, 0);
+				totalHeight += listItem.getMeasuredHeight();
+			}
+		}
+
+		ViewGroup.LayoutParams params = listView.getLayoutParams();
+
+		params.height = totalHeight
+				+ (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+
+//		((MarginLayoutParams) params).setMargins(10, 10, 10, 10); // 可删除
+
+		listView.setLayoutParams(params);
+	}
+
+	private AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+			PowerPoint powerPoint = mStubAdapater.setIndex(position);
+			LatLng latLng = new LatLng(powerPoint.getLat(),powerPoint.getLon());
+			AMapLocation location = mLocationPro.getAmapLocation();
+			LatLng mLatlng = new LatLng(location.getLatitude(),location.getLongitude());
+			LatLngBounds.Builder builder = new LatLngBounds.Builder();
+			builder.include(latLng);
+			builder.include(mLatlng);
+			LatLngBounds latLngBounds = builder.build();
+			LatLng rightTop = latLngBounds.northeast;
+			LatLng leftBottom = latLngBounds.southwest;
+			double latDis = rightTop.latitude - leftBottom.latitude;
+			double lonDis = rightTop.longitude - leftBottom.longitude;
+			latDis = latDis/5;
+			lonDis = lonDis/2f;
+			LatLng latLng1 = new LatLng(leftBottom.latitude - latDis,leftBottom.longitude - lonDis);
+			LatLngBounds.Builder builder1 = new LatLngBounds.Builder();
+			builder1.include(latLng);
+			builder1.include(mLatlng);
+			builder1.include(latLng1);
+			LatLngBounds latLngBounds1 = builder1.build();
+			mAMapNaviView.zoomIn();
+
+			mNaviAmap.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds1,150));
+			AMapNaviViewOptions mapNaviViewOptions = mAMapNaviView.getViewOptions();
+			mapNaviViewOptions.setLockMapDelayed(1000 * 1000);
+//			mAMapNaviView.setViewOptions(mapNaviViewOptions);
+			if (mStubMarker==null){
+				MarkerOptions options = new MarkerOptions();
+				options.anchor(0.5f,0.75f);
+				options.position(latLng);
+				options.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_add_way_poi));
+				mStubMarker = mNaviAmap.addMarker(options);
+			}else {
+				mStubMarker.setPosition(latLng);
+			}
+		}
+	};
+
+	private void reLockTime(){
+		if (mAMapNaviView.getViewOptions().getLockMapDelayed()!=DEFEA_DELET){
+			AMapNaviViewOptions mapNaviViewOptions = mAMapNaviView.getViewOptions();
+			mapNaviViewOptions.setLockMapDelayed(1000 * 1000);
+//			mAMapNaviView.setViewOptions(mapNaviViewOptions);
+		}
+	}
+
+	OnClickRightItem mRightItemListener = new OnClickRightItem() {
+		@Override
+		public void onClickRightItem(int posi) {
+			PowerPoint powerPoint = mStubAdapater.getPoP(posi);
+			NaviLatLng naviLatLng = new NaviLatLng(powerPoint.getLat(),powerPoint.getLon());
+			mLocationPro.stopNavi();
+			mLocationPro.tryAddWayPoiCalue(naviLatLng);
+			mProgDialog.show();
+		}
+	};
+
 
 
 }

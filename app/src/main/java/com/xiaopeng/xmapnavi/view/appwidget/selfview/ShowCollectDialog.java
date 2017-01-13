@@ -64,7 +64,7 @@ public class ShowCollectDialog implements AdapterView.OnItemClickListener,View.O
         mLv         .setDividerHeight(1);
         mLv         .setDivider(mContext.getResources().getDrawable(R.drawable.gray_button_background));
         findViewById(R.id.rl_out_side).setOnClickListener(this);
-
+        findViewById(R.id.btn_add_poi).setOnClickListener(this);
         mDialog     .setContentView(mRootView);
         Window window = mDialog.getWindow();
         WindowManager.LayoutParams params = window.getAttributes();
@@ -116,6 +116,12 @@ public class ShowCollectDialog implements AdapterView.OnItemClickListener,View.O
                 dismiss();
                 break;
 
+            case R.id.btn_add_poi:
+                if (mListener!=null){
+                    mListener.addPoiCollect();
+                }
+                break;
+
             default:
                 break;
         }
@@ -128,5 +134,6 @@ public class ShowCollectDialog implements AdapterView.OnItemClickListener,View.O
 
     public interface CollectDialogListener{
         void onClickCollectItem(int position,CollectItem item);
+        void addPoiCollect();
     }
 }

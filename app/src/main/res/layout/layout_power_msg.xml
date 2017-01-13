@@ -8,29 +8,13 @@
         android:layout_width="match_parent"
         android:orientation="horizontal"
         android:layout_height="139px">
+
         <LinearLayout
+            android:paddingLeft="40px"
             android:orientation="vertical"
-            android:layout_width="152px"
-            android:gravity="center_horizontal"
+            android:layout_width="808px"
             android:layout_height="match_parent">
-            <ImageView
-                android:layout_marginTop="28px"
-                android:src="@drawable/icon_navi_little"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <TextView
-                android:id="@+id/tv_distance"
-                android:layout_marginTop="16px"
-                android:text="0.8公里"
-                android:textSize="20px"
-                android:textColor="@color/text_blue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="608px"
-            android:layout_height="match_parent">
+
             <LinearLayout
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
@@ -40,79 +24,175 @@
                 <TextView
                     android:id="@+id/tv_name"
                     android:gravity="center_vertical"
-                    android:text="小鹏汽车线下体验店"
+                    android:text="华南师范大学石牌桥校区"
                     android:textColor="@color/first_text_color"
                     android:textSize="@dimen/list_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
-                <ImageView
-                    android:layout_marginLeft="20px"
-                    android:src="@drawable/icon_fast_icon"
+                <!--<ImageView-->
+                    <!--android:layout_marginLeft="20px"-->
+                    <!--android:src="@drawable/icon_fast_icon"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content" />-->
+                <TextView
+                    android:layout_marginLeft="26px"
+                    android:text="快充："
+                    android:textSize="18px"
+                    android:textColor="@color/a3a3a3"
+                    android:paddingBottom="1px"
+                    android:gravity="left|bottom"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
+                    android:layout_height="match_parent" />
                 <TextView
 
-                    android:text="空闲1"
+                    android:text="1"
                     android:layout_marginLeft="6px"
-                    android:textColor="@color/text_green"
-                    android:textSize="18px"
+                    android:textColor="@color/text_origer"
+                    android:textSize="24px"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/tv_fast" />
+                <TextView
 
-                <ImageView
-                    android:layout_marginLeft="16px"
-                    android:src="@drawable/icon_slow_icon"
+                    android:text="/"
+                    android:textSize="18px"
+                    android:textColor="@color/a3a3a3"
+                    android:paddingBottom="1px"
+                    android:gravity="left|bottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:id="@+id/tv_kuai_total"
+                    android:text="3"
+                    android:textSize="18px"
+                    android:textColor="@color/a3a3a3"
+                    android:paddingBottom="1px"
+                    android:gravity="left|bottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+
+                <!--<ImageView-->
+                    <!--android:layout_marginLeft="16px"-->
+                    <!--android:src="@drawable/icon_slow_icon"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content" />-->
+
+                <TextView
+                    android:layout_marginLeft="24px"
+                    android:text="慢充："
+                    android:textSize="18px"
+                    android:textColor="@color/a3a3a3"
+                    android:paddingBottom="1px"
+                    android:gravity="left|bottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:id="@+id/tv_slow"
+                    android:text="6"
+                    android:layout_marginLeft="6px"
+                    android:textColor="@color/text_green"
+                    android:textSize="24px"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                 <TextView
-                    android:id="@+id/tv_slow"
-                    android:text="空闲6"
-                    android:layout_marginLeft="6px"
-                    android:textColor="@color/text_origer"
+
+                    android:text="/"
                     android:textSize="18px"
+                    android:textColor="@color/a3a3a3"
+                    android:paddingBottom="1px"
+                    android:gravity="left|bottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:id="@+id/tv_man_total"
+                    android:text="12"
+                    android:textSize="18px"
+                    android:textColor="@color/a3a3a3"
+                    android:paddingBottom="1px"
+                    android:gravity="left|bottom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_marginTop="6px"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tv_distance"
+
+                    android:text="0.8公里"
+                    android:textSize="20px"
+                    android:textColor="@color/text_blue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_marginLeft="26px"
+                    android:id="@+id/tv_address"
+                    android:text="高新技术产业开发区科学城开源大道11号"
+                    android:textColor="@color/a3a3a3"
+                    android:singleLine="true"
+
+                    android:textSize="20px"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>
-            <TextView
-                android:id="@+id/tv_address"
-                android:text="高新技术产业开发区科学城开源大道11号"
-                android:textColor="@color/a3a3a3"
-                android:singleLine="true"
-                android:layout_marginTop="9px"
-                android:textSize="20px"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+
             <LinearLayout
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:layout_marginTop="12px"
-                android:background="@color/f1f1f1"
                 android:layout_width="match_parent"
                 android:layout_height="26px">
+                <ImageView
+                    android:src="@drawable/icon_runfor_little"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
                 <TextView
-                    android:layout_marginLeft="20px"
+                    android:layout_marginLeft="8px"
                     android:textColor="@color/text_666"
                     android:textSize="18px"
-                    android:text="运营商：星星充电"
+                    android:text="星星充电"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <ImageView
+                    android:layout_marginLeft="32px"
+                    android:src="@drawable/icon_light_little"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                 <TextView
                     android:id="@+id/tv_power_py"
-                    android:layout_marginLeft="44px"
+                    android:layout_marginLeft="8px"
                     android:textColor="@color/text_666"
                     android:textSize="18px"
-                    android:text="充电费：1.25元/度"
+                    android:text="1.25元/度"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <ImageView
+                    android:layout_marginLeft="32px"
+                    android:src="@drawable/icon_park_little"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/tv_server_py"
+                    android:layout_marginLeft="8px"
+                    android:textColor="@color/text_666"
+                    android:textSize="18px"
+                    android:text="2元/小时"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
+                <ImageView
+                    android:layout_marginLeft="32px"
+                    android:src="@drawable/icon_time_little"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
                 <TextView
-                    android:id="@+id/tv_server_py"
-                    android:layout_marginLeft="44px"
+                    android:id="@+id/tv_server_time"
+                    android:layout_marginLeft="8px"
                     android:textColor="@color/text_666"
                     android:textSize="18px"
-                    android:text="停车费：2元/小时"
+                    android:text="06:00-24:00"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 

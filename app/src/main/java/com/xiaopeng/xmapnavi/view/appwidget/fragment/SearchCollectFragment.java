@@ -74,7 +74,8 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
 
     private View rootView;
     private int requestCode = -1;
-    private static final int WAY_POI_CODE = 2;
+    public static final int WAY_POI_CODE = 2;
+    public static final int ADD_POI_CODE = 5;
     private View findViewById(int id){
         return rootView.findViewById(id);
     }
@@ -343,31 +344,35 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-            LogUtils.d(TAG,"mItemClickListner"+"  mCollectItems:"+mCollectItems);
+            LogUtils.d(TAG, "mItemClickListner" + "  mCollectItems:" + mCollectItems);
 
-            if (mCollectItems==null || position>=mCollectItems.size())return;
+            if (mCollectItems == null || position >= mCollectItems.size()) return;
             CollectItem item = mCollectItems.get(position);
-            if (requestCode  != WAY_POI_CODE) {
+            if (requestCode != WAY_POI_CODE && requestCode != ADD_POI_CODE) {
                 mDateHelper.saveWhereIten(requestCode, item.pName, item.pDesc, item.posLat, item.posLon);
-                if (mActivity.getFragmentNum()==2){
+                if (mActivity.getFragmentNum() == 2) {
                     List<NaviLatLng> endlist = new ArrayList<>();
-                    endlist.add(new NaviLatLng(item.posLat,item.posLon));
-                    if (mLocationProvider!=null) {
+                    endlist.add(new NaviLatLng(item.posLat, item.posLon));
+                    if (mLocationProvider != null) {
                         mLocationProvider.tryCalueRunWay(endlist);
                         mActivity.showDialogwithOther();
                     }
                 }
                 mActivity.exitFragment();
-            }else {
-                if (item!=null) {
+            } else if (requestCode == ADD_POI_CODE) {
+                item.save();
+                mActivity.exitFragment();
+                mActivity.showCollectDialog();
+            } else {
+                if (item != null) {
                     mLocationProvider.tryAddWayPoiCalue(new NaviLatLng(item.posLat, item.posLon));
                     mActivity.showDialogwithOther();
                 }
-            }
-            showHide();
+                showHide();
 
 //            setResult(RESULT_OK,intent);
 //            finish();
+            }
         }
     };
 
@@ -413,7 +418,7 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
     private void showHide(){
         InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         //隐藏软键盘
-                imm.hideSoftInputFromWindow(mEtSearch.getWindowToken(), 0);
+        imm.hideSoftInputFromWindow(mEtSearch.getWindowToken(), 0);
         //显示软键盘
 //        imm.showSoftInputFromInputMethod(mEtSearch.getWindowToken(), 0);
     }

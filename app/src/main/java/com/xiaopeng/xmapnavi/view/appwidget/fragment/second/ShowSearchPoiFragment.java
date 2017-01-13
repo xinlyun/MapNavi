@@ -148,6 +148,7 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
     private String searchStr;
     private boolean isFirst = true;
 
+    public static final int ADD_POI_CODE = 5;
     private static final int WAY_POI_CODE = 2;
 
     public void setMapView(MapView mapView){
@@ -372,10 +373,10 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
 //                if (requestCode!=WAY_POI_CODE) {
 //                    mActivity.exitFragment();
 //                }else {
-                    SearchCollectFragment searchCollectFragment = new SearchCollectFragment();
-                    searchCollectFragment.setMapView(mActivity.getMapView());
-                    searchCollectFragment.setRequestCode(requestCode);
-                    mActivity.startFragmentReplace(searchCollectFragment);
+                SearchCollectFragment searchCollectFragment = new SearchCollectFragment();
+                searchCollectFragment.setMapView(mActivity.getMapView());
+                searchCollectFragment.setRequestCode(requestCode);
+                mActivity.startFragmentReplace(searchCollectFragment);
 //                }
                 break;
 
@@ -391,22 +392,37 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
         int index = mAdapter.getIndex();
         if (index!=-1) {
             PoiItem item = poiItems.get(index);
-            if (requestCode!=WAY_POI_CODE) {
+            if (requestCode!=WAY_POI_CODE && requestCode!=ADD_POI_CODE) {
                 if (requestCode != -1) {
+                    dateHelper.saveWhereIten(requestCode, item.toString(), item.getCityName(), item.getLatLonPoint().getLatitude(), item.getLatLonPoint().getLongitude());
+
                     if (mActivity.getFragmentNum()==2){
                         List<NaviLatLng> endlist = new ArrayList<>();
                         endlist.add(new NaviLatLng(item.getLatLonPoint().getLatitude(),item.getLatLonPoint().getLongitude()));
                         if (mLocationPro!=null) {
-                            mLocationPro.tryCalueRunWay(endlist);
+
+
                             mActivity.showDialogwithOther();
+                            mActivity.exitFragment();
+                            mLocationPro.tryCalueRunWay(endlist);
+
+                            return;
                         }
                     }
-                    dateHelper.saveWhereIten(requestCode, item.toString(), item.getCityName(), item.getLatLonPoint().getLatitude(), item.getLatLonPoint().getLongitude());
-                } else {
+
+                }
+                else {
                     dateHelper.saveCollect(item.toString(), item.getCityName(), item.getLatLonPoint().getLatitude(), item.getLatLonPoint().getLongitude());
                 }
                 mActivity.exitFragment();
-            }else {
+            }
+            else if (requestCode == ADD_POI_CODE){
+                dateHelper.saveCollect(item.toString(), item.getCityName(), item.getLatLonPoint().getLatitude(), item.getLatLonPoint().getLongitude());
+                mActivity.exitFragment();
+                mActivity.showCollectDialog();
+                return;
+            }
+            else {
                 mLocationPro.tryAddWayPoiCalue(new NaviLatLng(item.getLatLonPoint().getLatitude(),item.getLatLonPoint().getLongitude()));
                 mActivity.showDialogwithOther();
             }
@@ -416,6 +432,8 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
 
         }
     }
+
+
 
 
 

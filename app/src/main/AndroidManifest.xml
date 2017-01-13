@@ -76,6 +76,11 @@
             >
 
         </activity>
+
+
+
+
+
         <activity android:name=".view.appwidget.activity.SearchCollectActivity"
             android:screenOrientation="portrait"
             >
@@ -84,7 +89,10 @@
         <!-- 定位需要的服务 使用2.0的定位需要加上这个 -->
         <service android:name="com.amap.api.location.APSService" >
         </service>
-        <service android:name=".view.appwidget.services.LocationProService">
+        <service android:name=".view.appwidget.services.LocationProService"
+            android:exported="true"
+            android:process=":location"
+            >
             <intent-filter>
                 <action android:name="com.xiaopeng.xpmapnavi.LocationProService"></action>
             </intent-filter>

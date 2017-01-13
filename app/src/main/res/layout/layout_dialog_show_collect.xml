@@ -31,17 +31,28 @@
                 android:id="@+id/btn_return"
                 android:layout_height="72px">
                 <ImageView
+                    android:layout_marginLeft="20px"
                     android:scaleType="center"
                     android:src="@drawable/icon_return"
-                    android:layout_width="88px"
-                    android:layout_height="72px" />
+                    android:layout_width="48px"
+                    android:layout_height="48px" />
                 <TextView
+                    android:layout_marginLeft="20px"
                     android:textSize="30px"
                     android:textColor="@color/first_text_color"
                     android:gravity="center"
                     android:text="@string/collor_poi"
                     android:layout_width="704px"
                     android:layout_height="56px" />
+                <TextView
+                    android:id="@+id/btn_add_poi"
+                    android:text="@string/add_more"
+                    android:textSize="22px"
+                    android:paddingLeft="10px"
+                    android:textColor="@color/text_blue"
+                    android:gravity="center_vertical|left"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
             </LinearLayout>
             <ImageView
                 android:layout_marginTop="72px"

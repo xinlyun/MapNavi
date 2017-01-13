@@ -6,11 +6,30 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.amap.api.navi.AMapNaviView
+    <!--<com.amap.api.navi.AMapNaviView-->
+        <!--android:id="@+id/navi_view"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--/>-->
+
+    <RelativeLayout
+        android:orientation="vertical"
         android:id="@+id/navi_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent">
+        <SurfaceView
+            android:background="@color/gray_btn_bg_pressed_color"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+
+    </RelativeLayout>
+    <ImageView
+        android:background="@color/grey_bg_color"
+        android:id="@+id/navi_see"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <FrameLayout
         android:paddingLeft="9px"
         android:paddingRight="9px"
@@ -190,7 +209,7 @@
                 android:layout_alignParentRight="true"
                 android:background="@drawable/shadowss"
                 android:layout_width="108px"
-                android:layout_height="340px">
+                android:layout_height="291px">
                 <LinearLayout
                     android:background="@drawable/white_backgrouad"
                     android:orientation="vertical"
@@ -200,12 +219,13 @@
                         android:background="@drawable/text_trans_bg"
                         android:orientation="vertical"
                         android:id="@+id/btn_recalue"
+                        android:gravity="center"
                         android:layout_width="match_parent"
-                        android:layout_height="107px">
+                        android:layout_height="90px">
                         <ImageView
                             android:src="@drawable/icon_recalue"
-                            android:layout_width="match_parent"
-                            android:layout_height="72px" />
+                            android:layout_width="48px"
+                            android:layout_height="48px" />
                         <TextView
                              
                             android:textColor="@color/first_text_color"
@@ -215,7 +235,7 @@
                             android:textSize="22px"
 
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent" />
+                            android:layout_height="wrap_content" />
                     </LinearLayout>
 
                     <ImageView
@@ -227,15 +247,16 @@
 
                     <LinearLayout
                         android:id="@+id/btn_lukuang"
+                        android:gravity="center"
                         android:background="@drawable/text_trans_bg"
                         android:orientation="vertical"
                         android:layout_width="match_parent"
-                        android:layout_height="107px">
+                        android:layout_height="90px">
                         <ImageView
                             android:id="@+id/iv_lukuang_icon"
                             android:src="@drawable/icon_lukuang_01"
-                            android:layout_width="match_parent"
-                            android:layout_height="72px" />
+                            android:layout_width="48px"
+                            android:layout_height="48px" />
                         <TextView
                              
                             android:id="@+id/btn_traffi_state"
@@ -244,7 +265,7 @@
                             android:textSize="22px"
                             android:textColor="@color/first_text_color"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent" />
+                            android:layout_height="wrap_content" />
                     </LinearLayout>
 
                     <ImageView
@@ -257,14 +278,14 @@
                         android:background="@drawable/text_trans_bg"
                         android:orientation="vertical"
                         android:id="@+id/btn_see_watch"
-                        android:layout_weight="1"
+                        android:gravity="center"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                        android:layout_height="90px">
                         <ImageView
                             android:id="@+id/iv_see_watch"
                             android:src="@drawable/icon_seewatch_1"
-                            android:layout_width="match_parent"
-                            android:layout_height="72px" />
+                            android:layout_width="48px"
+                            android:layout_height="48px" />
                         <TextView
                             android:id="@+id/tx_see_watch"
                             android:textColor="@color/first_text_color"
@@ -274,7 +295,7 @@
                             android:textSize="22px"
 
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent" />
+                            android:layout_height="wrap_content" />
                     </LinearLayout>
                     <!--<ImageView-->
 
@@ -398,154 +419,279 @@
         android:paddingBottom="14px"
         android:paddingLeft="9px"
         android:paddingRight="9px"
-        android:layout_marginTop="8px"
+        android:layout_marginTop="2px"
 
-        android:layout_marginLeft="3px"
+        android:layout_marginLeft="2px"
         android:background="@drawable/shadowss"
-        android:layout_width="288px"
-        android:layout_height="366px"
+        android:layout_width="338px"
+        android:layout_height="wrap_content"
 
         >
-        <RelativeLayout
-            android:background="@color/black_p80"
+        <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="310px">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_alignParentBottom="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="310px">
+                    <com.amap.api.navi.view.NextTurnTipView
+                        android:id="@+id/nttv_navi"
+                        android:visibility="gone"
+                        android:layout_width="match_parent"
+                        android:layout_height="140px"
+
+                        android:layout_centerHorizontal="true"
+                        >
+
+                    </com.amap.api.navi.view.NextTurnTipView>
+                    <ImageView
+                        android:src="@drawable/navi_icon_2"
+                        android:id="@+id/img_navi"
+                        android:scaleType="centerCrop"
+                        android:layout_width="match_parent"
+                        android:layout_height="162px"
+
+                        android:layout_centerHorizontal="true"
+                        >
+
+                    </ImageView>
+                    <LinearLayout
+                        android:layout_marginTop="0px"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+
+                            android:layout_marginLeft="24px"
+                            android:gravity="center_vertical|bottom"
+                            android:text="260"
+                            android:textStyle="bold"
+                            android:id="@+id/tx_length"
+                            android:textSize="38px"
+                            android:textColor="@color/first_text_color"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent" />
+                        <TextView
+                            android:paddingBottom="5px"
+                            android:id="@+id/tx_danwei"
+                            android:textSize="26px"
+                            android:textColor="@color/first_text_color"
+                            android:layout_marginLeft="5px"
+                            android:text="米"
+                            android:gravity="left|bottom"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent" />
+                        <TextView
+                            android:paddingBottom="5px"
+                            android:textSize="26px"
+                            android:textColor="@color/a3a3a3"
+
+                            android:text="后 进入"
+                            android:gravity="left|bottom"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent" />
+                    </LinearLayout>
+                    <TextView
+
+                        android:textStyle="bold"
+                        android:layout_marginTop="6px"
+                        android:id="@+id/tx_to_road"
+                        android:textSize="26px"
+                        android:textColor="@color/first_text_color"
+                        android:text="无名道路"
+                        android:layout_marginLeft="24px"
+                        android:gravity="center_vertical|left"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+                <RelativeLayout
+                    android:layout_alignParentBottom="true"
+
+                    android:gravity="center_vertical"
+                    android:background="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="48px">
+                    <ImageView
+                        android:background="@color/dadada"
+                        android:layout_width="match_parent"
+                        android:layout_height="1px" />
+                    <ImageView
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/dadada"
+                        android:layout_width="match_parent"
+                        android:layout_height="1px" />
+                    <!--<TextView-->
+                        <!---->
+                        <!--android:text="@string/shengyu"-->
+                        <!--android:textColor="@color/first_text_color"-->
+                        <!--android:textSize="22px"-->
+                        <!--android:layout_marginLeft="24px"-->
+                        <!--android:gravity="center"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="match_parent" />-->
+                    <TextView
+
+                        android:id="@+id/tx_time_need"
+                        android:text="1小时49分"
+                        android:textColor="@color/first_text_color"
+                        android:textSize="20px"
+                        android:layout_marginLeft="30px"
+                        android:gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
+                    <TextView
+
+                        android:id="@+id/tv_array_time"
+                        android:text="14:22"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="30px"
+                        android:textColor="@color/first_text_color"
+                        android:textSize="20px"
+
+                        android:gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent" />
+
+                    <TextView
+                        android:layout_toLeftOf="@id/tv_array_time"
+                        android:layout_toRightOf="@id/tx_time_need"
+                        android:id="@+id/tx_length_need"
+                        android:text="18.4公里"
+                        android:textColor="@color/first_text_color"
+                        android:textSize="20px"
+
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+
+                </RelativeLayout>
+
+            </RelativeLayout>
 
             <LinearLayout
-                android:orientation="vertical"
-                android:layout_alignParentBottom="true"
+                android:background="@color/grey_bg_color_92"
+                android:id="@+id/ll_enage"
+                android:visibility="visible"
+                android:gravity="center"
                 android:layout_width="match_parent"
-                android:layout_height="302px">
-                <com.amap.api.navi.view.NextTurnTipView
-                    android:id="@+id/nttv_navi"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="140px"
+                android:layout_height="69px">
+                <TextView
+                    android:textSize="18px"
+                    android:paddingTop="2px"
+                    android:textColor="@color/a3a3a3"
+                    android:text="预计到达目的地剩余续航"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/tv_nano_dis_0"
+                    android:textStyle="bold"
+                    android:textSize="22px"
+                    android:textColor="@color/text_green_2"
+                    android:text="66km"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
 
-                    android:layout_centerHorizontal="true"
-                    >
-
-                </com.amap.api.navi.view.NextTurnTipView>
-                <ImageView
-                    android:src="@drawable/navi_icon_2"
-                    android:id="@+id/img_navi"
-                    android:scaleType="centerCrop"
-                    android:layout_width="match_parent"
-                    android:layout_height="152px"
-
-                    android:layout_centerHorizontal="true"
-                    >
-
-                </ImageView>
+            <LinearLayout
+                android:background="@color/grey_bg_color_92"
+                android:id="@+id/ll_no_enage"
+                android:visibility="gone"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="189px">
+                <TextView
+                    android:textSize="18px"
+                    android:gravity="center"
+                    android:layout_marginTop="25px"
+                    android:textColor="@color/a3a3a3"
+                    android:text="预计到达目的地剩余续航"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
                 <LinearLayout
-                    android:layout_marginTop="0px"
+                    android:gravity="center"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TextView
+                    android:layout_marginTop="2px"
+                    android:layout_height="48px">
+                    <ImageView
+                        android:src="@drawable/icon_red_light"
+                        android:layout_width="48px"
 
-                        android:layout_marginLeft="24px"
-                        android:gravity="center_vertical|bottom"
-                        android:text="260"
-                        android:id="@+id/tx_length"
-                        android:textSize="36px"
-                        android:textColor="@color/white"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent" />
+                        android:layout_height="48px" />
                     <TextView
-
-                        android:id="@+id/tx_danwei"
-                        android:textSize="26px"
-                        android:textColor="@color/white"
-                        android:layout_marginLeft="5px"
-                        android:text="米后"
-                        android:gravity="left|bottom"
+                        android:id="@+id/tv_nano_dis_1"
+                        android:textSize="30px"
+                        android:text="12km"
+                        android:textColor="@color/text_red_power_2"
+                        android:layout_marginLeft="10px"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent" />
-                    <TextView
-
-                        android:textSize="26px"
-                        android:textColor="@color/gray_btn_bg_pressed_color"
-                        android:layout_marginLeft="5px"
-                        android:text="@string/entra"
-                        android:gravity="left|bottom"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent" />
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
-                <TextView
-
-                    android:layout_marginTop="16px"
-                    android:id="@+id/tx_to_road"
-                    android:textSize="26px"
-                    android:textColor="@color/white"
-                    android:text="无名道路"
-                    android:layout_marginLeft="24px"
-                    android:gravity="center_vertical|left"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-
-            </LinearLayout>
-            <LinearLayout
-                android:layout_alignParentBottom="true"
-                android:layout_marginTop="18px"
-                android:orientation="horizontal"
-                android:background="@color/text_black"
-                android:layout_width="match_parent"
-                android:layout_height="40px">
-                <TextView
-
-                    android:text="@string/shengyu"
-                    android:textColor="@color/gray_btn_bg_pressed_color"
+                <Button
+                    android:id="@+id/btn_search_stub"
+                    android:layout_marginTop="15px"
+                    android:gravity="center"
+                    android:text="搜索充电桩"
                     android:textSize="22px"
-                    android:layout_marginLeft="24px"
-                    android:gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent" />
-                <TextView
-
-                    android:id="@+id/tx_time_need"
-                    android:text="1小时49分"
                     android:textColor="@color/white"
-                    android:textSize="20px"
-                    android:layout_marginLeft="10px"
-                    android:gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent" />
-                <TextView
-
-                    android:id="@+id/tx_length_need"
-                    android:text="18.4公里"
-                    android:textColor="@color/white"
-                    android:textSize="20px"
-                    android:layout_marginLeft="10px"
-                    android:gravity="center"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent" />
+                    android:layout_marginLeft="30px"
+                    android:layout_marginRight="30px"
+                    android:background="@color/text_blue"
+                    android:layout_width="match_parent"
+                    android:layout_height="60px" />
             </LinearLayout>
+            
+            <ListView
+                android:visibility="gone"
+                android:id="@+id/lv_show_stub"
+                android:background="@color/grey_bg_color_92"
+                android:layout_width="match_parent"
+                android:layout_height="545px">
+
+            </ListView>
+
+
+
             <ImageView
-                android:background="@drawable/text_trans_bg"
-                android:layout_marginTop="-10px"
+                android:layout_alignParentBottom="true"
+                android:background="@color/dadada"
+                android:layout_width="match_parent"
+                android:layout_height="1px" />
+            <TextView
                 android:id="@+id/btn_exit"
+                android:textColor="@color/text_blue"
                 android:gravity="center"
-                android:textSize="45px"
-                android:src="@drawable/icon_x"
-                android:textColor="@color/white"
-                android:layout_width="88px"
-                android:layout_height="108px" />
-        </RelativeLayout>
+                android:textSize="22px"
+                android:text="退出导航"
+                android:background="@color/grey_bg_color_92"
+                android:layout_width="match_parent"
+                android:layout_height="60px" />
+            <com.amap.api.navi.view.ZoomInIntersectionView
+                android:visibility="gone"
+                android:id="@+id/myZoomInIntersectionView"
+                android:scaleType="fitXY"
+                android:layout_width="match_parent"
+                android:layout_height="202px"
+
+
+                />
+        </LinearLayout>
+
 
     </FrameLayout>
 
-    <com.amap.api.navi.view.ZoomInIntersectionView
-        android:id="@+id/myZoomInIntersectionView"
-        android:scaleType="fitXY"
-        android:layout_width="270px"
-        android:layout_height="202px"
-        android:layout_marginLeft="12px"
-        android:layout_marginTop="360px"
 
-        />
     <LinearLayout
         android:gravity="center|top"
         android:layout_marginTop="12px"

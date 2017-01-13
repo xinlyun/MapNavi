@@ -85,6 +85,9 @@ public class PowerPointAdapter extends ArrayAdapter {
             itemHolder.tvServerPy   = (TextView) view.findViewById(R.id.tv_server_py);
             itemHolder.tvShowDis    = (TextView) view.findViewById(R.id.tv_distance);
             itemHolder.ivLove       = (ImageView) view.findViewById(R.id.img_love);
+            itemHolder.tvFastTotal  = (TextView) view.findViewById(R.id.tv_kuai_total);
+            itemHolder.tvSlowTotal  = (TextView) view.findViewById(R.id.tv_man_total);
+            itemHolder.tvServerTime = (TextView) view.findViewById(R.id.tv_server_time);
             view.setTag(itemHolder);
         }else {
             view = convertView;
@@ -93,11 +96,13 @@ public class PowerPointAdapter extends ArrayAdapter {
 
         itemHolder.tvAddress.setText(powerPoint.getAddress());
         itemHolder.tvName.setText(powerPoint.getName());
-        itemHolder.tvFast.setText("空闲"+powerPoint.getAcIdleCnt());
-        itemHolder.tvSlow.setText("空闲"+powerPoint.getDcIdleCnt());
-        itemHolder.tvPowerPy.setText("充电费："+powerPoint.getElectricFee()+"元/度");
-        itemHolder.tvServerPy.setText("服务费："+powerPoint.getServiceFee()+"元/度");
-
+        itemHolder.tvFast.setText(""+powerPoint.getAcIdleCnt());
+        itemHolder.tvSlow.setText(""+powerPoint.getDcIdleCnt());
+        itemHolder.tvFastTotal.setText(""+powerPoint.getAcCnt());
+        itemHolder.tvSlowTotal.setText(""+powerPoint.getDcCnt());
+        itemHolder.tvPowerPy.setText(""+powerPoint.getElectricFee()+"元/度");
+        itemHolder.tvServerPy.setText(""+powerPoint.getServiceFee()+"元/度");
+        itemHolder.tvServerTime.setText(powerPoint.getTimeDesc());
         if (mPoi!=null) {
             LatLng thisPoi = new LatLng(powerPoint.getLat(),powerPoint.getLon());
             float dis = AMapUtils.calculateLineDistance(mPoi,thisPoi);
@@ -127,7 +132,7 @@ public class PowerPointAdapter extends ArrayAdapter {
 
 
     class ItemHolder{
-        TextView tvName,tvAddress,tvShowDis,tvPowerPy,tvServerPy,tvFast,tvSlow;
+        TextView tvName,tvAddress,tvShowDis,tvPowerPy,tvServerPy,tvFast,tvSlow,tvFastTotal,tvSlowTotal,tvServerTime;
         ImageView ivLove;
     }
 
