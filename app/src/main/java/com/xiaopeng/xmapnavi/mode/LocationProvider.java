@@ -100,6 +100,9 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 {
     private static final String TAG = "LocationProvider";
     private static final String NAVI_TAG = "Lp_NaviMsg";
+
+    private static final String SET_TIME_ACTION = "com.xiaopeng.ACTION_SET_TIME";
+    private static final String MSG_TIME = "com.xiaopeng.MSG_TIME";
     private TTSController ttsManager;
     private static Context mContext;
     private static ILocationProvider mLp;
@@ -1363,12 +1366,20 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
 
     private void tryToGetRightTime() throws IOException, InterruptedException {
-        if (isNetworkAvailable() && saveRightTime!=0){
-            Date date = new Date(saveRightTime);
-            LogUtils.d(TAG,"setTime:"+saveRightTime+"\ndate:"+date);
-            Utils.requestPermission();
-            SystemClock.setCurrentTimeMillis(saveRightTime);
+        try {
+            if (isNetworkAvailable() && saveRightTime != 0) {
+                Date date = new Date(saveRightTime);
+                LogUtils.d(TAG, "setTime:" + saveRightTime + "\ndate:" + date);
+                Utils.requestPermission();
+                SystemClock.setCurrentTimeMillis(saveRightTime);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
+        Intent intent = new Intent();
+        intent.setAction(SET_TIME_ACTION);
+        intent.putExtra(MSG_TIME,saveRightTime);
+        mContext.sendBroadcast(intent);
     }
 
 

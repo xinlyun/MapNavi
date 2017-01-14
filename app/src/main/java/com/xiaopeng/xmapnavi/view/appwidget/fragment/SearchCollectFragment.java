@@ -172,6 +172,10 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
             case 2:
                 mEtSearch.setHint(R.string.please_input_way_poi);
                 break;
+
+            case 5:
+                mEtSearch.setHint(R.string.please_input_poi);
+                break;
         }
     }
     private void init(){

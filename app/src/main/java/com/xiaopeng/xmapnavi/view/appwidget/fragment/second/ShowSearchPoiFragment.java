@@ -387,6 +387,15 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
         }
     }
 
+    Handler deleyCalue = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            List<NaviLatLng> endlist = (List<NaviLatLng>) msg.obj;
+            mLocationPro.tryCalueRunWay(endlist);
+        }
+    };
+
 
     private void saveThePoi(){
         int index = mAdapter.getIndex();
@@ -404,8 +413,9 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
 
                             mActivity.showDialogwithOther();
                             mActivity.exitFragment();
-                            mLocationPro.tryCalueRunWay(endlist);
-
+                            Message message = deleyCalue.obtainMessage();
+                            message.obj = endlist;
+                            deleyCalue.sendMessageDelayed(message,500);
                             return;
                         }
                     }
