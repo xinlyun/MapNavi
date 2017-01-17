@@ -445,24 +445,26 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			mCarControlPeple.addXpCarMsgListener(mXpCarMsgListener);
 		}
 
-		mAMapNaviView.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				mProgDialog2 = new ProgressDialog(RouteNaviActivity.this,"正在搜索数据");
+
+		mProgDialog2 = new ProgressDialog(RouteNaviActivity.this,"正在搜索数据");
 //        mProgDialog.setTitle("正在搜索数据...");
 //        mProgDialog.set("正在搜索相关信息....");
-				mProgDialog2.setCancelable(false);
-				mProgDialog2.getWindow().setDimAmount(0.7f);
-				//----init listener ---//
-				mProgDialog2.setOnCancelListener(new DialogInterface.OnCancelListener() {
-					@Override
-					public void onCancel(DialogInterface dialog) {
-
-					}
-				});
+		mProgDialog2.setCancelable(false);
+		mProgDialog2.getWindow().setDimAmount(0.7f);
+		//----init listener ---//
+		mProgDialog2.setOnCancelListener(new DialogInterface.OnCancelListener() {
+			@Override
+			public void onCancel(DialogInterface dialog) {
 
 			}
-		},2000);
+		});
+//		mAMapNaviView.postDelayed(new Runnable() {
+//			@Override
+//			public void run() {
+//
+//
+//			}
+//		},2000);
 		mStubAdapater = new NaviStubAdapater(this,R.layout.layout_item_collect_in_setting,mLocationPro.getAmapLocation());
 		mStubAdapater	.setOnClickRightItem(mRightItemListener);
 		mLvShowStub.setAdapter(mStubAdapater);
@@ -1237,7 +1239,9 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	private XpStubGroupListener mStubGroupListener = new XpStubGroupListener() {
 		@Override
 		public void OnStubData(List<PowerPoint> powerPoints) {
-			mProgDialog2.dismiss();
+			if(mProgDialog2!=null && mProgDialog2.isShowing()) {
+				mProgDialog2.dismiss();
+			}
 			if (powerPoints!=null && powerPoints.size()>0){
 				mStubAdapater.setDate(powerPoints);
 				mLvShowStub.setVisibility(View.VISIBLE);
