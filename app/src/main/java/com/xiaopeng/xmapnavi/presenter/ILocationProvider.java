@@ -61,7 +61,7 @@ public interface ILocationProvider {
 
     void trySearchPosi(String str);
     boolean tryAddWayPoiCalue(NaviLatLng wayPoi);
-    void calueRunWay(List<NaviLatLng> startList, List<NaviLatLng> wayList, List<NaviLatLng> endList);
+    boolean calueRunWay(List<NaviLatLng> startList, List<NaviLatLng> wayList, List<NaviLatLng> endList);
     boolean tryCalueRunWay(List<NaviLatLng> endList);
     AMapNaviPath getNaviPath();
     HashMap<Integer,AMapNaviPath> getNaviPaths();

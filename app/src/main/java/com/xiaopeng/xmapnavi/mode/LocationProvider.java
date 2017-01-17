@@ -34,6 +34,7 @@ import com.xiaopeng.lib.utils.utils.LogUtils;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.util.SparseArray;
+import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -296,16 +297,24 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         startPois.add(new NaviLatLng(mAmapLocation.getLatitude(),mAmapLocation.getLongitude()));
         wayPois.add(wayPoi);
         endPois.addAll(saveEndList);
-        calueRunWay(startPois,wayPois,endPois);
-        return true;
+
+        return calueRunWay(startPois,wayPois,endPois);
     }
 
     private long lastCalueTime = 0;
 
     @Override
-    public void calueRunWay(List<NaviLatLng> startList,List<NaviLatLng> wayList,List<NaviLatLng> endList) {
+    public boolean calueRunWay(List<NaviLatLng> startList,List<NaviLatLng> wayList,List<NaviLatLng> endList) {
 //        if (isCalueIng)return;
-        if ((System.currentTimeMillis() - lastCalueTime) < 500)return;
+        long timeDis;
+        if (( timeDis = (System.currentTimeMillis() - lastCalueTime)) < 500){
+            if (timeDis < 0){
+                lastCalueTime = System.currentTimeMillis();
+            }
+
+            return false;
+        }
+        boolean isCan = false;
         lastCalueTime = System.currentTimeMillis();
         aMapNavi.stopNavi();
         isNaviing = false;
@@ -327,12 +336,15 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         }
         if (strategyFlag >= 0) {
             isCalueIng = true;
-            aMapNavi.calculateDriveRoute(startList, endList, wayList, strategyFlag);
+            isCan = aMapNavi.calculateDriveRoute(startList, endList, wayList, strategyFlag);
 
             LogUtils.d(TAG,"策略:" + strategyFlag);
+            disNowCalue.removeMessages(0);
+            disNowCalue.sendEmptyMessageDelayed(0,30 * 1000);
         }
         saveEndList.clear();
         saveEndList.addAll(endList);
+        return isCan;
     }
 
     @Override
@@ -352,6 +364,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         if (strategyFlag >= 0) {
             isCalueIng = true;
             aMapNavi.calculateDriveRoute(startList, endList, wayList, strategyFlag);
+            disNowCalue.removeMessages(0);
+            disNowCalue.sendEmptyMessageDelayed(0,30 * 1000);
             LogUtils.d(TAG,"策略:" + strategyFlag);
         }
         saveEndList.clear();
@@ -686,7 +700,9 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void onCalculateRouteSuccess() {
         isCalueIng = false;
+//        Toast.makeText(mContext,"onCalculateRouteSuccess",Toast.LENGTH_SHORT).show();
         LogUtils.d(NAVI_TAG,"onCalculateRouteSuccess");
+        disNowCalue.removeMessages(0);
         for (XpNaviCalueListener listener:mNaviCalueListeners){
             listener.onCalculateRouteSuccess();
         }
@@ -694,10 +710,17 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     @Override
     public void onCalculateRouteFailure(int i) {
+//        Toast.makeText(mContext,"onCalculateRouteFailure",Toast.LENGTH_SHORT).show();
+        disNowCalue.removeMessages(0);
+//        disNowCalue.sendEmptyMessageDelayed(0,30 * 1000);
         isCalueIng = false;
         LogUtils.d(NAVI_TAG,"onCalculateRouteFailure i="+i);
         for (XpNaviCalueListener listener:mNaviCalueListeners){
-            listener.onCalculateRouteFailure();
+            try {
+                listener.onCalculateRouteFailure();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
         if (i == 2){
             try{
@@ -801,6 +824,9 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void onCalculateMultipleRoutesSuccess(int[] ints) {
         LogUtils.d(NAVI_TAG,"onCalculateMultipleRoutesSuccess");
+//        Toast.makeText(mContext,"onCalculateMultipleRoutesSuccess",Toast.LENGTH_SHORT).show();
+        disNowCalue.removeMessages(0);
+//        disNowCalue.sendEmptyMessageDelayed(0,30 * 1000);
         isCalueIng = false;
         mInts = ints;
         mRoutePower.setPath(aMapNavi.getNaviPaths(),ints);
@@ -1098,6 +1124,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
                 int trueAvi = aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, false);
                 int falseAvi = aMapNavi.strategyConvert(congestion, avoidhightspeed, cost, hightspeed, true);
                 LogUtils.d(TAG,"\ntrueAvi:"+trueAvi+"\nfalseAvi:"+falseAvi);
+                disNowCalue.removeMessages(0);
+                disNowCalue.sendEmptyMessageDelayed(0,30 * 1000);
                 return aMapNavi.calculateDriveRoute(startPoi, endPois, wayPoi, falseAvi);
             }
         } catch (Exception e) {
@@ -1326,6 +1354,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
             if (mAiosListener!=null){
                 mAiosListener.onOverview(s);
             }
+
         }
 
         @Override
@@ -1391,6 +1420,17 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
                 stubGroupListener.OnStubData(stubAcs);
             }
 
+        }
+    };
+
+
+    Handler disNowCalue = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            LogUtils.d(TAG,"disNowCalue");
+            Toast.makeText(mContext,"disNowCalue",Toast.LENGTH_SHORT).show();
+            LocationProvider.this.reCalue();
         }
     };
 

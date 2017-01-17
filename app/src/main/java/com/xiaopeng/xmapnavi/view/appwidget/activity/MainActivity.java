@@ -101,6 +101,7 @@ import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
 import com.xiaopeng.xmapnavi.presenter.callback.XpWhereListener;
 import com.xiaopeng.xmapnavi.utils.Utils;
+import com.xiaopeng.xmapnavi.view.appwidget.fragment.AddCollectFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.MainFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.RadarNaviFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.RunNaviWayFragment;
@@ -235,11 +236,14 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
 //        mProgDialog.set("正在搜索相关信息....");
         mProgDialog.setCancelable(false);
         mProgDialog.getWindow().setDimAmount(0.7f);
+
         //----init listener ---//
+
+
         mProgDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
-
+                mLocationProvider.reCalue();
             }
         });
 
@@ -450,8 +454,8 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
             endList.clear();
             endList.add(new NaviLatLng(toPoint.getLatitude(),toPoint.getLongitude()));
 //            mProgDialog.show();
-            showDialogwithOther();
-            mLocationProvider.calueRunWay(startList,wayList,endList);
+
+            if(mLocationProvider.calueRunWay(startList,wayList,endList)){showDialogwithOther();}
         }
     }
 
@@ -495,6 +499,9 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
     public void dismissDeleyDialog() {
         if (mProgDialog2!=null){
             mProgDialog2.dismiss();
+        }
+        if (mProgDialog!=null){
+            mProgDialog.dismiss();
         }
     }
 
@@ -698,7 +705,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
     @Override
     public void addPoiCollect() {
         mCollectDialog.dismiss();
-        SearchCollectFragment searchCollectFragment = new SearchCollectFragment();
+        AddCollectFragment searchCollectFragment = new AddCollectFragment();
         searchCollectFragment.setRequestCode(SearchCollectFragment.ADD_POI_CODE);
         searchCollectFragment.setMapView(mapView);
         startFragment(searchCollectFragment);

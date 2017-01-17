@@ -79,7 +79,7 @@ public class ShowStubGroupFragment extends Fragment implements View.OnClickListe
     public void onStart() {
         super.onStart();
         if (mActivity!=null){
-            mActivity.forShowDeleyDialog();
+            mActivity.showDialogwithOther();
         }
         if (mLocationProvider!=null){
             mLocationProvider.addStubGroupListener(listener);

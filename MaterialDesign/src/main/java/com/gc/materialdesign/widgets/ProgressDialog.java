@@ -30,10 +30,15 @@ public class ProgressDialog extends android.app.Dialog{
 	int progressColor = -1;
 	ImageView imageView;
 	RotateAnimation rotateAnimation;
+	private ClickOutSideListener mClickOutSideListener;
 	public ProgressDialog(Context context,String title) {
 		super(context, android.R.style.Theme_Translucent);
 		this.title = title;
 		this.context = context;
+	}
+
+	public void setOnClickOutSideListener(ClickOutSideListener outSideListener){
+		mClickOutSideListener = outSideListener;
 	}
 
 	public ProgressDialog(Context context,String title, int progressColor) {
@@ -60,6 +65,10 @@ public class ProgressDialog extends android.app.Dialog{
 						|| event.getY() > view.getBottom()
 						|| event.getY() < view.getTop()) {
 //					dismiss();
+					if (mClickOutSideListener!=null){
+						mClickOutSideListener.OnClickOutSide();
+						return true;
+					}
 				}
 				return false;
 			}
@@ -154,6 +163,10 @@ public class ProgressDialog extends android.app.Dialog{
 		}catch (Exception e){
 			e.printStackTrace();
 		}
+	}
+
+	public interface ClickOutSideListener{
+		void OnClickOutSide();
 	}
 
 

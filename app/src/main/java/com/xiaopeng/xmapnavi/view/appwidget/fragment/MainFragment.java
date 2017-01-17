@@ -1524,14 +1524,16 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
     private void startCalueNavi(){
         LogUtils.d(TAG,"startCalueNavi");
-        mActivity.showDialogwithOther();
+
         List<NaviLatLng> startPoi = new ArrayList<>();
         startPoi.add(new NaviLatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
         List<NaviLatLng> wayPoi = new ArrayList<>();
         List<NaviLatLng> endPoi = new ArrayList<>();
         if (mLatLng == null)return;
         endPoi.add(new NaviLatLng(mLatLng.latitude,mLatLng.longitude));
-        mLocationProvider.calueRunWay(startPoi,wayPoi,endPoi);
+        if (mLocationProvider.calueRunWay(startPoi,wayPoi,endPoi)){
+            mActivity.showDialogwithOther();
+        }
     }
 
     private void startSearch(){
