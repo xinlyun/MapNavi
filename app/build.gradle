@@ -92,5 +92,5 @@ dependencies {
 //        , module: 'gson-parent'
     })
     compile files('libs/zixing-core-3.2.0.jar')
-    compile files('libs/aios-sdk.170105.1.jar')
+    compile files('libs/aios-sdk.170116.14.jar')
 }
