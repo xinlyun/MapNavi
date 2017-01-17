@@ -41,10 +41,10 @@
             android:paddingRight="9px"
             android:layout_marginRight="3px"
             android:layout_width="match_parent"
-            android:layout_height="126px">
+            android:layout_height="108px">
             <RelativeLayout
                 android:padding="1px"
-                android:background="@drawable/black_50_bg"
+                android:background="@drawable/white_bg_navi"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
                 <LinearLayout
@@ -55,28 +55,29 @@
                     android:gravity="center_vertical"
                     >
 
-                    <ImageView
+                    <TextView
+                        android:text="@string/exit_navi"
                         android:gravity="center"
                         android:id="@+id/btn_exit"
-                        android:src="@drawable/icon_x"
-                        android:textSize="35px"
-                        android:layout_width="88px"
+                        android:textSize="22px"
+                        android:textColor="@color/text_blue"
+                        android:layout_width="120px"
                         android:layout_height="match_parent" />
                     <ImageView
-                        android:layout_marginTop="34px"
-                        android:layout_marginBottom="34px"
-                        android:background="@color/gray_btn_bg_pressed_color"
+                        android:layout_marginTop="20px"
+                        android:layout_marginBottom="20px"
+                        android:background="@color/dadada"
                         android:layout_width="1px"
                         android:layout_height="match_parent" />
                     <LinearLayout
                         android:gravity="center_vertical"
-                        android:layout_width="340px"
+                        android:layout_width="360px"
                         android:layout_height="match_parent">
                         <TextView
-                            android:layout_marginLeft="10px"
+                            android:layout_marginLeft="20px"
                             android:singleLine="true"
                             android:textColor="@color/a3a3a3"
-                            android:textSize="24px"
+                            android:textSize="20px"
                             android:text="125米后"
                             android:id="@+id/tv_show_msg"
                             android:gravity="left|bottom"
@@ -92,7 +93,7 @@
 
                             android:singleLine="true"
                             android:textColor="@color/a3a3a3"
-                            android:textSize="24px"
+                            android:textSize="20px"
                             android:text="进入无名道路"
                             android:id="@+id/tv_show_other"
                             android:gravity="left|bottom"
@@ -104,9 +105,9 @@
                     <TextView
 
                         android:id="@+id/tv_show_shengyu"
-                        android:textColor="@color/white"
-                        android:textSize="28px"
-                        android:text="剩余1小时36分钟 25.6公里"
+                        android:textColor="@color/first_text_color"
+                        android:textSize="24px"
+                        android:text="剩余1小时36分钟 125.6公里"
                         android:gravity="center|right"
                         android:layout_marginRight="270px"
                         android:layout_width="match_parent"
@@ -114,44 +115,46 @@
 
                 </LinearLayout>
                 <ImageView
+                    android:scaleType="center"
                     android:id="@+id/btn_show_intro"
                     android:visibility="visible"
-                    android:layout_marginRight="168px"
+                    android:layout_marginRight="120px"
                     android:layout_alignParentRight="true"
                     android:src="@drawable/icon_help"
-                    android:layout_width="88px"
+                    android:layout_width="120px"
                     android:layout_height="108px" />
                 <ImageView
                     android:visibility="visible"
-                    android:background="@color/gray_btn_bg_pressed_color"
-                    android:layout_marginTop="34px"
-                    android:layout_marginBottom="34px"
+                    android:background="@color/dadada"
+                    android:layout_marginTop="20px"
+                    android:layout_marginBottom="20px"
                     android:layout_alignParentRight="true"
-                    android:layout_marginRight="256px"
+                    android:layout_marginRight="240px"
                     android:layout_width="1px"
                     android:layout_height="match_parent" />
-                <RelativeLayout
-                    android:background="#242424"
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:background="@color/white"
                     android:layout_alignParentRight="true"
-                    android:layout_width="168px"
+                    android:layout_width="120px"
                     android:id="@+id/btn_start_navi"
-                    android:gravity="center_horizontal"
+                    android:gravity="center"
                     android:layout_height="match_parent">
 
                     <ImageView
-                        android:background="@drawable/icon_return_navi"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent" />
+                        android:src="@drawable/icon_return_navi"
+                        android:layout_width="48px"
+                        android:layout_height="48px" />
                     <TextView
-                        android:layout_marginBottom="12px"
+
                         android:layout_alignParentBottom="true"
-                        android:textColor="@color/white"
-                        android:text="@string/navi"
+                        android:textColor="@color/first_text_color"
+                        android:text="@string/switch_navi"
                         android:gravity="center"
-                        android:textSize="24px"
+                        android:textSize="22px"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
-                </RelativeLayout>
+                </LinearLayout>
 
             </RelativeLayout>
 
@@ -189,12 +192,12 @@
         android:paddingLeft="9px"
         android:paddingRight="9px"
         android:paddingBottom="14px"
-        android:layout_height="126px">
+        android:layout_height="106px">
         <LinearLayout
             android:id="@+id/btn_lukuang"
             android:padding="1px"
             android:orientation="vertical"
-            android:gravity="center_horizontal"
+            android:gravity="center"
             android:background="@drawable/white_backgrouad"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -202,8 +205,8 @@
                 android:scaleType="center"
                 android:id="@+id/iv_lukuang"
                 android:src="@drawable/icon_lukuang_02"
-                android:layout_width="match_parent"
-                android:layout_height="72px" />
+                android:layout_width="48px"
+                android:layout_height="48px" />
             <TextView
                 android:background="@drawable/text_trans_bg"
                 android:textSize="22px"
@@ -211,7 +214,7 @@
                 android:textColor="@color/first_text_color"
                 android:text="@string/lukuagg"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
     </FrameLayout>

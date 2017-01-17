@@ -100,4 +100,6 @@
     <string name="you_will_not_back">您有可能无法返回出发地！</string>
     <string name="you_will_not_array">您有可能无法到达目的地！</string>
     <string name="you_will_not_enage">预计到达目的地时续航不足，请及时充电。</string>
+    <string name="add_collect_poi">添加收藏点</string>
+    <string name="switch_navi">切换导航</string>
 </resources>

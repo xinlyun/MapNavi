@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <layer-list>
+
+
+            <!--第二层-->
+            <item >
+                <shape>
+                    <solid android:color="#f2f4f5"/>
+                    <!-- 描边 -->
+                    <stroke android:width="1px" android:color="@color/gray_btn_bg_color"/>
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+</selector>
