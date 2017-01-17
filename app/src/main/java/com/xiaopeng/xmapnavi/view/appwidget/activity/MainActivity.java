@@ -458,7 +458,9 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
     @Override
     public void showCollectDialog(){
         mCollectDateHelper.getCollectItems();
+
     }
+
 
     @Override
     public int getFragmentNum() {

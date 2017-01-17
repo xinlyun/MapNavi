@@ -6,6 +6,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -81,6 +82,30 @@ public class ShowCollectDialog implements AdapterView.OnItemClickListener,View.O
     public void show(){
         if (mDialog!=null){
             mDialog.show();
+        }
+        if (mLv!=null){
+            mLv.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        showHide();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            },800);
+        }
+    }
+
+    private void showHide(){
+        try {
+            InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+            //隐藏软键盘
+            imm.hideSoftInputFromWindow(mLv.getWindowToken(), 0);
+            //显示软键盘
+//        imm.showSoftInputFromInputMethod(mEtSearch.getWindowToken(), 0);
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
     public void dismiss(){
