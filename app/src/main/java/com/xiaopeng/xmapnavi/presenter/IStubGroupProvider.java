@@ -3,7 +3,6 @@ package com.xiaopeng.xmapnavi.presenter;
 import android.content.Context;
 
 import com.xiaopeng.xmapnavi.bean.PowerPoint;
-import com.xiaopeng.xmapnavi.bean.StubAc;
 
 import java.util.List;
 

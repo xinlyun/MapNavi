@@ -120,6 +120,9 @@ public class ShowCollectDialog implements AdapterView.OnItemClickListener,View.O
             LogUtils.d(TAG,"onClickRightItem:"+posi);
             CollectItem collectItem  = mDate.get(posi);
             collectItem.delete();
+            if (collectItem.style == CollectItem.STYLE_STUB){
+                mDateHelper.deletPowerPointById(collectItem.styleMsg);
+            }
             mDateHelper.getCollectItems();
         }
     };

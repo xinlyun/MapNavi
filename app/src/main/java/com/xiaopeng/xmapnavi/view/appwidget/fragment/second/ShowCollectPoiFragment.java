@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.amap.api.maps.AMap;
@@ -22,6 +23,7 @@ import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.navi.model.NaviLatLng;
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.bean.CollectItem;
+import com.xiaopeng.xmapnavi.bean.PowerPoint;
 import com.xiaopeng.xmapnavi.mode.DateHelper;
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
@@ -29,6 +31,7 @@ import com.xiaopeng.xmapnavi.view.appwidget.activity.BaseFuncActivityInteface;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -46,11 +49,15 @@ public class ShowCollectPoiFragment extends Fragment implements View.OnClickList
     private AMap mAmap;
 
     private TextView mTxName,mTxDesc,mTxDis;
-    private Button mBtnExit,mBtnLove,mBtnNavi;
+    private Button mBtnNavi;
+    private ImageView mBtnLove,mBtnExit;
     private Marker mMarkerPoi;
     LatLng latLng ;
     private String poiName,poiDesc;
     private DateHelper dateHelper;
+
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,8 +95,8 @@ public class ShowCollectPoiFragment extends Fragment implements View.OnClickList
         mTxName         = (TextView) findViewById(R.id.tv_poi_name);
         mTxDesc         = (TextView) findViewById(R.id.tv_poi_str);
         mTxDis          = (TextView) findViewById(R.id.tv_poi_dis);
-        mBtnExit        = (Button) findViewById(R.id.btn_exit_show);
-        mBtnLove        = (Button) findViewById(R.id.btn_collect);
+        mBtnExit        = (ImageView) findViewById(R.id.btn_exit_show);
+        mBtnLove        = (ImageView) findViewById(R.id.btn_collect);
         mBtnNavi        = (Button) findViewById(R.id.btn_begin_navi);
 
         mBtnExit        .setOnClickListener(this);
@@ -162,15 +169,19 @@ public class ShowCollectPoiFragment extends Fragment implements View.OnClickList
         }
     }
 
+
+
     private void changeLoveState(){
         if (mCollectPoiItem!=null){
             mCollectPoiItem.delete();
+
             mCollectPoiItem = null;
-            mBtnLove.setBackgroundResource(R.drawable.icon_collect_2);
+            mBtnLove.setImageResource(R.drawable.icon_collect_2);
+
 
 
         }else {
-            mBtnLove.setBackgroundResource(R.drawable.icon_collect_1);
+            mBtnLove.setImageResource(R.drawable.icon_collect_1);
             dateHelper.saveCollect(poiName,poiDesc,latLng.latitude,latLng.longitude);
             mCollectPoiItem = dateHelper.getCollectByName(poiName);
         }

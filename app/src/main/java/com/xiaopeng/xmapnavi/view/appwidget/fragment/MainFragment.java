@@ -507,10 +507,12 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                         for (PowerPoint po:list){
                             po.delete();
                         }
+                        CollectItem.delectCollectByPowerPoi(powerPoint);
                     }else {
                         LogUtils.d(TAG,"is collect");
                         mImgCollectStub.setImageResource(R.drawable.icon_collect_1);
                         powerPoint.save();
+                        CollectItem.saveCollectByPowerPoi(powerPoint);
                     }
                 }catch (Exception e){
                     e.printStackTrace();
@@ -1512,6 +1514,9 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         }else {
             mLoveBtn.setImageResource(R.drawable.icon_collect_2);
             mCollectNow.delete();
+            if (mCollectNow.style == CollectItem.STYLE_STUB){
+                mCollectDateHelper.deletPowerPointById(mCollectNow.styleMsg);
+            }
             mCollectNow = null;
         }
     }

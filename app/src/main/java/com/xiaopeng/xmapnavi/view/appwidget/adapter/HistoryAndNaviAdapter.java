@@ -169,6 +169,9 @@ public class HistoryAndNaviAdapter extends ArrayAdapter {
                     newView.setImageResource(R.drawable.icon_collect_1);
                 }else {
                     collectItem.delete();
+                    if (collectItem.style == CollectItem.STYLE_STUB){
+                        dateHelper.deletPowerPointById(collectItem.styleMsg);
+                    }
                     newView.setImageResource(R.drawable.icon_collect_2);
                 }
             }

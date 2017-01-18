@@ -33,7 +33,7 @@
 
         <meta-data android:name="AA_DB_NAME" android:value="SearchInfo.db"
             tools:replace="android:value"/>
-        <meta-data android:name="AA_DB_VERSION" android:value="6" tools:replace="android:value"/>
+        <meta-data android:name="AA_DB_VERSION" android:value="7" tools:replace="android:value"/>
 
 
 

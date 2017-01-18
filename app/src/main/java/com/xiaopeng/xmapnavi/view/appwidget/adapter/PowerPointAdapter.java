@@ -14,6 +14,7 @@ import com.amap.api.maps.model.LatLng;
 import com.xiaopeng.amaplib.util.AMapUtil;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import com.xiaopeng.xmapnavi.R;
+import com.xiaopeng.xmapnavi.bean.CollectItem;
 import com.xiaopeng.xmapnavi.bean.PowerPoint;
 import com.xiaopeng.xmapnavi.mode.DateHelper;
 import com.xiaopeng.xmapnavi.presenter.callback.OnClickRightItem;
@@ -152,8 +153,10 @@ public class PowerPointAdapter extends ArrayAdapter {
                 PowerPoint powerPoint = dataPowers.get(position);
                 if (isLoves[position]){
                     powerPoint.save();
+                    CollectItem.saveCollectByPowerPoi(powerPoint);
                 }else {
                     mDateHelper.deletPowerPointById(powerPoint.getPoiId());
+                    CollectItem.delectCollectByPowerPoi(powerPoint);
                 }
             }catch (Exception e){
                 e.printStackTrace();

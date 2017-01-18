@@ -3,20 +3,15 @@ package com.xiaopeng.xmapnavi.mode;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.xiaopeng.lib.scu.msg.CAN3A3;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import com.xiaopeng.lib.utils.utils.XPAppSharedPreferenceHelper;
 import com.xiaopeng.xmapnavi.bean.PowerPoint;
-import com.xiaopeng.xmapnavi.bean.StubAc;
 import com.xiaopeng.xmapnavi.presenter.IStubGroupProvider;
 
-import java.io.IOException;
-import java.security.cert.CertificateFactory;
 import java.util.ArrayList;
 import java.util.List;
 
