@@ -1345,7 +1345,9 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			NaviLatLng naviLatLng = new NaviLatLng(powerPoint.getLat(),powerPoint.getLon());
 			mLocationPro.stopNavi();
 			mLocationPro.tryAddWayPoiCalue(naviLatLng);
-			mProgDialog.show();
+			if (mProgDialog!=null) {
+				mProgDialog.show();
+			}
 		}
 	};
 
