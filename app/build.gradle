@@ -25,16 +25,16 @@ android {
                 throw new InvalidUserDataException("You should define KEYSTORE_PASSWORD and KEY_PASSWORD in gradle.properties.")
             }
         }
-//        debug{
-//            try {
-//                storeFile file('C:/Users/linzx/Documents/debug.keystore')
-//                storePassword "zyxie1324"
-//                keyAlias "androiddebugkey"
-//                keyPassword "zyxie1324"
-//            } catch (ex) {
-//                throw new InvalidUserDataException("You should define KEYSTORE_PASSWORD and KEY_PASSWORD in gradle.properties.")
-//            }
-//        }
+        debug{
+            try {
+                storeFile file('C:/Users/linzx/Documents/debug.keystore')
+                storePassword "zyxie1324"
+                keyAlias "androiddebugkey"
+                keyPassword "zyxie1324"
+            } catch (ex) {
+                throw new InvalidUserDataException("You should define KEYSTORE_PASSWORD and KEY_PASSWORD in gradle.properties.")
+            }
+        }
     }
 
 
