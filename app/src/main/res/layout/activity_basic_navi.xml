@@ -131,6 +131,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
                     <ImageView
+                        android:scaleType="center"
                         android:src="@drawable/icon_setting"
                         android:layout_width="88px"
                         android:layout_height="70px" />

@@ -171,9 +171,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
     private LatLonPoint fromPoint,toPoint;
     private TextView mTxBilici;
 
-    private SensorManager mSensorManager;
-    private Sensor mOrientation;
-    private MySensorEventListener mySensorEventListener;
     private float mSeeFloat = 0;
     private long saveTouchTime = 0;
     private long sensorChangeTime = 0;
@@ -198,7 +195,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
     private TextView mTvStubName,mTvStubDis,mTvStubAddress,mTvKuai,mTvMan,mTvStubYunyin,mTvStubPower,mTvStubStop,mTvStubOpen,mTvKuaiTotal,mTvManTotal;
     private ImageView mImgCollectStub;
 
-    private boolean isMapDown = false;
     private boolean isStubPower = false;
 
     private ImageView mStubImg;
@@ -217,10 +213,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         mLocationProvider    = LocationProvider.getInstence(getActivity());
         mLocationProvider    .stopNavi();
         getSensorList();
-
-//        mStubProvider   = new StubGroupProvider();
-//        mStubProvider   .init(getActivity());
-//        mStubProvider   .setOnStubDataListener(mOnStubData);
     }
 
     @Nullable
@@ -250,10 +242,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         };
         initView();
         mLsv.setVisibility(View.GONE);
-
-        mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
-        mOrientation = mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-        mySensorEventListener = new MySensorEventListener();
 
         return rootView;
     }
@@ -343,7 +331,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         mLocationProvider   .addLocationListener(this);
         mLocationProvider.addSearchListner(this);
         isInFace = true;
-//        mLocationProvider.stopNavi();
     }
 
     @Override
@@ -356,7 +343,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
     }
 
     private void initMarkInfo(){
-//        mMarkInfoView       = getActivity().getLayoutInflater().inflate(R.layout.layout_tip_show,null);
         mTxMarkTitle        = (TextView) findViewById(R.id.tx_tip_show);
         mTxMarkTitle        .setOnClickListener(this);
         findViewById(R.id.btn_little_begin_navi).setOnClickListener(this);
@@ -474,7 +460,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
             case R.id.btn_setting:
                 try {
-//                    mLocationProvider.getStubGroups(mLocationMarker.getPosition().latitude, mLocationMarker.getPosition().longitude);
                     mLocationProvider.getStubGroups(null);
                 }catch (Exception e){
                     e.printStackTrace();
@@ -623,7 +608,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
     @Override
     public void onCameraChangeFinish(CameraPosition cameraPosition) {
-//        upDateLineTo(cameraPosition);
         LogUtils.d(TAG,"onCameraChangeFinish");
         updateLine(cameraPosition);
         mLatLng = cameraPosition.target;
@@ -824,7 +808,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                         public void run() {
                             CameraUpdate update = CameraUpdateFactory.newCameraPosition(new CameraPosition(
                                     new LatLng(mLocationProvider.getAmapLocation().getLatitude(), mLocationProvider.getAmapLocation().getLongitude())
-//                    新的中心点坐标
+                                    //新的中心点坐标
                                     , 17, //新的缩放级别
                                     0, //俯仰角0°~45°（垂直与地图时为0）
                                     0  ////偏航角 0~360° (正北方为0)
@@ -910,41 +894,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
     }
 
-    class MySensorEventListener implements SensorEventListener {
-
-        @Override
-        public void onSensorChanged(SensorEvent event) {
-            // TODO Auto-generated method stub
-//            float a = event.values[0];
-//            if (mLocationMarker!=null){
-//                mLocationMarker.setRotateAngle(360 - a);
-//            }
-            LogUtils.d(TAG,"onSensorChanged");
-            saveA = event.values[0];
-            if (mLocationMarker != null) {
-                mLocationMarker.setRotateAngle(360 - saveA);
-            }
-
-            if (mWatchStyle != WATCH_NORTH) {
-                if ((System.currentTimeMillis() - sensorChangeTime > 300)) {
-                    if (Math.abs(event.values[0] - saveA) > 5) {
-                        saveA = event.values[0];
-                        mSeeFloat = saveA;
-                        mAmap.animateCamera(CameraUpdateFactory.changeBearing(saveA));
-                        sensorChangeTime = System.currentTimeMillis();
-                    }
-                }
-            }
-        }
-
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-            // TODO Auto-generated method stub
-            LogUtils.d(TAG,"onAccuracyChanged :Vendor:"+sensor.getVendor());
-
-        }
-
-    }
 
 
     private void updateScale(){
@@ -1058,7 +1007,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         if (mapView==null){
             mapView = mActivity.getMapView();
             init();
-
         }
         if (isTraff){
             mAmap.setCustomMapStylePath("/sdcard/main_style_true.json");
@@ -1067,18 +1015,12 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
             mAmap.setCustomMapStylePath("/sdcard/main_style_false.json");
             mAmap.setMapCustomEnable(true);
         }
-
         mapView.postDelayed(new Runnable() {
             @Override
             public void run() {
                 mLsv.setVisibility(View.VISIBLE);
             }
         },2000);
-
-//        mSensorManager.registerListener(mySensorEventListener,
-//                mOrientation, SensorManager.SENSOR_DELAY_NORMAL);
-
-
         mLoveBtn.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -1101,11 +1043,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
     @Override
     public void onStop() {
         super.onStop();
-        try {
-//            mSensorManager.unregisterListener(mySensorEventListener);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
     }
 
     private AMapGestureListener gestureListener = new AMapGestureListener() {
@@ -1137,12 +1074,10 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
         @Override
         public void onDown(float v, float v1) {
-            isMapDown = true;
         }
 
         @Override
         public void onUp(float v, float v1) {
-            isMapDown = false;
         }
 
         @Override
@@ -1169,8 +1104,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
         polylineOptions.width(2);
         polylineOptions.color(Color.argb(255, 255, 34, 34));
-//        polylineOptions.setDottedLine(true);
-//        polylineOptions.aboveMaskLayer(true);
         mPolyline = mAmap.addPolyline(polylineOptions);
         if (mWatchStyle != WATCH_3D){
             mPolyline.setVisible(false);
@@ -1238,8 +1171,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                     }
 
                     if ( mLocationProvider!=null && mLocationProvider.getAmapLocation()!=null) {
-//
-//                        findMyPosi();
                         whenNorthChange();
 //
                         if (mLocationMarker!=null){
@@ -1386,7 +1317,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
             mAmap.getUiSettings().setMyLocationButtonEnabled(false);// 设置默认定位按钮是否显示
             mAmap.getUiSettings().setZoomControlsEnabled(false);
             mAmap.getUiSettings().setZoomInByScreenCenter(true);
-//            mAmap.getUiSettings().setZoomGesturesEnabled(false);
             mAmap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
             // 设置定位的类型为定位模式 ，可以由定位、跟随或地图根据面向方向旋转几种
             mAmap.setMyLocationType(AMap.LOCATION_TYPE_LOCATE);
@@ -1478,7 +1408,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
     private void clickComplete(){
         if (mComplete==null) {
-//            startActivityForResult(new Intent(this, SearchCollectActivity.class), REQUEST_FIND_COMPLETE);
             SearchCollectFragment searchCollectFragment = new SearchCollectFragment();
             searchCollectFragment.setRequestCode(REQUEST_FIND_COMPLETE);
             searchCollectFragment.setMapView(mapView);
@@ -1486,14 +1415,12 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         }else {
             mLatLng = new LatLng(mComplete.posLat,mComplete.posLon);
             mActivity.showDialogwithOther();
-//            mProgDialog.show();
             startCalueNavi();
         }
     }
 
     private void clickHome(){
         if (mHome==null) {
-//            startActivityForResult(new Intent(this, SearchCollectActivity.class), REQUEST_FIND_HOME);
             SearchCollectFragment searchCollectFragment = new SearchCollectFragment();
             searchCollectFragment.setRequestCode(REQUEST_FIND_HOME);
             searchCollectFragment.setMapView(mapView);
@@ -1501,7 +1428,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         }else {
             mLatLng = new LatLng(mHome.posLat,mHome.posLon);
             mActivity.showDialogwithOther();
-//            mProgDialog.show();
             startCalueNavi();
         }
     }
@@ -1529,7 +1455,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
     private void startCalueNavi(){
         LogUtils.d(TAG,"startCalueNavi");
-
         List<NaviLatLng> startPoi = new ArrayList<>();
         startPoi.add(new NaviLatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
         List<NaviLatLng> wayPoi = new ArrayList<>();
@@ -1547,7 +1472,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
     }
 
 
-    //    private void upDateLineTo(CameraPosition cameraPosition){
     private void upDateLineTo(CameraPosition position){
         try {
             LatLng mLatlon = new LatLng(mLocationProvider.getAmapLocation().getLatitude(), mLocationProvider.getAmapLocation().getLongitude());
@@ -1570,50 +1494,13 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
     private List<LatLng> cameraLatlngs = new ArrayList<>();
 
-    private LatLng preLatlng;
-    private double latDis = 0,lonDis = 0;
 
     private void updateLine(CameraPosition cameraPosition){
-//        if (marker != null){
-//            List<LatLng> latLngs = new ArrayList<LatLng>();
-//            latLngs.add(cameraPosition.target);
-//            latLngs.add(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
-//            cameraLatlngs.
         try {
-//            if (preLatlng!=null){
-//                LatLng latLng = cameraPosition.target;
-//                double disX = latLng.latitude - preLatlng.latitude;
-//                double disY = latLng.longitude - preLatlng.longitude;
-//
-//                preLatlng = latLng;
-//                if (disX * latDis < 0d || disY * lonDis < 0d){
-//                    latDis = disX;
-//                    lonDis = disY;
-//                    return;
-//                }else {
-//                    latDis = disX;
-//                    lonDis = disY;
-//                }
-//            }else {
-//                preLatlng = cameraPosition.target;
-//            }
-
-
-
             if (cameraLatlngs.size()>1) {
                 cameraLatlngs.remove(1);
             }
             cameraLatlngs.add(1, cameraPosition.target);
-
-//            if (mPolyline!=null){
-//                mPolyline.remove();
-//            }
-//            if (polylineOptions!=null) {
-//                polylineOptions.setPoints(cameraLatlngs);
-//                mPolyline = mAmap.addPolyline(polylineOptions);
-//            }else {
-//                LogUtils.d(TAG,"polylineOptions is null");
-//            }
             mPolyline.setPoints(cameraLatlngs);
         }catch (Exception e){
             e.printStackTrace();
@@ -1622,54 +1509,18 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
     }
 
     private void updateLine(Marker marker){
-//        if (marker != null){
-//            List<LatLng> latLngs = new ArrayList<LatLng>();
-//            latLngs.add(cameraPosition.target);
-//            latLngs.add(new LatLng(mLocationProvider.getAmapLocation().getLatitude(),mLocationProvider.getAmapLocation().getLongitude()));
-//            cameraLatlngs.
         if (marker==null)return;
-//        if (preLatlng!=null){
-//            LatLng latLng = marker.getPosition();
-//            double disX = latLng.latitude - preLatlng.latitude;
-//            double disY = latLng.longitude - preLatlng.longitude;
-//
-//            preLatlng = latLng;
-//            if (disX * latDis < 0d || disY * lonDis < 0d){
-//                latDis = disX;
-//                lonDis = disY;
-//                return;
-//            }else {
-//                latDis = disX;
-//                lonDis = disY;
-//            }
-//        }else {
-//            preLatlng = marker.getPosition();
-//        }
-
         LogUtils.d(TAG,"\nPosi:\nlat"+marker.getPosition().latitude+"\nlon"+marker.getPosition().longitude);
         try {
             if (cameraLatlngs.size()>1) {
                 cameraLatlngs.remove(1);
             }
             cameraLatlngs.add(1, marker.getPosition());
-
-//            if (mPolyline!=null){
-//                mPolyline.remove();
-//            }
-//            if (polylineOptions!=null) {
-//                polylineOptions.setPoints(cameraLatlngs);
-//                mPolyline = mAmap.addPolyline(polylineOptions);
-//            }else {
-//                LogUtils.d(TAG,"polylineOptions is null");
-//            }
             mPolyline.setPoints(cameraLatlngs);
 
         }catch (Exception e){
             e.printStackTrace();
         }
-//            PolylineOptions polylineOptions = new PolylineOptions();
-//            polylineOptions.set
-//        }
     }
 
 
@@ -1697,7 +1548,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
             mAmap.setTrafficEnabled(isTraff);
 
             if (isTraff){
-//                mAmap.setMapType(AMap.MAP_TYPE_NAVI);
                 mAmap.setCustomMapStylePath("/sdcard/main_style_true.json");
                 mAmap.setMapCustomEnable(true);
                 mapView.getMap().setMaskLayerParams(500,500,500,500,500,500);
@@ -1719,16 +1569,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
 
 
 
-    private XpStubGroupListener mOnStubData = new XpStubGroupListener() {
-        @Override
-        public void OnStubData(List<PowerPoint> powerPoints) {
-            mPowerPoints .clear();
-            if (powerPoints!=null) {
-                mPowerPoints.addAll(powerPoints);
-                initStubMarker();
-            }
-        }
-    };
 
 
     private void initStubMarker(){
@@ -1743,7 +1583,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         for (PowerPoint powerPoint:mPowerPoints){
             MarkerOptions options = new MarkerOptions();
             options.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_poi_show_stub));
-//            options.zIndex(0);
             LatLng latLng = new LatLng(powerPoint.getLat(),powerPoint.getLon());
             options.position(latLng);
             Marker marker = mAmap.addMarker(options);

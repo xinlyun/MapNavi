@@ -130,6 +130,7 @@ import java.util.concurrent.ExecutionException;
 import okhttp3.internal.Util;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+
 public class MainActivity extends Activity implements BaseFuncActivityInteface,XpNaviCalueListener
         , XpCollectListener
         ,ShowCollectDialog.CollectDialogListener
