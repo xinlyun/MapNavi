@@ -66,6 +66,7 @@ import com.xiaopeng.xmapnavi.presenter.callback.XpAiosMapListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpCarMsgListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviInfoListener;
+import com.xiaopeng.xmapnavi.presenter.callback.XpShouldStubListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpStubGroupListener;
 import com.xiaopeng.xmapnavi.utils.Utils;
 import com.xiaopeng.xmapnavi.view.appwidget.adapter.NaviStubAdapater;
@@ -468,6 +469,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		initAll();
 		mLocationPro.addNaviInfoListner(this);
 		mLocationPro.addNaviCalueListner(xpNaviCalueListener);
+		mLocationPro.setShouldStubListener(mShouldStubListener);
 	}
 
 	@Override
@@ -1242,6 +1244,16 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			mLocationPro.tryAddWayPoiCalue(naviLatLng);
 			if (mProgDialog!=null) {
 				mProgDialog.show();
+			}
+		}
+	};
+
+	XpShouldStubListener mShouldStubListener = new XpShouldStubListener() {
+		@Override
+		public void onShowStub() {
+			if (mProgDialog2!=null&&mLocationPro!=null) {
+				mProgDialog2.show();
+				mLocationPro.getStubGroups();
 			}
 		}
 	};

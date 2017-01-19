@@ -22,6 +22,7 @@ import com.xiaopeng.xmapnavi.mode.SoloNaviInfo;
 import com.xiaopeng.xmapnavi.presenter.ILocationForICU;
 import com.xiaopeng.xmapnavi.presenter.ILocationProvider;
 import com.xiaopeng.xmapnavi.presenter.IRunBroadInfo;
+import com.xiaopeng.xmapnavi.view.appwidget.activity.MainActivity;
 
 /**
  * Created by linzx on 2016/10/12.
@@ -38,12 +39,14 @@ public class LocationProService extends Service {
     //    String ACTION_BT = "com.bluetooth.broadcast";
     String ACTION_WEATHER = "com.weather.broadcast";
     public static final String ACTION_NAVI2 = "com.xiaopeng.navi.broadcast";
+    public static final String ACTION_NOT_POWER = "com.xiaopeng.chargecontrol.action.CHARGE_CONTROL_NEARBY_CHARGE";
     private final static String ACTION0_DOWN_COMPLETE = "com.xiaopeng.searchmusic.IMGDOWN";
 
     public IRunBroadInfo naviInfo;
     public ILocationForICU mLocationICU;
     private IBinder localBind ;
     private boolean isConnect =true;
+    private static final int DELEY_INIT = 0,DELEY_SHOW_STUB= 1;
 
 
     @Nullable
@@ -56,7 +59,7 @@ public class LocationProService extends Service {
     public void onCreate() {
         super.onCreate();
 //        LocationProvider.init(this);
-        deleyToInit.sendEmptyMessageDelayed(0,1000);
+        deleyToInit.sendEmptyMessageDelayed(DELEY_INIT,1000);
         try {
             mScuMailboxes = XpApplication.sApplication.getScuMailboxes();
             mNcmControlBox = mScuMailboxes.getNcmControlBox(mNcmControlCallback);
@@ -71,16 +74,24 @@ public class LocationProService extends Service {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
+            switch (msg.what){
+                case DELEY_INIT:
+                    mLocationProvider  = LocationProvider.getInstence(LocationProService.this);
+                    try {
+                        initBroadCast();
+                        mLocationICU = new LocationForICU(LocationProService.this, mNcmControlBox);
+                        mLocationICU.beginToLocation(mLocationProvider);
+                        mLocationICU.setConnectState(isConnect);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    break;
 
-            mLocationProvider  = LocationProvider.getInstence(LocationProService.this);
-            try {
-                initBroadCast();
-                mLocationICU = new LocationForICU(LocationProService.this, mNcmControlBox);
-                mLocationICU.beginToLocation(mLocationProvider);
-                mLocationICU.setConnectState(isConnect);
-            }catch (Exception e){
-                e.printStackTrace();
+                case DELEY_SHOW_STUB:
+                    mLocationProvider.shouldShowStub();
+                    break;
             }
+
         }
     };
 
@@ -124,6 +135,7 @@ public class LocationProService extends Service {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ACTION_NAVI);
         intentFilter.addAction(ACTION_NAVI2);
+        intentFilter.addAction(ACTION_NOT_POWER);
         registerReceiver(broadcastReceiver, intentFilter);
     }
 
@@ -132,7 +144,17 @@ public class LocationProService extends Service {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
 //            LogUtils.d("NaviProService","onReceive:Action="+action);
-            if (action.equals(ACTION_NAVI2)) {
+            if (action.equals(ACTION_NOT_POWER)){
+                try {
+
+                    Intent intent1 = new Intent(context, MainActivity.class);
+                    intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent1);
+                    deleyToInit.sendEmptyMessageDelayed(DELEY_SHOW_STUB,1000);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }else if (action.equals(ACTION_NAVI2)) {
                 try {
                     mLocationICU.readIntentInfo(intent);
                 }catch (Exception e){
@@ -147,7 +169,11 @@ public class LocationProService extends Service {
             }catch (Exception e){
                 e.printStackTrace();
             }
+
+
         }
     };
+
+
 
 }

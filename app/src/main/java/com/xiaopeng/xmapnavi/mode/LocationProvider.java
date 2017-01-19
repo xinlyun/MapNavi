@@ -79,6 +79,7 @@ import com.xiaopeng.xmapnavi.presenter.callback.XpNaviInfoListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpRouteListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSensorListener;
+import com.xiaopeng.xmapnavi.presenter.callback.XpShouldStubListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpStubGroupListener;
 import com.xiaopeng.xmapnavi.utils.Utils;
 import com.xiaopeng.xmapnavi.view.appwidget.activity.MainActivity;
@@ -122,6 +123,7 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     private static List<XpAimNaviMsgListener> mAimNaviListeners;
     private static List<XpStubGroupListener> mStubListeners;
     private XpAiosMapListener mAiosListener;
+    private XpShouldStubListener mShouldSbutListener;
     private OfflineMapManager.OfflineMapDownloadListener mMapDownListener;
     private OfflineMapManager mDownMapManager;
     private PoiSearch mPoiSearch;
@@ -280,6 +282,11 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public void removeStubGroupListener(XpStubGroupListener listener) {
         mStubListeners.remove(listener);
+    }
+
+    @Override
+    public void setShouldStubListener(XpShouldStubListener listener) {
+        mShouldSbutListener = listener;
     }
 
 
@@ -1274,6 +1281,13 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     @Override
     public ICarControlReple getCarControlReple() {
         return mCarControlReple;
+    }
+
+    @Override
+    public void shouldShowStub() {
+        if (mShouldSbutListener!=null){
+            mShouldSbutListener.onShowStub();
+        }
     }
 
 

@@ -99,6 +99,7 @@ import com.xiaopeng.xmapnavi.presenter.callback.XpCollectListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpLocationListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpNaviCalueListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpSearchListner;
+import com.xiaopeng.xmapnavi.presenter.callback.XpShouldStubListener;
 import com.xiaopeng.xmapnavi.presenter.callback.XpWhereListener;
 import com.xiaopeng.xmapnavi.utils.Utils;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.AddCollectFragment;
@@ -110,6 +111,7 @@ import com.xiaopeng.xmapnavi.view.appwidget.fragment.SearchPosiFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.SettingFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.ShowCollectFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.ShowPosiFragment;
+import com.xiaopeng.xmapnavi.view.appwidget.fragment.ShowStubGroupFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.fragment.second.ShowSearchPoiFragment;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.CircleImageView;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.LineShowView;
@@ -203,7 +205,8 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
             }
         },1000);
 
-        mLocationProvider    = LocationProvider.getInstence(this);
+        mLocationProvider   = LocationProvider.getInstence(this);
+        mLocationProvider   .setShouldStubListener(mShouldStubListener);
     }
 
 
@@ -718,6 +721,18 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             exitFragment();
+        }
+    };
+
+    XpShouldStubListener mShouldStubListener = new XpShouldStubListener() {
+        @Override
+        public void onShowStub() {
+            Fragment fragment = mFragments.get(mFragments.size()-1);
+            if (fragment instanceof RunNaviWayFragment || fragment instanceof RadarNaviFragment || fragment instanceof ShowStubGroupFragment){
+
+            }else {
+                startFragment(new ShowStubGroupFragment());
+            }
         }
     };
 
