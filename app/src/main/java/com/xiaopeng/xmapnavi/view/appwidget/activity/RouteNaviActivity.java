@@ -421,6 +421,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 
 		if (mCarControlPeple!=null){
 			mCarControlPeple.addXpCarMsgListener(mXpCarMsgListener);
+			lenghtDis = mCarControlPeple.getCarTralLenght();
 		}
 		mProgDialog2 = new ProgressDialog(RouteNaviActivity.this,"正在搜索数据");
 		mProgDialog2.setCancelable(false);
@@ -801,14 +802,14 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	}
 
 	private void showEnageMsg(){
-		int allLenght = lenghtDis - lengthNeed;
-		if (allLenght>=60 * 1000){
+		int allLenght = lenghtDis - lengthNeed/1000;
+		if (allLenght>=60 ){
 			mTvNanoDis0.setTextColor(getResources().getColor(R.color.text_green_2));
 			if (mLvShowStub.getVisibility() ==View.GONE) {
 				mLlEnage.setVisibility(View.VISIBLE);
 				mLlNoEnage.setVisibility(View.GONE);
 			}
-		}else if (allLenght>= 30 * 1000){
+		}else if (allLenght>= 30 ){
 			mTvNanoDis0.setTextColor(getResources().getColor(R.color.text_origer));
 			if (mLvShowStub.getVisibility() ==View.GONE) {
 				mLlEnage.setVisibility(View.VISIBLE);
@@ -821,12 +822,12 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			}
 		}
 		boolean isNum = (allLenght > 0);
-		String msg;
+		String msg ;
 		if (!isNum){
 			allLenght = 0 - allLenght;
-			msg = "-"+AMapUtil.getFriendlyLength(allLenght);
+			msg = "-"+allLenght+"公里";
 		}else {
-			msg = AMapUtil.getFriendlyLength(allLenght);
+			msg = ""+allLenght+"公里";
 		}
 		mTvNanoDis0	.setText(msg);
 		mTvNanoDis1.setText(msg);

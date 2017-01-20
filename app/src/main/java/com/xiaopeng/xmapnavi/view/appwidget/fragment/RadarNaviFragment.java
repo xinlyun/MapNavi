@@ -335,7 +335,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
             mLocationMarker.setPosition(new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude()));
             float bearing = aMapLocation.getBearing();
             if (bearing != 0.0f) {
-                mLocationMarker.setRotateAngle(bearing);
+                mLocationMarker.setRotateAngle(360 - bearing);
             }
         }
 
@@ -611,7 +611,7 @@ public class RadarNaviFragment  extends Fragment implements XpRouteListener,XpNa
                     String str = "" + naviInfo.getCurStepRetainDistance() + "米后";
                     mTvShowMsg.setText(str);
                 }else {
-                    int dis = naviInfo.getPathRetainDistance();
+                    int dis = naviInfo.getCurStepRetainDistance();
 //                    dis = dis / 1000;
 //                    DecimalFormat df = new DecimalFormat("0.0");
 //                    String result = df.format(dis);
