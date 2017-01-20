@@ -59,7 +59,20 @@ public class LocationProService extends Service {
     public void onCreate() {
         super.onCreate();
 //        LocationProvider.init(this);
-        deleyToInit.sendEmptyMessageDelayed(DELEY_INIT,1000);
+//        deleyToInit.sendEmptyMessageDelayed(DELEY_INIT,1000);
+        LogUtils.d(TAG,"DELEY_INIT begin");
+
+        mLocationProvider  = LocationProvider.getInstence(LocationProService.this);
+
+        try {
+            initBroadCast();
+            mLocationICU = new LocationForICU(LocationProService.this, mNcmControlBox);
+            mLocationICU.beginToLocation(mLocationProvider);
+            mLocationICU.setConnectState(isConnect);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
         try {
             mScuMailboxes = XpApplication.sApplication.getScuMailboxes();
             mNcmControlBox = mScuMailboxes.getNcmControlBox(mNcmControlCallback);
@@ -76,6 +89,7 @@ public class LocationProService extends Service {
             super.handleMessage(msg);
             switch (msg.what){
                 case DELEY_INIT:
+                    LogUtils.d(TAG,"DELEY_INIT begin");
                     mLocationProvider  = LocationProvider.getInstence(LocationProService.this);
                     try {
                         initBroadCast();

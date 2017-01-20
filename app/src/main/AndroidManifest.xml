@@ -89,8 +89,7 @@
         <service android:name="com.amap.api.location.APSService" >
         </service>
         <service android:name=".view.appwidget.services.LocationProService"
-            android:exported="true"
-            android:process=":location"
+
             >
             <intent-filter>
                 <action android:name="com.xiaopeng.xpmapnavi.LocationProService"></action>
