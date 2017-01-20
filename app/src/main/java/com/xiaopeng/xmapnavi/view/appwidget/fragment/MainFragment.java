@@ -1607,6 +1607,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
     }
 
     private void changeStubPower(){
+        mLocationProvider.setStubShowFlag(isStubPower);
         if (isStubPower){
             mStubImg.setImageResource(R.drawable.icon_power);
 

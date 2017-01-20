@@ -79,8 +79,6 @@ import com.xiaopeng.xmapnavi.view.appwidget.selfview.RouteNaviSettingDialog;
 import java.util.Date;
 import java.util.List;
 
-import okhttp3.Route;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
 public class RouteNaviActivity extends Activity implements  AMapNaviViewListener

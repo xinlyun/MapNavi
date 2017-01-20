@@ -167,6 +167,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
 
     private long saveRightTime = 0;
 
+    private boolean isShowFlag = false;
+
     public static void init(Context context) {
         mContext = context;
         mLp      = new LocationProvider(context);
@@ -1290,6 +1292,16 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
         if (mShouldSbutListener!=null){
             mShouldSbutListener.onShowStub();
         }
+    }
+
+    @Override
+    public void setStubShowFlag(boolean isShowStub) {
+        this.isShowFlag = isShowStub;
+    }
+
+    @Override
+    public boolean getStubShowFlag() {
+        return isShowFlag;
     }
 
 

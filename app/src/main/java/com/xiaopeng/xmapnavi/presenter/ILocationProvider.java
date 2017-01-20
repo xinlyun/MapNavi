@@ -105,4 +105,7 @@ public interface ILocationProvider {
     NaviInfo getNaviInfo();
     ICarControlReple getCarControlReple();
     void shouldShowStub();
+
+    void setStubShowFlag(boolean isShowStub);
+    boolean getStubShowFlag();
 }

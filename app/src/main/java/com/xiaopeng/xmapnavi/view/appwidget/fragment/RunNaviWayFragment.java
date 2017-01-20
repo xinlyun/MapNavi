@@ -971,7 +971,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     }
 
     private void changeStubPower(){
-
+        mLocaionPro.setStubShowFlag(isStubPower);
         if (isStubPower){
             mStubImg.setImageResource(R.drawable.icon_power);
 
