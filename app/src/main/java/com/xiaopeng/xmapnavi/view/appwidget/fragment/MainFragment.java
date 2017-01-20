@@ -319,6 +319,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         findViewById(R.id.btn_setting).setOnClickListener(this);
         findViewById(R.id.btn_navi_to_stub).setOnClickListener(this);
         findViewById(R.id.d3_power).setOnClickListener(this);
+        findViewById(R.id.btn_navi_to_stub_2).setOnClickListener(this);
         mLoveBtn        = (ImageView) findViewById(R.id.btn_collect);
         mImgCollectStub     .setOnClickListener(this);
         initMarkInfo();
@@ -331,6 +332,20 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         mLocationProvider   .addLocationListener(this);
         mLocationProvider.addSearchListner(this);
         isInFace = true;
+
+        if (mapView!=null){
+            mapView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (isStubPower) {
+                        mLocationProvider.getStubGroups();
+                        mStubImg.setImageResource(R.drawable.icon_power);
+                    }else {
+                        mStubImg.setImageResource(R.drawable.icon_power_false);
+                    }
+                }
+            },500);
+        }
     }
 
     @Override
@@ -465,7 +480,8 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
                 }
                 mActivity.startFragment(new SettingFragment());
                 break;
-
+            case R.id.btn_navi_to_stub_2:
+                //Flow down
             case R.id.btn_navi_to_stub:
                 try {
                     PowerPoint powerPoint = mPowerPoints.get(clickOne);
@@ -1034,10 +1050,10 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
             }
         },500);
         mCollectDateHelper.getWhereItems();
-        if (isStubPower) {
-            mLocationProvider.getStubGroups();
-        }
+
     }
+
+
 
     @Override
     public void onStop() {

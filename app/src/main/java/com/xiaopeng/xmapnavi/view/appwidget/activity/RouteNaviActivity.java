@@ -57,6 +57,7 @@ import com.xiaopeng.amaplib.util.AMapUtil;
 import com.xiaopeng.lib.bughunter.BugHunter;
 import com.xiaopeng.lib.utils.utils.LogUtils;
 import com.xiaopeng.xmapnavi.R;
+import com.xiaopeng.xmapnavi.XpApplication;
 import com.xiaopeng.xmapnavi.bean.PowerPoint;
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
 import com.xiaopeng.xmapnavi.presenter.ICarControlReple;
@@ -149,6 +150,8 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 
 	Marker mStubMarker;
 
+	private int Navi_Style = AMapNavi.GPSNaviMode;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		BugHunter.countTimeStart(BugHunter.TIME_TYPE_START,TAG,BugHunter.SWITCH_TYPE_START_COOL);
@@ -173,7 +176,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 		if (isFirstInit) {
 			isFirstInit = false;
 			mAMapNaviView = new AMapNaviView(this);
-			mAMapNaviView.onCreate(saveBundle);
+			mAMapNaviView.onCreate(null);
 			mLinView.postDelayed(new Runnable() {
 				@Override
 				public void run() {
@@ -207,15 +210,17 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			mNaviAmap = mAMapNaviView.getMap();
 			mNaviAmap.setTrafficEnabled(isTraff);
 			mNaviAmap.setOnCameraChangeListener(this);
+			boolean gps = getIntent().getBooleanExtra("gps", true);
+			if (gps){
+				Navi_Style = AMapNavi.GPSNaviMode;
+			}else {
+				Navi_Style = AMapNavi.EmulatorNaviMode;
+			}
 			mAMapNaviView.postDelayed(new Runnable() {
 				@Override
 				public void run() {
-					boolean gps = getIntent().getBooleanExtra("gps", true);
-					if (gps) {
-						mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
-					} else {
-						mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
-					}
+
+					mLocationPro.startNavi(Navi_Style);
 					mNaviAmap.setMapType(AMap.MAP_TYPE_NAVI);
 					changeMapType.sendEmptyMessageDelayed(0,800);
 				}
@@ -455,11 +460,12 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		mCarControlPeple.removeXpCarMsgListener(mXpCarMsgListener);
 		mLocationPro.removeStubGroupListener(mStubGroupListener);
 		mTrafficBarView2.recycleResource();
 		mAMapNaviView.onDestroy();
 		mTmap.onDestroy();
-
+//		XpApplication.getRefWatcher().watch(this);
 	}
 
 	@Override
@@ -1032,6 +1038,10 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			LogUtils.d(TAG,"onCalculateMultipleRoutesSuccess");
 			mIvShadow.setVisibility(View.VISIBLE);
 			mAMapNaviView.setVisibility(View.GONE);
+			mAMapNaviView.onPause();
+
+//			mLinView.removeView(mAMapNaviView);
+//			mAMapNaviView.onDestroy();
 			mSaveNaviView = mAMapNaviView;
 			deleyHandler2.removeMessages(0);
 			mLinView.postDelayed(new Runnable() {
@@ -1040,9 +1050,9 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 					if (mProgDialog!=null){
 						mProgDialog.dismiss();
 					}
+
 					if (mSaveNaviView!=null) {
 						mSaveNaviView.onPause();
-
 						mLinView.removeView(mSaveNaviView);
 						try{
 							mSaveNaviView.onDestroy();
@@ -1051,17 +1061,18 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 						}
 						mSaveNaviView = null;
 					}
+
 				}
 			},2000);
 
 			if (mAmap!=null){
 				mAmap.clear();
 			}
-			try{
-				showPathInListtle();
-			}catch (Exception e){
-				e.printStackTrace();
-			}
+//			try{
+//				showPathInListtle();
+//			}catch (Exception e){
+//				e.printStackTrace();
+//			}
 
 			mLocationPro.selectRouteId(ints[0]);
 
@@ -1069,7 +1080,7 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			isFirstInit = true;
 			initAll();
 
-			boolean isSuccess = mLocationPro.startNavi(AMapNavi.EmulatorNaviMode);
+			boolean isSuccess = mLocationPro.startNavi(Navi_Style);
 
 			LogUtils.d(TAG,"onCalculateMultipleRoutesSuccess?"+isSuccess);
 			if (mAMapNaviView!=null) {
@@ -1094,12 +1105,12 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 			if (mAmap!=null){
 				mAmap.clear();
 			}
-			try{
-				showPathInListtle();
-			}catch (Exception e){
-				e.printStackTrace();
-			}
-			mLocationPro.startNavi(AMapNavi.GPSNaviMode);
+//			try{
+//				showPathInListtle();
+//			}catch (Exception e){
+//				e.printStackTrace();
+//			}
+			mLocationPro.startNavi(Navi_Style);
 			if (mAMapNaviView!=null) {
 				mAMapNaviView.postDelayed(new Runnable() {
 					@Override

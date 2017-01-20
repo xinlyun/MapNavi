@@ -38,7 +38,7 @@ public class CarControlReple implements ICarControlReple {
 
     @Override
     public void removeXpCarMsgListener(XpCarMsgListener listener) {
-        xpCarMsgListeners.remove(xpCarMsgListeners);
+        xpCarMsgListeners.remove(listener);
     }
 
     @Override

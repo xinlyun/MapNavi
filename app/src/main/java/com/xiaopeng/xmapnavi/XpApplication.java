@@ -10,6 +10,10 @@ import android.util.Log;
 import com.activeandroid.ActiveAndroid;
 import com.aispeech.aios.sdk.AIOSForCarSDK;
 import com.amap.api.navi.AMapNavi;
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.LeakTrace;
+import com.squareup.leakcanary.LeakTraceElement;
+import com.squareup.leakcanary.RefWatcher;
 import com.tencent.bugly.crashreport.CrashReport;
 import com.tencent.wechat.Cloud;
 import com.xiaopeng.lib.bughunter.BugHunter;
@@ -43,7 +47,7 @@ public class XpApplication extends LibScuApplication {
     public static Typeface typeFace;
     private static final String TAG = "XpApplication";
     public static XpApplication sApplication;
-
+    private RefWatcher mRefWatcher;
     String licence = "1A02C1DAE06DF1716A1453A6BFA7563D4D516AB38837298B646935DB045A14DD1687803A1373C75BF3A32C1D1C2724115547FBADC138F80116D6CE7AF7A44104B67B20942766B45A0CB9A66D2C10206D";
 
     public int vehicle_id ,litId;
@@ -51,6 +55,11 @@ public class XpApplication extends LibScuApplication {
     public String licShow = "";
     public String device_id = "";
     public String ticket = "";
+
+
+    public static RefWatcher getRefWatcher() {
+        return sApplication.mRefWatcher;
+    }
 
     @Override
     public void onCreate() {
@@ -88,8 +97,7 @@ public class XpApplication extends LibScuApplication {
 
         }
         deleyToInitMsg.sendEmptyMessageDelayed(0,500);
-
-
+//        mRefWatcher = LeakCanary.install(this);
     }
 
     private Handler deleyToInitMsg = new Handler(){

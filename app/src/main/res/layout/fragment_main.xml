@@ -324,6 +324,7 @@
                     android:layout_height="match_parent">
 
                     <Button
+                        android:id="@+id/btn_navi_to_stub_2"
                         android:layout_marginTop="10px"
                         android:background="@color/text_blue"
                         android:text="@string/navi_find_way"

@@ -79,7 +79,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         ,AMap.OnMapTouchListener,RouteSearch.OnRouteSearchListener
         ,XpNaviCalueListener ,NaviChanDialog.OnChioceNaviStyleListner
         ,AMap.OnCameraChangeListener
-        , AMap.OnMapLongClickListener
+        , AMap.OnMapLongClickListener,View.OnLongClickListener
 {
     private static final String TAG = "RunNaviWayFragment";
     private MapView mAmapView;
@@ -361,6 +361,7 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         mStubImg            = (ImageView) findViewById(R.id.iv_stub_show);
         //--listener--//
         mBtnStartNavi       .setOnClickListener(this);
+        mBtnStartNavi       .setOnLongClickListener(this);
         findViewById(R.id.btn_start_route_navi).setOnClickListener(this);
         findViewById(R.id.btn_pianhao).setOnClickListener(this);
         findViewById(R.id.btn_exit).setOnClickListener(this);
@@ -844,8 +845,6 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         routeOverLay.addToMap();
         routeOverLay.setTransparency(1.0f);
         return routeOverLay;
-//        mRouteOverLay = routeOverLay;
-
     }
 
 
@@ -855,18 +854,6 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             RunNaviWayFragment.this.routeIndex = i;
             RunNaviWayFragment.this.adapter.setIndex(i);
             changeRoute();
-        }
-    };
-
-    private Handler deleyExit = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            try {
-                mActivity.exitFragment();
-            }catch (Exception e){
-                e.printStackTrace();
-            }
         }
     };
 
@@ -995,7 +982,11 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         }else {
             mPowerPoints.clear();
             for (Marker marker : mStubMarkers){
-                marker.remove();
+                try {
+                    marker.remove();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
             mStubMarkers.clear();
             mStubImg.setImageResource(R.drawable.icon_power_false);
@@ -1109,6 +1100,31 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         RegeocodeQuery query = new RegeocodeQuery(new LatLonPoint(latLng.latitude,latLng.longitude), 200, GeocodeSearch.AMAP);
         geocodeSearch.getFromLocationAsyn(query);
         mTxMarkTitle.setText(R.string.loading_hard);
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        switch (v.getId()){
+            case R.id.btn_start_navi:
+                isFirst = true;
+                watchUpdate = null;
+                if (mActivity.getFragmentNum()!=2) {
+                    mActivity.exitFragmentDeley();
+                    Intent intent = new Intent(getActivity(), RouteNaviActivity.class);
+                    intent.putExtra("gps", false);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    startActivity(intent);
+                }else{
+                    Intent intent = new Intent(getActivity(), RouteNaviActivity.class);
+                    intent.putExtra("gps", false);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    startActivity(intent);
+                    mActivity.exitFragment();
+                }
+                break;
+        }
+
+        return false;
     }
 
     /**
@@ -1374,9 +1390,6 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                         }
                         mMarker.setVisible(true);
                         isTouch = true;
-//                        if (mAMap!=null) {
-//                            mAMap.getUiSettings().setAllGesturesEnabled(false);
-//                        }
                     }else {
                         mMarker.remove();
                         mMarker = null;
@@ -1395,8 +1408,6 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                         if ((disX*disX + disY*disY)>200 && System.currentTimeMillis() - timeRe >200) {
                             markers.remove(nowNum);
                             markers.add(nowNum,mMarker.getPosition());
-//                            markers.get(nowNum).latitude = mMarker.getPosition().latitude;
-//                            markers.get(nowNum).longitude = mMarker.getPosition().longitude;
                             reCanLine();
                             timeRe = System.currentTimeMillis();
                             posiX = motionEvent.getX();
@@ -1408,13 +1419,8 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                 case MotionEvent.ACTION_UP:
                     if (mMarker!=null){
                         mMarker.remove();
-//                        mMarker.setDraggable(false);
                         mMarker = null;
                     }
-
-//                    if (mAMap!=null) {
-//                        mAMap.getUiSettings().setAllGesturesEnabled(true);
-//                    }
 
                     isTouch = false;
                     break;
