@@ -358,8 +358,9 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
                     List<NaviLatLng> endlist = new ArrayList<>();
                     endlist.add(new NaviLatLng(item.posLat, item.posLon));
                     if (mLocationProvider != null) {
-                        mLocationProvider.tryCalueRunWay(endlist);
-                        mActivity.showDialogwithOther();
+                        if(mLocationProvider.tryCalueRunWay(endlist)) {
+                            mActivity.showDialogwithOther();
+                        }
                     }
                 }
                 mActivity.exitFragment();
@@ -369,8 +370,9 @@ public class SearchCollectFragment extends Fragment implements View.OnClickListe
                 mActivity.showCollectDialog();
             } else {
                 if (item != null) {
-                    mLocationProvider.tryAddWayPoiCalue(new NaviLatLng(item.posLat, item.posLon));
-                    mActivity.showDialogwithOther();
+                    if (mLocationProvider.tryAddWayPoiCalue(new NaviLatLng(item.posLat, item.posLon))) {
+                        mActivity.showDialogwithOther();
+                    }
                 }
                 showHide();
 

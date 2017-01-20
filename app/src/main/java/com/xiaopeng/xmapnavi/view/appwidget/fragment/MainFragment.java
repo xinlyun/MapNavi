@@ -380,7 +380,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         switch (view.getId()){
 
             case R.id.btn_begin_navi:
-                mActivity.showDialogwithOther();
                 startCalueNavi();
                 break;
 
@@ -1414,7 +1413,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
             mActivity.startFragment(searchCollectFragment);
         }else {
             mLatLng = new LatLng(mComplete.posLat,mComplete.posLon);
-            mActivity.showDialogwithOther();
             startCalueNavi();
         }
     }
@@ -1427,7 +1425,6 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
             mActivity.startFragment(searchCollectFragment);
         }else {
             mLatLng = new LatLng(mHome.posLat,mHome.posLon);
-            mActivity.showDialogwithOther();
             startCalueNavi();
         }
     }

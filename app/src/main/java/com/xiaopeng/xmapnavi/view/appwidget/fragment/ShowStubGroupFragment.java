@@ -93,6 +93,9 @@ public class ShowStubGroupFragment extends Fragment implements View.OnClickListe
         if (mLocationProvider!=null){
             mLocationProvider.removeStubGroupListener(listener);
         }
+        if (mActivity!=null){
+            mActivity.dismissDeleyDialog();
+        }
     }
 
     @Override
@@ -129,8 +132,10 @@ public class ShowStubGroupFragment extends Fragment implements View.OnClickListe
             PowerPoint powerPoint  = mPowerPoints.get(position);
             List<NaviLatLng> naviLatLngs = new ArrayList<>();
             naviLatLngs.add(new NaviLatLng(powerPoint.getLat(),powerPoint.getLon()));
-            mActivity.showDialogwithOther();
-            mLocationProvider.tryCalueRunWay(naviLatLngs);
+
+            if(mLocationProvider.tryCalueRunWay(naviLatLngs)){
+                mActivity.showDialogwithOther();
+            }
 
         }
     }

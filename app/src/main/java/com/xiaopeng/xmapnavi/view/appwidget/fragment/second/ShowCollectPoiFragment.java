@@ -159,8 +159,9 @@ public class ShowCollectPoiFragment extends Fragment implements View.OnClickList
             case R.id.btn_begin_navi:
                 List<NaviLatLng> endPoi = new ArrayList<>();
                 endPoi.add(new NaviLatLng(latLng.latitude,latLng.longitude));
-                mLocation.tryCalueRunWay(endPoi);
-                mActivity.showDialogwithOther();
+                if(mLocation.tryCalueRunWay(endPoi)) {
+                    mActivity.showDialogwithOther();
+                }
                 break;
 
             default:

@@ -701,8 +701,9 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
 
             List<NaviLatLng> endWay = new ArrayList<>();
             endWay.add(new NaviLatLng(item.posLat,item.posLon));
-            mLocationProvider.tryCalueRunWay(endWay);
-            showDialogwithOther();
+            if(mLocationProvider.tryCalueRunWay(endWay)) {
+                showDialogwithOther();
+            }
         }
     }
 

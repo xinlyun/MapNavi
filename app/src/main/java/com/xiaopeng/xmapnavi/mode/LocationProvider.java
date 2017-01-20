@@ -1151,11 +1151,13 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
     };
 
     @Override
-    public void reCalue() {
+    public boolean reCalue() {
         //TODO
         LogUtils.d(TAG,"reCalue");
         if (saveEndList.size()>0 ){
-            tryCalueRunWay(new ArrayList<NaviLatLng>(saveEndList));
+            return tryCalueRunWay(new ArrayList<NaviLatLng>(saveEndList));
+        }else {
+            return false;
         }
     }
 

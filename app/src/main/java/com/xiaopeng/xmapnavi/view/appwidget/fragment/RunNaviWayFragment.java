@@ -967,8 +967,9 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                     markerWayPoi.remove();
                     markerWayPoi = null;
                 }
-                mActivity.showDialogwithOther();
-                mLocaionPro.reCalue();
+                if(mLocaionPro.reCalue()){
+                    mActivity.showDialogwithOther();
+                }
                 break;
 
             case R.id.btn_chongdian:
@@ -1429,7 +1430,9 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             NaviLatLng naviLatLng = new NaviLatLng(latLng.latitude,latLng.longitude);
             wayPois.add(naviLatLng);
         }
-        mLocaionPro.calueRunWay(startPoi,wayPois,endPoi);
+        if(!mLocaionPro.calueRunWay(startPoi,wayPois,endPoi)){
+            mActivity.dismissDeleyDialog();
+        }
 
     }
 
@@ -1528,9 +1531,11 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
 
         @Override
         public void changeLikeStyle(boolean congestion, boolean avCost, boolean highSpeed, boolean avHighSpeed) {
-            mActivity.showDialogwithOther();
+
             mLocaionPro.setNaviStyle(congestion,avHighSpeed,avCost,highSpeed);
-            mLocaionPro.reCalue();
+            if(mLocaionPro.reCalue()){
+                mActivity.showDialogwithOther();
+            }
         }
     };
 

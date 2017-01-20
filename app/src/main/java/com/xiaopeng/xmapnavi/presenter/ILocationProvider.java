@@ -78,7 +78,7 @@ public interface ILocationProvider {
     void stopRouteNavi();
     void setNaviStyle(boolean congestion, boolean avHighSpeed, boolean avCost, boolean highSpeed);
     boolean reCalueInNavi();
-    void reCalue();
+    boolean reCalue();
     int[] getPathsInts();
     NaviLatLng getNaviEndPoi();
     OfflineMapManager getOfflineMapManager();

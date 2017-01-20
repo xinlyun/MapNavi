@@ -392,7 +392,9 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             List<NaviLatLng> endlist = (List<NaviLatLng>) msg.obj;
-            mLocationPro.tryCalueRunWay(endlist);
+            if(!mLocationPro.tryCalueRunWay(endlist)){
+                mActivity.dismissDeleyDialog();
+            }
         }
     };
 
@@ -433,8 +435,9 @@ public class ShowSearchPoiFragment extends Fragment implements XpLocationListene
                 return;
             }
             else {
-                mLocationPro.tryAddWayPoiCalue(new NaviLatLng(item.getLatLonPoint().getLatitude(),item.getLatLonPoint().getLongitude()));
-                mActivity.showDialogwithOther();
+                if(mLocationPro.tryAddWayPoiCalue(new NaviLatLng(item.getLatLonPoint().getLatitude(),item.getLatLonPoint().getLongitude()))) {
+                    mActivity.showDialogwithOther();
+                }
             }
 //            dateHelper.savePoiItem(item);
 //            Marker marker = poiOverlay.getMarker(posi);
