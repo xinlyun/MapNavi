@@ -337,12 +337,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
             mapView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if (isStubPower) {
-                        mLocationProvider.getStubGroups();
-                        mStubImg.setImageResource(R.drawable.icon_power);
-                    }else {
-                        mStubImg.setImageResource(R.drawable.icon_power_false);
-                    }
+                    changeStubPower();
                 }
             },500);
         }
@@ -355,6 +350,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
         isInFace = false;
         mLocationProvider.removeSearchListner(this);
         mLocationProvider   .removeLocationListener(this);
+        mLocationProvider   .removeStubGroupListener(xpStubGroupListener);
     }
 
     private void initMarkInfo(){
@@ -1050,7 +1046,7 @@ public class MainFragment extends Fragment implements AMap.InfoWindowAdapter
             }
         },500);
         mCollectDateHelper.getWhereItems();
-
+        isStubPower = mLocationProvider.getStubShowFlag();
     }
 
 

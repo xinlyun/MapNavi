@@ -214,6 +214,15 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         @Override
         public void OnStubData(List<PowerPoint> powerPoints) {
             mPowerPoints .clear();
+            for (Marker marker:mStubMarkers){
+                try{
+                    marker.remove();
+                }catch (Exception e){
+                    e.printStackTrace();
+                    LogUtils.d(TAG,"remove Stub Marker fail");
+                }
+            }
+            mStubMarkers.clear();
             if (isStubPower) {
                 if (powerPoints != null) {
                     mPowerPoints.addAll(powerPoints);
@@ -224,14 +233,8 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
     };
 
     private void initStubMarker(){
-        for (Marker marker:mStubMarkers){
-            try{
-                marker.remove();
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-        mStubMarkers.clear();
+
+
         for (PowerPoint powerPoint:mPowerPoints){
             MarkerOptions options = new MarkerOptions();
             options.zIndex(1);
@@ -319,8 +322,8 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
                 mNaviChioceDialog = new NaviChanDialog(RunNaviWayFragment.this.getActivity());
                 mNaviChioceDialog.setOnChioceNaviStyleListner(RunNaviWayFragment.this);
             }
+            isStubPower = mLocaionPro.getStubShowFlag();
 
-            changeStubPower();
 
         }catch (Exception e){
             e.printStackTrace();
@@ -341,13 +344,16 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
         }
         mAMap.setMapType(AMap.MAP_TYPE_NAVI);
         mAMap.setMapTextZIndex(0);
+        changeStubPower();
 
     }
 
     @Override
     public void onPause() {
         super.onPause();
-
+        if (mLocaionPro!=null){
+            mLocaionPro.removeStubGroupListener(xpStubGroupListener);
+        }
     }
 
     private void initView(){
@@ -981,20 +987,19 @@ public class RunNaviWayFragment extends Fragment implements View.OnClickListener
             }
         }else {
             mPowerPoints.clear();
+            if (mLocaionPro!=null){
+                mLocaionPro.removeStubGroupListener(xpStubGroupListener);
+            }
             for (Marker marker : mStubMarkers){
                 try {
                     marker.remove();
                 }catch (Exception e){
                     e.printStackTrace();
+                    LogUtils.d(TAG,"remove Stub Marker fail");
                 }
             }
             mStubMarkers.clear();
             mStubImg.setImageResource(R.drawable.icon_power_false);
-            if (mLocaionPro!=null){
-                mLocaionPro.removeStubGroupListener(xpStubGroupListener);
-            }
-
-
         }
 
     }
