@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.xiaopeng.xmapnavi.R;
 import com.xiaopeng.xmapnavi.mode.LocationProvider;
@@ -91,7 +92,11 @@ public class SettingFragment extends Fragment implements View.OnClickListener{
                 break;
 
             case R.id.office_map:
-                mActivityInteface.startFragment(new OfflineMapFragment());
+                if(LocationProvider.getInstence(getActivity()).isNetworkAvailable()) {
+                    mActivityInteface.startFragment(new OfflineMapFragment());
+                }else {
+                    Toast.makeText(getActivity(),"暂无网络连接，请稍后再试",Toast.LENGTH_SHORT).show();
+                }
                 break;
 
             case R.id.rl_out_side:

@@ -619,7 +619,7 @@ public class MainActivity extends Activity implements BaseFuncActivityInteface,X
             if (mFragments.size()>0){
                 Fragment fragment = mFragments.get(mFragments.size()-1);
                 if (fragment instanceof RadarNaviFragment){
-                    return;
+                    mLocationProvider.stopNavi();
                 }
             }
             NaviLatLng naviLatLng = new NaviLatLng(poiBean.getLatitude(),poiBean.getLongitude());

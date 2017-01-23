@@ -108,4 +108,5 @@ public interface ILocationProvider {
 
     void setStubShowFlag(boolean isShowStub);
     boolean getStubShowFlag();
+    boolean isNetworkAvailable();
 }

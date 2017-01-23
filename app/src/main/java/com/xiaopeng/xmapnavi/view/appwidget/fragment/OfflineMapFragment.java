@@ -263,11 +263,12 @@ public class OfflineMapFragment extends Fragment implements
         mTvState        = (TextView) findViewById(R.id.tv_now_state);
 
         mTvNowCity.setText(cityName);
-        double size = ((int) (mCity.getSize() / 1024.0 / 1024.0 * 100)) / 100.0;
-        mTvCityBig.setText(String.valueOf(size) + "MB");
-
-        updateCity();
-        mTvState.setOnClickListener(this);
+        if (mCity!=null) {
+            double size = ((int) (mCity.getSize() / 1024.0 / 1024.0 * 100)) / 100.0;
+            mTvCityBig.setText(String.valueOf(size) + "MB");
+            updateCity();
+            mTvState.setOnClickListener(this);
+        }
     }
 
     Handler refreshHandler = new Handler(){

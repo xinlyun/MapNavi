@@ -1415,7 +1415,8 @@ public class LocationProvider implements ILocationProvider,AMapLocationListener,
      *
      * @return boolean true if we are connected false otherwise
      */
-    private boolean isNetworkAvailable() {
+    @Override
+    public boolean isNetworkAvailable() {
         NetworkInfo info = mConnectivityManager.getActiveNetworkInfo();
 
         return (info == null) ? false : info.isConnected();

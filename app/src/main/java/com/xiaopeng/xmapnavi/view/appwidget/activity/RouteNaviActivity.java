@@ -76,6 +76,7 @@ import com.xiaopeng.xmapnavi.view.appwidget.selfview.MTrafficBarView;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.MTrafficBarView2;
 import com.xiaopeng.xmapnavi.view.appwidget.selfview.RouteNaviSettingDialog;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -991,7 +992,13 @@ public class RouteNaviActivity extends Activity implements  AMapNaviViewListener
 	private XpAiosMapListener aiosMapListener = new XpAiosMapListener() {
 		@Override
 		public void onStartNavi(@NonNull String s, @NonNull PoiBean poiBean) {
+			mLocationPro.stopNavi();
+			List<NaviLatLng> endLatLng = new ArrayList<>();
+			endLatLng.add(new NaviLatLng(poiBean.getLatitude(),poiBean.getLongitude()));
 
+			if(mLocationPro.tryCalueRunWay(endLatLng)&& mProgDialog!=null){
+				mProgDialog.show();
+			}
 		}
 
 		@Override
